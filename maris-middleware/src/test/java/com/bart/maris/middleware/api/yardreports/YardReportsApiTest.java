@@ -261,6 +261,15 @@ class YardReportsApiTest extends ApiTestBase {
     }
 
     @Test
+    void aBackendErrorOnTheSystemWideMapIsTheMarisMessage() throws Exception {
+        backend().on("VHSW01A", in -> new FakeLegacyBackend.Reply(
+                Map.of("XDCONTROL", Map.of("urc", 8, "umsgcode", "REC NOT FND", "umsgins", List.of("YARD", "", ""))), "00000000"));
+        Answer a = get("/api/v1/yard-reports/system-wide", null);
+        assertThat(a.status()).isEqualTo(422);
+        assertThat(a.body().get("detail").asText()).isEqualTo("YARD Is Not Found");
+    }
+
+    @Test
     void anUnknownMapIsRefusedAndCallsNothing() throws Exception {
         Answer a = get("/api/v1/yard-reports/maps/atlantis", null);
         assertThat(a.status()).isEqualTo(400);

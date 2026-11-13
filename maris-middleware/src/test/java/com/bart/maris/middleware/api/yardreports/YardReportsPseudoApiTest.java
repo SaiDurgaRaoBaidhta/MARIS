@@ -258,4 +258,23 @@ class YardReportsPseudoApiTest extends ApiTestBase {
         assertThat(a.status()).isEqualTo(400);
         assertThat(called()).isEmpty();
     }
+
+    @Test
+    void aBackendErrorOnCreateIsTheMarisMessage() throws Exception {
+        createBackend(100, "N");
+        backend().on("VHYT53F", in -> new FakeLegacyBackend.Reply(
+                Map.of("XDCONTROL", Map.of("urc", 8, "umsgcode", "REC NOT FND", "umsgins", List.of("PSEUDO CONSIST", "", ""))), "00000000"));
+        Answer a = create("123", false, GOOD);
+        assertThat(a.status()).isEqualTo(422);
+        assertThat(a.body().get("detail").asText()).isEqualTo("PSEUDO CONSIST Is Not Found");
+    }
+
+    @Test
+    void aBackendErrorOnMoveThatIsNotAFullTrackIsTheMarisMessage() throws Exception {
+        backend().on("VHYT53H", in -> new FakeLegacyBackend.Reply(
+                Map.of("XDCONTROL", Map.of("urc", 8, "umsgcode", "REC NOT FND", "umsgins", List.of("CAR", "", ""))), "00000000"));
+        Answer a = post(BASE + "/car-moves", Map.of("car", "1002", "track", "ST-07"));
+        assertThat(a.status()).isEqualTo(422);
+        assertThat(a.body().get("detail").asText()).isEqualTo("CAR Is Not Found");
+    }
 }

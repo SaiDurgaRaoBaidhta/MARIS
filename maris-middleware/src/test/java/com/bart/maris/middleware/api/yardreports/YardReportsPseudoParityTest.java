@@ -40,7 +40,7 @@ class YardReportsPseudoParityTest {
             rows.add(Map.of("conNo", "532", "carNoX", carX(i == 0 ? "<" : "", cars[i][0], i == cars.length - 1 ? ">" : ""), "vehStat", cars[i][2],
                     "carType", cars[i][1], "atoPresentInd", cars[i][3], "trainIncdInd", cars[i][4], "homeYrd", "CY", "posnNo", i + 1));
         }
-        rows.add(Map.of("conNo", "446", "carNoX", carX("<", "3456", ""), "vehStat", "GO", "carType", "A1", "atoPresentInd", "Y", "trainIncdInd", "N", "homeYrd", "HY", "posnNo", 1));
+        rows.add(Map.of("conNo", "446", "carNoX", carX("", "3456", ">"), "vehStat", "GO", "carType", "A1", "atoPresentInd", "Y", "trainIncdInd", "N", "homeYrd", "HY", "posnNo", 1));
         p.on("VHYT53C", in -> Map.of("XDCONTROL", Map.of("urc", 0, "urowcnt", rows.size()), "VHYT53C_DATA", Map.of("dataRow", rows)));
         p.on("VHYT53L", in -> {
             Map<String, Object> data = new HashMap<>(in.get("VHYT53L_DATA"));
@@ -226,5 +226,40 @@ class YardReportsPseudoParityTest {
         var r = api.moveCar("CY", "1002", "ST-07", p.user.groupId());
         assertThat(records(p.lastSent("VHYT53H"))).isEqualTo(records(oldH));
         assertThat(r.message()).isEqualTo(oldMessage);
+    }
+
+    /**
+     * a one-car consist (446) included after part of 532. Old slip: VHYT53IS-MOVE-DATA does not copy VEH-STAT-1 for a one-car
+     * consist, so the old screen sends that car's status blank; the API sends the car's status. Everything else is the same.
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    void includingAOneCarConsistSendsTheSameRecordsButTheCarsStatus() {
+        backend(GOOD, 100);
+        ScreenSession old = openOld();
+        String w = windowId(old);
+        old.event(w, List.of(), "VAGen_Container_Details_DATA_ROW", "select", 1);
+        old.event(w, List.of(new ScreenSession.Change("Text4", "object", 2)), "Text4", "changed", null);
+        old.event(w, List.of(), "Push_Button1", "clicked", null);
+        old.event(w, List.of(), "VAGen_Container_Details_DATA_ROW", "select", 2);
+        old.event(w, List.of(), "Push_Button1", "clicked", null);
+        old.event(w, List.of(new ScreenSession.Change("Text2", "object", "125")), "Text2", "changed", null);
+        p.clear();
+        old.event(w, List.of(), "Push_Button6", "clicked", null);
+        Map<String, Map<String, Object>> oldF = p.lastSent("VHYT53F");
+        assertThat(oldF).as("the old screen created the consist; it says: " + shown(old, "Multi-line_Edit1")).isNotNull();
+
+        YardReportsPseudo.Config config = api.config("CY");
+        List<YardReportsPseudo.NewCar> cars = new java.util.ArrayList<>(newCars(config.consists().get(0)).subList(0, 2));
+        cars.addAll(newCars(config.consists().get(1)));
+        p.clear();
+        api.create("CY", "125", false, cars, p.user.groupId());
+        Map<String, Map<String, Object>> sent = records(p.lastSent("VHYT53F"));
+        List<Object> apiStats = (List<Object>) ((Map<String, Object>) sent.get("VHYT53F_CRIT").get("carNoRow")).get("vehStatN");
+        List<Object> oldStats = (List<Object>) ((Map<String, Object>) oldF.get("VHYT53F_CRIT").get("carNoRow")).get("vehStatN");
+        assertThat(apiStats).containsExactly("GO", "USABLE", "GO");
+        assertThat(oldStats).containsExactly("GO", "USABLE");                                     // the third (one-car consist) left blank
+        ((Map<String, Object>) sent.get("VHYT53F_CRIT").get("carNoRow")).put("vehStatN", oldStats);
+        assertThat(sent).isEqualTo(records(oldF));
     }
 }
