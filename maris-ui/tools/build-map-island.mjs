@@ -22,7 +22,9 @@ const boot = `
   css.textContent = "html.island-wait body { visibility: hidden !important; } #wv-login, .taskbar, #wv-side, #wv-head, .mm-foot, .nav-crumb { display: none !important; }"
     // not in full screen the React page keeps its header, side menu and footer: the map fills the space left for it
     + " html body.mvx-page .frame.mvx-frame:not(.nav-hidden) { left: 0 !important; right: 0 !important; top: 0 !important; bottom: 0 !important; width: auto !important; height: auto !important; }"
-    + " html:has(body.mvx-page), html body.mvx-page { background: transparent !important; }";
+    + " html:has(body.mvx-page), html body.mvx-page { background: transparent !important; }"
+    // the viewer's side menu and top bar are hidden here: its windows (car move, detail) centre on the map, not beside a menu
+    + " html { --side: 0px !important; --hdr: 0px !important; } html #desk { margin-left: 0 !important; }";
   document.head.appendChild(css);
   document.documentElement.classList.add("island-wait");
   let mapWin = null;
