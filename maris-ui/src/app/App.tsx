@@ -20,7 +20,7 @@ function Workspace() {
       <Sidebar menus={MENUS} mini={mini} />
       <main className={`min-h-screen px-6 pb-16 pt-16 transition-[margin] duration-200 print:m-0 print:p-0 ${mini ? "ml-[72px]" : "ml-[276px]"}`}><Router /></main>
       <Footer />
-      <MapIsland map={(p => p.kind === "map" ? { yard: p.yard, shop: p.shop } : null)(resolve(app.stack[app.stack.length - 1]))} />
+      <MapIsland map={(p => p.kind === "map" ? { yard: p.yard, shop: p.shop } : null)(resolve(app.stack[app.stack.length - 1], !!app.session?.update))} />
     </>
   );
 }
