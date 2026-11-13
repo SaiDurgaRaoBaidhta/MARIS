@@ -1,7 +1,7 @@
 /* A yard map (old screens VHIC01 / VHIC02 Berryessa, VHYT80I / 81I Millbrae, VHYT105I / 106I Daly City yard,
- * VHYT70I / 71I Concord yard, VHYT90I / 91I Richmond yard), on the clean API. Every track with its spots, in the old map's
- * order. The old screens' colour rules: the inquiry map colours a car by its home yard (the colours come from MARIS's
- * old colour statement group, through the API); the update map colours it by condition (GiveAColor).
+ * VHYT70I / 71I Concord yard, VHYT90I / 91I Richmond yard, VHYT100I / 101I Daly City shop), on the clean API. Every track with its spots, in the old map's
+ * order. The old screens' colour rules, chosen per screen in screens.tsx: by home yard (the colours come from the old
+ * colour statement group, through the API), by condition (GiveAColor, most update maps), or none (VHYT81I).
  * Not carried over from the old update screens: Maint, Reports, Tower Menu and the spot clicks that open other screens. */
 import { useCallback, useEffect, useState } from "react";
 import { PageHead } from "@/shared/ui/PageHead";
@@ -19,18 +19,21 @@ function cssColour(name: string): string {
   return name.replace(/\s+/g, "").toLowerCase();
 }
 
-function Spot({ car, update }: { car?: YardCar; update: boolean }) {
+/** how the old screen colours its cars */
+export type MapColours = "home" | "condition" | "none";
+
+function Spot({ car, colours }: { car?: YardCar; colours: MapColours }) {
   if (!car) return <li className="h-7 min-w-14 rounded border border-dashed border-slate-300 dark:border-line-dark" aria-label="empty spot" />;
-  const style = update
-    ? { color: CONDITION_COLOUR[car.condition ?? ""] ?? "inherit", backgroundColor: "white" }
-    : { color: cssColour(car.colour), backgroundColor: cssColour(car.background) };
+  const style = colours === "home" ? { color: cssColour(car.colour), backgroundColor: cssColour(car.background) }
+    : colours === "condition" ? { color: CONDITION_COLOUR[car.condition ?? ""] ?? "inherit", backgroundColor: "white" }
+    : undefined;
   return (
     <li className="h-7 min-w-14 rounded border border-slate-400 px-1 text-center font-mono text-[12px] font-bold leading-7" style={style}
         title={`Car ${car.car}, consist ${car.consist || "-"}, ${car.status}, home yard ${car.homeYard}`}>{car.label}</li>
   );
 }
 
-export function YardMapPage({ map, code, title, update }: { map: string; code: string; title: string; update: boolean }) {
+export function YardMapPage({ map, code, title, colours }: { map: string; code: string; title: string; colours: MapColours }) {
   const [data, setData] = useState<YardMap | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -57,7 +60,7 @@ export function YardMapPage({ map, code, title, update }: { map: string; code: s
           {data?.tracks.map(t => (
             <div key={t.track} role="group" aria-label={`Track ${t.track}`} className="flex items-center gap-2">
               <span className="w-20 shrink-0 text-[13px] font-semibold text-slate-600 dark:text-[#c9d6e4]">{t.track}</span>
-              <ol className="flex gap-1">{t.spots.map(s => <Spot key={s} car={at.get(`${t.track}/${s}`)} update={update} />)}</ol>
+              <ol className="flex gap-1">{t.spots.map(s => <Spot key={s} car={at.get(`${t.track}/${s}`)} colours={colours} />)}</ol>
             </div>
           ))}
         </div>

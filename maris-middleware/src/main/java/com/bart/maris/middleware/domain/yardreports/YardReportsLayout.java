@@ -25,35 +25,46 @@ public final class YardReportsLayout {
      * -> home yard (or {@link #OTHER_YARD}) -> [text colour, background]
      */
     public static Map<String, List<String>> colours(ScreenBundle screens, String function, String pkg) {
+        return colours(screens, function, pkg, "HOME-YRD", "CAR-COLOR", "CAR-COLOR-B");
+    }
+
+    /**
+     * the same for any colour statement group or function: {@code if (yardField == "HY") textField = "GREEN"; ...}
+     * (e.g. dy100Color: HOME_YARD, theColor); backgroundField null = the group sets no background ([text colour] only)
+     */
+    public static Map<String, List<String>> colours(ScreenBundle screens, String function, String pkg, String yardField,
+                                                    String textField, String backgroundField) {
         Ast.Function f = screens.function(function, pkg);
         if (f == null) throw new IllegalStateException("function " + function + " not found");
         Map<String, List<String>> out = new LinkedHashMap<>();
-        colours(f.body(), out);
+        colours(f.body(), out, yardField, textField, backgroundField);
         if (!out.containsKey(OTHER_YARD)) throw new IllegalStateException(function + " has no colours for other home yards");
         return out;
     }
 
-    private static void colours(List<Ast.Stmt> body, Map<String, List<String>> out) {
+    private static void colours(List<Ast.Stmt> body, Map<String, List<String>> out, String yardField, String textField, String backgroundField) {
         for (Ast.Stmt s : body) {
             if (!(s instanceof Ast.If i)) continue;
-            if (compared(i.cond(), "HOME-YRD") instanceof Ast.Str yard) out.put(yard.value(), pair(i.then()));
-            if (i.otherwise().size() == 1 && i.otherwise().get(0) instanceof Ast.If) colours(i.otherwise(), out);
-            else if (!i.otherwise().isEmpty()) out.put(OTHER_YARD, pair(i.otherwise()));
+            if (compared(i.cond(), yardField) instanceof Ast.Str yard) out.put(yard.value(), pair(i.then(), textField, backgroundField));
+            if (i.otherwise().size() == 1 && i.otherwise().get(0) instanceof Ast.If) colours(i.otherwise(), out, yardField, textField, backgroundField);
+            else if (!i.otherwise().isEmpty()) out.put(OTHER_YARD, pair(i.otherwise(), textField, backgroundField));
         }
     }
 
-    /** the CAR-COLOR and CAR-COLOR-B texts a branch assigns */
-    private static List<String> pair(List<Ast.Stmt> branch) {
+    /** the text colour (and background) a branch assigns */
+    private static List<String> pair(List<Ast.Stmt> branch, String textField, String backgroundField) {
         String text = null, background = null;
         for (Ast.Stmt s : branch) {
             if (s instanceof Ast.Assign a && a.value() instanceof Ast.Str v) {
-                String field = a.target().segments().get(a.target().segments().size() - 1).name().toUpperCase(java.util.Locale.ROOT);
-                if (field.equals("CAR-COLOR")) text = v.value();
-                if (field.equals("CAR-COLOR-B")) background = v.value();
+                String field = a.target().segments().get(a.target().segments().size() - 1).name();
+                if (field.equalsIgnoreCase(textField)) text = v.value();
+                if (field.equalsIgnoreCase(backgroundField == null ? "" : backgroundField)) background = v.value();
             }
         }
-        if (text == null || background == null) throw new IllegalStateException("a colour branch without CAR-COLOR / CAR-COLOR-B");
-        return List.of(text, background);
+        if (text == null || (backgroundField != null && background == null)) {
+            throw new IllegalStateException("a colour branch without " + textField + (backgroundField == null ? "" : " / " + backgroundField));
+        }
+        return backgroundField == null ? List.of(text) : List.of(text, background);
     }
 
     /** track -> its spots, in the LOAD's order */

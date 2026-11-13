@@ -57,6 +57,11 @@ class YardReportsLiveTest extends LiveTestBase {
     }
 
     @Test
+    void dalyCityShop() throws Exception {
+        oldCarsAreInTheApi("daly-city-shop", "VHYT100I", false);
+    }
+
+    @Test
     void richmondYard() throws Exception {
         oldCarsAreInTheApi("richmond-yard", "VHYT90I", false);
     }

@@ -76,5 +76,19 @@
     "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
     "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
     "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHYT100I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHYT101I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
   }
 }

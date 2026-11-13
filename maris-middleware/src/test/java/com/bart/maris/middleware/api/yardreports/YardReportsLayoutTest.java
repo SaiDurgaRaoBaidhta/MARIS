@@ -38,7 +38,8 @@ class YardReportsLayoutTest {
     @Test
     void theInquiryAndUpdateScreenOfAMapPlaceCarsAlike() {
         for (String[] pair : new String[][]{{"VHIC01IS-LOAD", "VHIC02IS-LOAD"}, {"VHYT80IS-LOAD", "VHYT81IS-LOAD"},
-                {"VHYT105IS-LOAD", "VHYT106IS-LOAD"}, {"VHYT70IS-LOAD", "VHYT71IS-LOAD"}, {"VHYT90IS-LOAD", "VHYT91IS-LOAD"}}) {
+                {"VHYT105IS-LOAD", "VHYT106IS-LOAD"}, {"VHYT70IS-LOAD", "VHYT71IS-LOAD"}, {"VHYT90IS-LOAD", "VHYT91IS-LOAD"},
+                {"VHYT100IS-LOAD", "VHYT101IS-LOAD"}}) {
             assertThat(YardReportsLayout.of(Parity.bundle(), pair[1], PKG)).as(pair[1])
                     .isEqualTo(YardReportsLayout.of(Parity.bundle(), pair[0], PKG));
         }
@@ -52,5 +53,24 @@ class YardReportsLayoutTest {
         assertThat(c.get("CY")).containsExactly("YELLOW", "GREY55");
         assertThat(c.get("DY")).containsExactly("RED", "LIGHT YELLOW");
         assertThat(c.get(YardReportsLayout.OTHER_YARD)).containsExactly("BLACK", "GREY80");
+    }
+
+    @Test
+    void dalyCityShopTracksIncludeTheOneSpotTracksLoadedThroughLoadCar() {
+        Map<String, Set<Integer>> l = YardReportsLayout.of(Parity.bundle(), "VHYT100IS-LOAD", PKG);
+        assertThat(l.get("B-PIT-01")).isEqualTo(spots(1, 1));
+        assertThat(l.get("ST-13")).isEqualTo(spots(1, 8));
+        assertThat(l.get("S-1A")).isEqualTo(spots(1, 1));
+        assertThat(l.get("RR-1A")).isEqualTo(spots(1, 2));
+    }
+
+    @Test
+    void theDalyCityShopColoursComeFromDy100Color() {
+        Map<String, List<String>> c = YardReportsLayout.colours(Parity.bundle(), "dy100Color", PKG, "HOME_YARD", "theColor", null);
+        assertThat(c.get("HY")).containsExactly("GREEN");
+        assertThat(c.get("RY")).containsExactly("BROWN");
+        assertThat(c.get("CY")).containsExactly("BLUE");
+        assertThat(c.get("DY")).containsExactly("RED");
+        assertThat(c.get(YardReportsLayout.OTHER_YARD)).containsExactly("BLACK");
     }
 }

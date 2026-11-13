@@ -18,8 +18,8 @@ const BERRYESSA = {
     car("TM3", 2, "$<3456", { condition: "not-usable" })],
 };
 
-const page = (map = "berryessa", update = false) =>
-  render(<AppProvider><YardMapPage map={map} code={update ? "VHIC02" : "VHIC01"} title="Berryessa Station" update={update} /></AppProvider>);
+const page = (map = "berryessa", colours: "home" | "condition" | "none" = "home") =>
+  render(<AppProvider><YardMapPage map={map} code="VHIC01" title="Berryessa Station" colours={colours} /></AppProvider>);
 
 describe("yard map page (old VHIC01 / VHIC02 and the other yard maps)", () => {
   it("asks for the map and draws every track's spots, with the cars on theirs", async () => {
@@ -42,10 +42,16 @@ describe("yard map page (old VHIC01 / VHIC02 and the other yard maps)", () => {
 
   it("colours each car by its condition on the update map (GO black, USABLE blue, otherwise red)", async () => {
     fakeMiddleware({ "GET /api/v1/yard-reports/maps/berryessa": () => ({ body: BERRYESSA }) });
-    page("berryessa", true);
+    page("berryessa", "condition");
     expect(await screen.findByText("<1234")).toHaveStyle({ color: "rgb(0, 0, 0)" });
     expect(screen.getByText("2345>")).toHaveStyle({ color: "rgb(0, 0, 255)" });
     expect(screen.getByText("$<3456")).toHaveStyle({ color: "rgb(255, 0, 0)" });
+  });
+
+  it("leaves cars uncoloured on a map whose old screen colours none (VHYT81I)", async () => {
+    fakeMiddleware({ "GET /api/v1/yard-reports/maps/berryessa": () => ({ body: BERRYESSA }) });
+    page("berryessa", "none");
+    expect(getComputedStyle(await screen.findByText("2345>")).color).not.toBe("rgb(255, 140, 0)");
   });
 
   it("shows the middleware's message when MARIS refuses", async () => {
@@ -77,7 +83,7 @@ describe("system-wide map page (old VHSW01I)", () => {
 
 describe("routing", () => {
   it("routes every converted yard report screen to its new page", () => {
-    for (const code of ["VHIC01", "VHIC02", "VHYT80I", "VHYT81I", "VHYT105I", "VHYT106I", "VHYT70I", "VHYT71I", "VHYT90I", "VHYT91I", "VHSW01I"]) {
+    for (const code of ["VHIC01", "VHIC02", "VHYT80I", "VHYT81I", "VHYT105I", "VHYT106I", "VHYT70I", "VHYT71I", "VHYT90I", "VHYT91I", "VHYT100I", "VHYT101I", "VHSW01I"]) {
       expect(CLEAN_PAGES[code], code).toBeTypeOf("function");
     }
   });

@@ -180,6 +180,36 @@ class YardReportsApiTest extends ApiTestBase {
                 .containsExactly("<3001", "<3002", "$<3003");
     }
 
+    /** a VHYTX0A row: the program says which orientation is the car's left end */
+    private static Map<String, Object> shopCar(String car, String orientation, String track, int position, String homeYard, String softver) {
+        return Map.of("carNo", car, "vagenOrientation", orientation, "lftOrientationCd", "<", "yrdSubLoc", track, "posnNo", position,
+                "vehStat", "GO", "homeYrd", homeYard, "softver", softver);
+    }
+
+    @Test
+    void dalyCityShopMapAsksForEveryCarAndUsesTheShopsOwnRules() throws Exception {
+        AtomicReference<Map<String, Object>> crit = new AtomicReference<>();
+        List<Map<String, Object>> rows = List.of(
+                shopCar("5001", "<", "ST-13", 8, "RY", ""),        // ST-13 has 8 spots
+                shopCar("5002", ">", "ST-13", 9, "HY", ""),
+                shopCar("5003", "<", "B-PIT-02", 1, "CY", "V2"),   // a software version of 2+ characters: "$"
+                shopCar("5004", "(", "S-1A", 1, "MY", "V"));       // "(" is not this row's left end: after the car
+        backend().on("VHYTX0A", in -> {
+            crit.set(in.get("VHYT100A-CRIT"));
+            return reply(0, rows.size(), Map.of("VHYT100A-DATA", rows("dataRow", rows)));
+        });
+        Answer a = get("/api/v1/yard-reports/maps/daly-city-shop", null);
+
+        assertThat(a.status()).isEqualTo(200);
+        assertThat(called()).containsExactly("VHYTX0A");
+        assertThat(crit.get()).doesNotContainKey("yrdTrkgYrd");                          // VHYT100IS-INIT-S sets no yard
+        assertThat(a.body().findValuesAsText("car")).containsExactly("5001", "5003", "5004");
+        assertThat(a.body().get("cars").findValuesAsText("label")).containsExactly("<5001", "$<5003", "5004(");
+        assertThat(a.body().get("cars").findValuesAsText("colour")).containsExactly("BROWN", "BLUE", "BLACK");   // dy100Color
+        assertThat(a.body().get("cars").findValuesAsText("background")).containsOnly("GREY80");
+        assertThat(a.body().at("/cars/0").has("condition")).isFalse();
+    }
+
     @Test
     void systemWideMapTellsWhichLocationsHaveCars() throws Exception {
         AtomicReference<Map<String, Object>> crit = new AtomicReference<>();

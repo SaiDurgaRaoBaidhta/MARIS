@@ -27,19 +27,19 @@ class YardReportsParityTest {
     private static final String[] YARDS = {"HY", "RY", "CY", "DY", "MY"};
     private static final String[] STATUS = {"GO", "USABLE", "NO GO"};
     private static final String[] ORIENTATION = {"<", ">", "O", "b", "("};
-    private static final String[] SOFTWARE = {"", "V2", "$V3", " "};
+    private static final String[] SOFTWARE = {"", "V2", "$V3", " ", " V", "V"};
 
     private Parity p;
 
     /** rows for every spot of the map, two more per track, and one unknown track; car numbers are unique */
-    private static List<Map<String, Object>> rows(String load, boolean conditionFields, boolean software) {
+    private static List<Map<String, Object>> rows(String load, boolean conditionFields, boolean software, int beyond) {
         List<Map<String, Object>> rows = new ArrayList<>();
         Map<String, Set<Integer>> layout = new java.util.LinkedHashMap<>(YardReportsLayout.of(Parity.bundle(), load, PKG));
         layout.put("T-95", Set.of(1));
         int n = 0;
         for (var t : layout.entrySet()) {
             int last = t.getValue().stream().max(Integer::compare).orElse(0);
-            for (int pos = 1; pos <= last + 2; pos++, n++) {
+            for (int pos = 1; pos <= last + beyond; pos++, n++) {
                 // PM due (HPMHRS 1) is never sent: the engine compares GiveAColor's SMALLINT parameter wrongly and always
                 // shows BLACK where the EGL shows BROWN; YardReportsApiTest covers go-pm-due. Re-add once engine/** is fixed.
                 Map<String, Object> row = new java.util.HashMap<>(Map.of("carNo", String.valueOf(1000 + n), "conNo", "532",
@@ -49,7 +49,8 @@ class YardReportsParityTest {
                     row.put("trainIncdInd", n % 7 == 0 ? "Y" : "N");
                     row.put("hpmhrs", 0);
                 }
-                if (software) row.put("softver", SOFTWARE[n % 4]);
+                if (software) row.put("softver", SOFTWARE[n % SOFTWARE.length]);
+                if (load.startsWith("VHYT10") && !load.startsWith("VHYT105") && !load.startsWith("VHYT106")) row.put("lftOrientationCd", "<");
                 rows.add(row);
             }
         }
@@ -57,18 +58,24 @@ class YardReportsParityTest {
     }
 
     private void backend(String program, String data, String load) {
+        backend(program, data, load, 2);
+    }
+
+    /** @param beyond rows past each track's last spot (which the map must not show) */
+    private void backend(String program, String data, String load, int beyond) {
         p = new Parity();
-        List<Map<String, Object>> rows = rows(load, !data.equals("VHYT80A_DATA"), !data.equals("VHYT80A_DATA") && !data.equals("VHIC01A_DATA"));
+        List<Map<String, Object>> rows = rows(load, !data.equals("VHYT80A_DATA"), !data.equals("VHYT80A_DATA") && !data.equals("VHIC01A_DATA"), beyond);
         p.on(program, in -> Map.of("XDCONTROL", Map.of("urc", 0, "urowcnt", rows.size()), data, Map.of("dataRow", rows)));
     }
 
-    /** the old screen's car spots (widgets bound to a BUTTON-n or ORIENTATION-n field) that show something */
+    /** the old screen's car spots that show something: widgets bound to a BUTTON / BUTTONTXT / ORIENTATION field, or named
+     *  like a spot (S1TXT01, BPITTXT01: the Daly City shop update screen fills its spots without bindings) */
     @SuppressWarnings("unchecked")
     private List<String> oldSpots(String screen, Function<Map<String, Object>, String> show) {
         Set<String> spots = new HashSet<>();
         for (var c : Parity.bundle().screen(screen).path("connections")) {
             var a = c.path("a");
-            if (c.path("m").asText().equals("connectAttributes") && a.path(1).asText().matches("(BUTTON|ORIENTATION)-?\\d+ data")
+            if (c.path("m").asText().equals("connectAttributes") && a.path(1).asText().matches("(BUTTON|BUTTONTXT|ORIENTATION)(-?\\d+)? data")
                     && a.path(3).asText().equals("object")) {
                 spots.add(a.path(2).path("id").asText().replaceFirst("^screen\\.", ""));
             }
@@ -79,7 +86,8 @@ class YardReportsParityTest {
         for (Map<String, Object> w : (List<Map<String, Object>>) old.state().get("windows")) {
             if (!w.get("screen").equals(screen)) continue;
             ((Map<String, Map<String, Object>>) w.get("widgets")).forEach((name, wd) -> {
-                if (spots.contains(name) && wd.get("value") != null && !wd.get("value").toString().isBlank()) out.add(show.apply(wd));
+                boolean namedSpot = name.matches("[A-Z0-9]+TXT\\d+") && String.valueOf(wd.get("value")).matches(".*\\d.*");   // a car number
+                if ((spots.contains(name) || namedSpot) && wd.get("value") != null && !wd.get("value").toString().isBlank()) out.add(show.apply(wd));
             });
         }
         return out;
@@ -95,7 +103,7 @@ class YardReportsParityTest {
         Map<String, Map<String, Object>> oldSent = p.lastSent(program);
         p.clear();
         YardReportsMap m = new YardReportsService(p.legacy(), p.messages(), Parity.bundle()).map(map);
-        assertThat(p.lastSent(program).get(program + "_CRIT")).isEqualTo(oldSent.get(program + "_CRIT"));
+        assertThat(criteria(p.lastSent(program))).as("the criteria sent").isNotEmpty().isEqualTo(criteria(oldSent));
         assertThat(shown).as("the old screen shows cars").isNotEmpty();
         Set<String> skipped = new HashSet<>();
         List<String> api = new ArrayList<>();
@@ -109,6 +117,13 @@ class YardReportsParityTest {
     }
 
     /** an inquiry spot: label, text colour (bound to foregroundColor, or to color on VHYT90I), background */
+    /** the criteria records a call sent (VHIC01A_CRIT, VHYT105A_CRIT, VHYT100A-CRIT ...) */
+    private static Map<String, Map<String, Object>> criteria(Map<String, Map<String, Object>> sent) {
+        Map<String, Map<String, Object>> out = new java.util.TreeMap<>();
+        sent.forEach((k, v) -> { if (k.endsWith("CRIT")) out.put(k, v); });
+        return out;
+    }
+
     private static String inquiry(Map<String, Object> w) {
         return w.get("value") + " " + (w.get("fg") != null ? w.get("fg") : w.get("color")) + "/" + w.get("bg");
     }
@@ -219,5 +234,20 @@ class YardReportsParityTest {
             Object shown = widgets.get(marker.get(loc.location())).get("value");
             assertThat(shown != null && !shown.toString().isBlank()).as(loc.location()).isEqualTo(!loc.cars().isEmpty());
         }
+    }
+
+    @Test
+    void dalyCityShopInquiry() {
+        // no rows past a track's end: VHYT100IS-LOAD sets a one-spot track's colour from every row on it, even rows LOAD-CAR
+        // does not draw, so a row at spot 2 recolours the car at spot 1 (an old screen slip; the API test covers spot 9 of ST-13)
+        backend("VHYTX0A", "VHYT100A-DATA", "VHYT100IS-LOAD", 0);
+        same("VHYT100I", "VHYTX0A", "daly-city-shop", w -> w.get("value") + " " + w.get("color") + "/" + w.get("bg"),
+                c -> c.label() + " " + c.colour() + "/" + c.background(), Set.of());
+    }
+
+    @Test
+    void dalyCityShopUpdate() {
+        backend("VHYTX0A", "VHYT100A-DATA", "VHYT101IS-LOAD", 0);      // as dalyCityShopInquiry
+        same("VHYT101I", "VHYTX0A", "daly-city-shop", w -> w.get("value") + " " + w.get("color"), c -> c.label() + " " + c.colour(), Set.of());
     }
 }

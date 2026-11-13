@@ -1,5 +1,5 @@
 /* Yard reports: the middleware's clean API (/api/v1/yard-reports). Maps call MARIS programs VHIC01A, VHYT80A, VHYTX5A,
- * VHYT70A and VHYT90A; the system-wide map calls VHSW01A. */
+ * VHYT70A, VHYT90A and VHYTX0A; the system-wide map calls VHSW01A. */
 import { get } from "@/shared/api/client";
 
 export interface YardTrack { track: string; spots: number[] }
