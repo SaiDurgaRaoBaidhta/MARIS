@@ -28,7 +28,7 @@ test("out of full screen the map sits under its page header, as in the reference
   send({ type: "maris-map:shown", yard: "HY", shop: false, title: "VHYT07I - Hayward Yard Map - Inquiry" });
   send({ type: "maris-map:full", on: false });
   expect(layer.style.left).toBe("292px");
-  expect(layer).toHaveClass("top-[166px]", "bottom-[52px]", "right-4");
+  expect(layer).toHaveClass("top-[166px]", "bottom-0", "right-4");
   expect(screen.getByRole("heading", { name: "Hayward Yard Map - Inquiry" })).toBeInTheDocument();
   expect(screen.getByText("VHYT07I")).toBeInTheDocument();
   send({ type: "maris-map:full", on: true });

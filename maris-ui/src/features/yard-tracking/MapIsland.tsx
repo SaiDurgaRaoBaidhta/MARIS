@@ -70,10 +70,11 @@ export function MapIsland({ map, navWidth }: { map: { yard: string; shop: boolea
         <div className="fixed right-6 top-16 z-[4400] px-6" style={{ left: navWidth }}>
           <PageHead title={name || map.yard} code={code || undefined} />
         </div>)}
-      <div className={`fixed bg-[#eef3f8] dark:bg-[#08121d] ${full ? "inset-0 z-[6000]" : "bottom-[52px] right-4 top-[166px] z-[4400] overflow-hidden rounded-2xl shadow-[0_0_0_1px_rgba(169,219,241,.45),0_18px_40px_-28px_rgba(11,37,69,.45)]"} ${map ? "" : "hidden"}`}
+      {/* the viewer sizes its own map card (58px above the window's bottom, as in the reference): the layer reaches the bottom and adds no card of its own */}
+      <div className={`fixed ${full ? "inset-0 z-[6000] bg-[#eef3f8] dark:bg-[#08121d]" : "bottom-0 right-4 top-[166px] z-[4400]"} ${map ? "" : "hidden"}`}
         style={full ? undefined : { left: navWidth + 16 }} aria-hidden={!map}>
         {map && !shown && <p role="status" className="absolute inset-0 grid place-items-center text-slate-500">Loading the map…</p>}
-        <iframe ref={frame} src="/legacy/maris-map.html" title="Yard map" className={`size-full border-0 ${shown ? "" : "invisible"}`} />
+        <iframe ref={frame} src="/legacy/maris-map.html" title="Yard map" className={`size-full border-0 bg-transparent ${shown ? "" : "invisible"}`} />
       </div>
     </>
   );
