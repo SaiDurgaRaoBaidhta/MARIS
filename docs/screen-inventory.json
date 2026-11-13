@@ -1,0 +1,2632 @@
+{
+ "AFCX6I": {
+  "module": "MRSCommonCode",
+  "programs": [
+   "AFCX6A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "MRS00I": {
+  "module": "MRSMainMenu",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "MRS02I": {
+  "module": "MRSMainMenu",
+  "programs": [
+   "MRS02A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "MRS99I": {
+  "module": "MRSMainMenu",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "MRSX0I": {
+  "module": "MRSMainMenu",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VFCF05I": {
+  "module": "MRSConfigureTracking",
+  "programs": [
+   "VHCF05A",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VH001I": {
+  "module": "MRSVehicleMenu",
+  "programs": [
+   "VH01A01",
+   "VH01A02"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHCBP1I": {
+  "module": "MRSVehicleCarBright",
+  "programs": [
+   "VHCBP1A",
+   "VHCBR2C",
+   "VHIE01B"
+  ],
+  "writes": [
+   "VHCBP1A"
+  ],
+  "kind": "update"
+ },
+ "VHCBR1I": {
+  "module": "MRSVehicleCarBright",
+  "programs": [
+   "VHCBR1A",
+   "VHCBR1X"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHCBR2I": {
+  "module": "MRSVehicleCarBright",
+  "programs": [
+   "VHCBR02",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHCC01I": {
+  "module": "MRSVehicleConsist",
+  "programs": [
+   "VH01A02",
+   "VHCC011",
+   "VHCC013",
+   "VHCC014",
+   "VHCC015",
+   "VHCC016",
+   "VHCC017",
+   "VHMT014",
+   "VHXREVC"
+  ],
+  "writes": [
+   "VHCC013",
+   "VHCC017"
+  ],
+  "kind": "update"
+ },
+ "VHCCS04I": {
+  "module": "MRSTableMaintenanceApp2",
+  "programs": [
+   "AFCXVLD",
+   "VHCCS4A",
+   "VHCCS4B",
+   "VHCCS4E",
+   "VHCCS4F",
+   "VHCCS4G",
+   "VHCCS4H",
+   "VHCCS4I",
+   "VHYTIME"
+  ],
+  "writes": [
+   "VHCCS4B",
+   "VHYTIME"
+  ],
+  "kind": "update"
+ },
+ "VHCCS05I": {
+  "module": "MRSTableMaintenanceApp2",
+  "programs": [
+   "VHCCS5B",
+   "VHCCS5C",
+   "VHCCS5D",
+   "VHCCS5E",
+   "VHCCS5M",
+   "VHCCS5N"
+  ],
+  "writes": [
+   "VHCCS5C",
+   "VHCCS5D",
+   "VHCCS5N"
+  ],
+  "kind": "update"
+ },
+ "VHCCS06I": {
+  "module": "MRSTableMaintenanceApp2",
+  "programs": [
+   "AFCXVLD",
+   "VHCCS6A",
+   "VHCCS6B",
+   "VHCCS6C",
+   "VHCCS6D",
+   "VHCCS6E"
+  ],
+  "writes": [
+   "VHCCS6B",
+   "VHCCS6C",
+   "VHCCS6D"
+  ],
+  "kind": "update"
+ },
+ "VHCCS07I": {
+  "module": "MRSTableMaintenanceApp2",
+  "programs": [
+   "VHCCS7A",
+   "VHCCS7B",
+   "VHCCS7C",
+   "VHCCS7D"
+  ],
+  "writes": [
+   "VHCCS7B",
+   "VHCCS7C",
+   "VHCCS7D"
+  ],
+  "kind": "update"
+ },
+ "VHCF01I": {
+  "module": "MRSConfigureTracking",
+  "programs": [
+   "VH01A02",
+   "VHCF01A",
+   "VHCF01B",
+   "VHCF01C",
+   "VHCF01D",
+   "VHCF01F",
+   "VHCF01G",
+   "VHCF01H",
+   "VHCF01J",
+   "VHCF01K",
+   "VHCF01L",
+   "VHCF01M",
+   "VHCF01N",
+   "VHCF01P",
+   "VHCF01Q",
+   "VHCF01S",
+   "VHCF01T",
+   "VHCF01U",
+   "VHCF01V",
+   "VHCF01W",
+   "VHCF01X",
+   "VHCF01Y"
+  ],
+  "writes": [
+   "VHCF01Q",
+   "VHCF01S",
+   "VHCF01T",
+   "VHCF01U",
+   "VHCF01Y"
+  ],
+  "kind": "update"
+ },
+ "VHCF06I": {
+  "module": "MRSConfigureTracking",
+  "programs": [
+   "VHCF01J",
+   "VHCF01P",
+   "VHCF06A",
+   "VHCF06C",
+   "VHCF06D",
+   "VHCF06E",
+   "VHCF06F",
+   "VHCF06G",
+   "VHCF06H",
+   "VHCF06I",
+   "VHCF06J",
+   "VHCF06K",
+   "VHCF06L",
+   "VHCF06M"
+  ],
+  "writes": [
+   "VHCF06F",
+   "VHCF06G",
+   "VHCF06H",
+   "VHCF06I",
+   "VHCF06J",
+   "VHCF06L",
+   "VHCF06M"
+  ],
+  "kind": "update"
+ },
+ "VHCF16I": {
+  "module": "MRSConfigurTrackQuery",
+  "programs": [
+   "VHCF16A",
+   "VHCF16B",
+   "VHCF16C",
+   "VHCF16D"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHCF21I": {
+  "module": "MRSConfigurTrackQuery",
+  "programs": [
+   "VHCF21A",
+   "VHCF21B",
+   "VHCF21C",
+   "VHCF21D",
+   "VHCF21E"
+  ],
+  "writes": [
+   "VHCF21D"
+  ],
+  "kind": "update"
+ },
+ "VHCF35I": {
+  "module": "MRSConfigurTrackQuery",
+  "programs": [
+   "VHCF35B",
+   "VHCF35C",
+   "VHCF35D",
+   "VHCF35G",
+   "VHCF35H",
+   "VHCF37F"
+  ],
+  "writes": [
+   "VHCF35G",
+   "VHCF35H"
+  ],
+  "kind": "update"
+ },
+ "VHCF37I": {
+  "module": "MRSConfigurTrackQuery",
+  "programs": [
+   "VHCF35B",
+   "VHCF35C",
+   "VHCF35D",
+   "VHCF35G",
+   "VHCF35H",
+   "VHCF37F"
+  ],
+  "writes": [
+   "VHCF35G",
+   "VHCF35H"
+  ],
+  "kind": "update"
+ },
+ "VHCF49I": {
+  "module": "MRSTableMaintenanceApp3",
+  "programs": [
+   "VHCF49A",
+   "VHCF49B",
+   "VHCF49D",
+   "VHCF49E"
+  ],
+  "writes": [
+   "VHCF49D"
+  ],
+  "kind": "update"
+ },
+ "VHCF50I": {
+  "module": "MRSTableMaintenanceApp3",
+  "programs": [
+   "VHCF50A",
+   "VHCF50B",
+   "VHCF50C",
+   "VHCF50D",
+   "VHCF50E",
+   "VHCF50F",
+   "VHCF50G",
+   "VHCF50H",
+   "VHCF50I",
+   "VHCF50J",
+   "VHCF50K",
+   "VHCF50L",
+   "VHCF50M"
+  ],
+  "writes": [
+   "VHCF50D"
+  ],
+  "kind": "update"
+ },
+ "VHCF51I": {
+  "module": "MRSTableMaintenanceApp3",
+  "programs": [
+   "AFCXVLD",
+   "VHCF51A",
+   "VHCF51B"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHCF52I": {
+  "module": "MRSTableMaintenanceApp3",
+  "programs": [
+   "AFCXVLD",
+   "VHCF52A",
+   "VHCF52B",
+   "VHCF52C"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHCHG1I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHCY1A1",
+   "VHVM1A1",
+   "VHVM1A2"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHCHR1I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "AFCXVLD",
+   "VHCHR01",
+   "VHCHR1A",
+   "VHINC6A",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHCI02I": {
+  "module": "MRSVehicleIncident",
+  "programs": [
+   "AFCXVLD",
+   "VHCI01A",
+   "VHCI01B",
+   "VHCI01C",
+   "VHCI01D",
+   "VHCI01E",
+   "VHCI01F",
+   "VHCI02B",
+   "VHCI02D",
+   "VHCI02G",
+   "VHCIP",
+   "VHCIQ",
+   "VHCIR",
+   "VHCIS",
+   "VHCIT",
+   "VHCIU",
+   "VHCIW",
+   "VHCIX",
+   "VHCIY",
+   "VHCIZ",
+   "VHINC6A",
+   "VHINCD",
+   "VHINVA",
+   "VHINVB",
+   "VHINXA",
+   "VHINXB",
+   "VHINXD",
+   "VHXREVA"
+  ],
+  "writes": [
+   "VHCI01F",
+   "VHCIP",
+   "VHCIQ",
+   "VHCIR",
+   "VHCIS",
+   "VHCIT",
+   "VHCIU",
+   "VHCIW",
+   "VHCIX",
+   "VHCIY",
+   "VHCIZ",
+   "VHINVA",
+   "VHINVB",
+   "VHINXD"
+  ],
+  "kind": "update"
+ },
+ "VHCI03I": {
+  "module": "MRSVehicleIncident",
+  "programs": [
+   "AFCXVLD",
+   "VHCI01B",
+   "VHCI01E",
+   "VHCI02B",
+   "VHCI02G",
+   "VHCI03E",
+   "VHCIV",
+   "VHINVA",
+   "VHINVB",
+   "VHINXA",
+   "VHINXB",
+   "VHINXD",
+   "VHXREVA"
+  ],
+  "writes": [
+   "VHCIV",
+   "VHINVA",
+   "VHINVB",
+   "VHINXD"
+  ],
+  "kind": "update"
+ },
+ "VHCL01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHCL011",
+   "VHCL01E",
+   "VHSV011",
+   "VHXREVA",
+   "WS70A01"
+  ],
+  "writes": [
+   "VHCL01E"
+  ],
+  "kind": "update"
+ },
+ "VHCL02I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHCL02B",
+   "VHCL02C"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHCM01I": {
+  "module": "MRSVehicleConsist",
+  "programs": [
+   "VH01A02",
+   "VHCM011",
+   "VHCM012",
+   "VHCM013",
+   "VHCM014",
+   "VHCM015",
+   "VHCM016",
+   "VHCM017",
+   "VHCM018",
+   "VHMT016"
+  ],
+  "writes": [
+   "VHCM015"
+  ],
+  "kind": "update"
+ },
+ "VHCO01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHCO011",
+   "VHHPMA3",
+   "VHSV011",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHCP01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "AFCXVLD",
+   "VHCP01A",
+   "VHCP01B",
+   "VHCP01C",
+   "VHCP01D",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHCSH1I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "AFCXVLD",
+   "VHCSH1A",
+   "VHINC6A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHCSH2I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHCSH2A",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHCT01I": {
+  "module": "MRSVehicleConsist",
+  "programs": [
+   "VH01A02",
+   "VHCT011",
+   "VHCT012",
+   "VHCT013",
+   "VHCT014",
+   "VHCT015",
+   "VHCT016",
+   "VHCT017",
+   "VHCT018",
+   "VHCT019",
+   "VHCT01A",
+   "VHXREVC"
+  ],
+  "writes": [
+   "VHCT012",
+   "VHCT017",
+   "VHCT018"
+  ],
+  "kind": "update"
+ },
+ "VHCWA2I": {
+  "module": "MRSVehicleCarWash",
+  "programs": [
+   "VHCWA2",
+   "VHCWA3",
+   "VHCWA5",
+   "VHCWA6",
+   "VHIE01B"
+  ],
+  "writes": [
+   "VHCWA6"
+  ],
+  "kind": "update"
+ },
+ "VHCWA3I": {
+  "module": "MRSVehicleCarWash",
+  "programs": [
+   "VHCWA3A",
+   "VHCWA3B",
+   "VHCWA3D",
+   "VHCWA3E",
+   "VHIE01B",
+   "VHINVB",
+   "VHXREVC"
+  ],
+  "writes": [
+   "VHCWA3D",
+   "VHCWA3E",
+   "VHINVB"
+  ],
+  "kind": "update"
+ },
+ "VHCWR1I": {
+  "module": "MRSVehicleCarWash",
+  "programs": [
+   "AFCXVLD",
+   "VHCWR1A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHCWR2I": {
+  "module": "MRSVehicleCarWash",
+  "programs": [
+   "VHCWR2A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHCY01I": {
+  "module": "MRSVehicleConsist",
+  "programs": [
+   "VHCY1A1",
+   "VHCY1A2",
+   "VHCY1A3",
+   "VHCY1A4",
+   "VHVM1A1",
+   "VHVM1A2"
+  ],
+  "writes": [
+   "VHCY1A3"
+  ],
+  "kind": "update"
+ },
+ "VHDC01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "PRINTBLANKDNC",
+   "PRINTDNC",
+   "VHDC011",
+   "VHDC012",
+   "VHDC013"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHDP01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "AFCXVLD",
+   "VHDP01A",
+   "VHDP01B",
+   "VHDP01C",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHDVS1I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHDVS01",
+   "VHDVS03",
+   "VHDVS11"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHDVS2I": {
+  "module": "MRSVehicleQueries",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHDVS3I": {
+  "module": "MRSVehicleQueries",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHDVS4I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHDVS04",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHFO01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "AFCXVLD",
+   "VHFO01A",
+   "VHFO01B",
+   "VHFO01E",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHFR01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHFR01A",
+   "VHFR01C",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHHF01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHHF01A",
+   "VHHF01B"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHHF02I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHHF02A",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHHPD1I": {
+  "module": "MRSVehiclePrevMaint",
+  "programs": [
+   "VHHPDA1"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHHPD2I": {
+  "module": "MRSVehiclePrevMaint",
+  "programs": [
+   "VHHPD2A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHHPM1I": {
+  "module": "MRSVehiclePrevMaint",
+  "programs": [
+   "VHHPM01",
+   "VHHPMA2",
+   "VHHPMA3",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHHPM2I": {
+  "module": "MRSVehiclePrevMaint",
+  "programs": [
+   "VHHPMA1"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHHPR1I": {
+  "module": "MRSVehiclePrevMaint",
+  "programs": [
+   "VHHPRA1"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHIC01": {
+  "module": "MRSYardTrackingReport",
+  "programs": [
+   "VHIC01A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHIC02": {
+  "module": "MRSYardTrackingReport",
+  "programs": [
+   "VH01A02",
+   "VHIC01A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHIC03I": {
+  "module": "MRSYardTrackingReport",
+  "programs": [
+   "VHIC03A",
+   "VHYT09A"
+  ],
+  "writes": [
+   "VHIC03A"
+  ],
+  "kind": "update"
+ },
+ "VHIC30I": {
+  "module": "MRSVehicleIcsReports",
+  "programs": [
+   "VHIC30A",
+   "VHIC30B",
+   "VHIC30C",
+   "VHIC30E",
+   "VHRT04A",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHIC31I": {
+  "module": "MRSVehicleIcsReports",
+  "programs": [
+   "VHIC31A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHIC32I": {
+  "module": "MRSVehicleIcsReports",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHIE01I": {
+  "module": "MRSVehicleIncdEvent",
+  "programs": [
+   "VHIE01A",
+   "VHIE01B"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHIE02I": {
+  "module": "MRSVehicleIncdEvent",
+  "programs": [
+   "VHIE02A",
+   "VHIE02B",
+   "VHIE02C",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHIE03I": {
+  "module": "MRSVehicleIncdEvent",
+  "programs": [
+   "VH01A02",
+   "VHEVL1F",
+   "VHEVLX",
+   "VHEVLY",
+   "VHIE01B",
+   "VHIE03A",
+   "VHIE03B",
+   "VHIE03C",
+   "VHIE03D",
+   "VHIE03E",
+   "VHIE03F",
+   "VHIE03G",
+   "VHIE03H",
+   "VHIE04A",
+   "VHIE04B",
+   "VHIE04C",
+   "VHIE04D",
+   "VHINC1A",
+   "VHINC1B",
+   "VHINC1X",
+   "VHINC3A",
+   "VHINC6A",
+   "VHINC8E",
+   "VHINCE",
+   "VHINXA",
+   "VHINXB",
+   "VHINXC"
+  ],
+  "writes": [
+   "VHEVL1F",
+   "VHEVLX",
+   "VHEVLY",
+   "VHIE04A",
+   "VHIE04B",
+   "VHINC1X",
+   "VHINC8E",
+   "VHINXC"
+  ],
+  "kind": "update"
+ },
+ "VHIE04I": {
+  "module": "MRSVehicleIncdEvent",
+  "programs": [
+   "VHEVL1F",
+   "VHEVLX",
+   "VHEVLY",
+   "VHIE03B",
+   "VHIE03C",
+   "VHIE03D",
+   "VHIE04B",
+   "VHIE04C",
+   "VHINC1A",
+   "VHINC1B",
+   "VHINC3A",
+   "VHINC6A",
+   "VHINC8E",
+   "VHINCE",
+   "VHINXA",
+   "VHINXB",
+   "VHINXC"
+  ],
+  "writes": [
+   "VHEVL1F",
+   "VHEVLX",
+   "VHEVLY",
+   "VHIE04B",
+   "VHINC8E",
+   "VHINXC"
+  ],
+  "kind": "update"
+ },
+ "VHIE06I": {
+  "module": "MRSVehicleIncdEvent",
+  "programs": [
+   "VHIE03H",
+   "VHIE06A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHIE07I": {
+  "module": "MRSVehicleIncdEvent",
+  "programs": [
+   "VHIE07A",
+   "VHIE07B",
+   "VHIE07C"
+  ],
+  "writes": [
+   "VHIE07C"
+  ],
+  "kind": "update"
+ },
+ "VHINC01I": {
+  "module": "MRSVehicleIncident",
+  "programs": [
+   "VH01A02",
+   "VHCI02G",
+   "VHINC1A",
+   "VHINC1B",
+   "VHINC1C",
+   "VHINC1D",
+   "VHINC1F",
+   "VHINCD",
+   "VHINCE",
+   "VHINVC",
+   "VHXREVA"
+  ],
+  "writes": [
+   "VHINC1C",
+   "VHINC1F",
+   "VHINVC"
+  ],
+  "kind": "update"
+ },
+ "VHINC03I": {
+  "module": "MRSVehicleIncident",
+  "programs": [
+   "AFCXVLD",
+   "VHCI02G",
+   "VHINC1A",
+   "VHINC1D",
+   "VHINC3A",
+   "VHINC3B",
+   "VHINC6A",
+   "VHINCD",
+   "VHINCXA",
+   "VHINCZ",
+   "VHINVB",
+   "VHXREVA"
+  ],
+  "writes": [
+   "VHINCZ",
+   "VHINVB"
+  ],
+  "kind": "update"
+ },
+ "VHINC06I": {
+  "module": "MRSVehicleIncident",
+  "programs": [
+   "AFCXVLD",
+   "VH01A02",
+   "VHCI02G",
+   "VHINC1A",
+   "VHINC1D",
+   "VHINC3A",
+   "VHINC3C",
+   "VHINC6A",
+   "VHINCD",
+   "VHINCE",
+   "VHINCX",
+   "VHINVC",
+   "VHXREVC"
+  ],
+  "writes": [
+   "VHINCX",
+   "VHINVC"
+  ],
+  "kind": "update"
+ },
+ "VHINC08I": {
+  "module": "MRSVehicleIncident",
+  "programs": [
+   "AFCXVLD",
+   "VH01A02",
+   "VHCI02G",
+   "VHINC1A",
+   "VHINC1D",
+   "VHINC3A",
+   "VHINC6A",
+   "VHINC8E",
+   "VHINCXA",
+   "VHINCY",
+   "VHINVB",
+   "VHINXA",
+   "VHINXB",
+   "VHINXC",
+   "VHXREVA"
+  ],
+  "writes": [
+   "VHINC8E",
+   "VHINCY",
+   "VHINVB",
+   "VHINXC"
+  ],
+  "kind": "update"
+ },
+ "VHINC09I": {
+  "module": "MRSVehicleIncident",
+  "programs": [
+   "VHINC1A",
+   "VHINC1C",
+   "VHINC1D",
+   "VHINC9A"
+  ],
+  "writes": [
+   "VHINC1C"
+  ],
+  "kind": "update"
+ },
+ "VHINC10I": {
+  "module": "MRSVehicleIncident",
+  "programs": [
+   "VH01A01",
+   "VHINC1D",
+   "VHINC9A",
+   "VHINCXB",
+   "VHINCXC",
+   "VHXREVA"
+  ],
+  "writes": [
+   "VHINCXB",
+   "VHINCXC"
+  ],
+  "kind": "update"
+ },
+ "VHLT01I": {
+  "module": "MRSVehicleConsist",
+  "programs": [
+   "VHLT009",
+   "VHLT010",
+   "VHLT011",
+   "VHLT012",
+   "VHLT013",
+   "VHLT014",
+   "VHLT015",
+   "VHLT016",
+   "VHLT017",
+   "VHLT018",
+   "VHLT019",
+   "VHLT01A",
+   "VHLT020",
+   "VHLT021",
+   "VHLT022",
+   "VHTR012",
+   "VHXREVC"
+  ],
+  "writes": [
+   "VHLT012",
+   "VHLT017",
+   "VHLT018"
+  ],
+  "kind": "update"
+ },
+ "VHMARI": {
+  "module": "MRSVehicleMenu",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMC01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "AFCXVLD",
+   "VHMC01A",
+   "VHMC01B",
+   "VHMC01C",
+   "VHMC01D",
+   "VHMC01E",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMCFI": {
+  "module": "MRSVehicleMenu",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMCMI": {
+  "module": "MRSVehicleMenu",
+  "programs": [
+   "VH01A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMCRI": {
+  "module": "MRSVehicleMenu",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMENI": {
+  "module": "MRSVehicleMenu",
+  "programs": [
+   "VH01A01",
+   "VH01A02"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMMMI": {
+  "module": "MRSVehicleMenu",
+  "programs": [
+   "VH01A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMOTDI": {
+  "module": "MRSVehicleMenu",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMR01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "AFCXVLD",
+   "VHMR01A",
+   "VHMR01B",
+   "VHMR01C",
+   "VHMR01D",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMR02I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "AFCXVLD",
+   "VHMR02A",
+   "VHMR02B",
+   "VHMR02C",
+   "VHMR02D",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMR03I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "AFCXVLD",
+   "VHMR03A",
+   "VHMR03B",
+   "VHMR03C",
+   "VHMR03D",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMREI": {
+  "module": "MRSVehicleMenu",
+  "programs": [
+   "VH01A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMSRI": {
+  "module": "MRSSecondaryRepair",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMSSI": {
+  "module": "MRSVehicleMenu",
+  "programs": [
+   "VH01A01",
+   "VH01A02"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMSUB1I": {
+  "module": "MRSSecondaryRepair",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMT01I": {
+  "module": "MRSVehicleConsist",
+  "programs": [
+   "VH01A02",
+   "VHMT011",
+   "VHMT012",
+   "VHMT013",
+   "VHMT014",
+   "VHMT015",
+   "VHMT016"
+  ],
+  "writes": [
+   "VHMT012",
+   "VHMT013"
+  ],
+  "kind": "update"
+ },
+ "VHMTOI": {
+  "module": "MRSVehicleMenu",
+  "programs": [
+   "VH01A01",
+   "VH01A02"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMVSI": {
+  "module": "MRSVehicleMenu",
+  "programs": [
+   "VH01A01",
+   "VH01A02"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHMYTI": {
+  "module": "MRSVehicleMenu",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHNAR01I": {
+  "module": "MRSVehicleMaintenance",
+  "programs": [
+   "VHXNR1A",
+   "VHXNR2A",
+   "VHXNR3A",
+   "VHXNR4A",
+   "VHXNR5A",
+   "VHXNR6A",
+   "VHXNR7A",
+   "VHXNR8A"
+  ],
+  "writes": [
+   "VHXNR2A",
+   "VHXNR3A"
+  ],
+  "kind": "update"
+ },
+ "VHNAR02I": {
+  "module": "MRSVehicleMaintenance",
+  "programs": [
+   "VHNARX"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHNG01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "AFCXVLD",
+   "VHNG01A",
+   "VHNG01B",
+   "VHNG01C",
+   "VHNG01D",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHOT01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "AFCXVLD",
+   "VHOT01A",
+   "VHOT01B",
+   "VHOT01C",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHPMR1I": {
+  "module": "MRSVehiclePrevMaint",
+  "programs": [
+   "VHPMRA1"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHPMS01I": {
+  "module": "MRSVehiclePrevMaint",
+  "programs": [
+   "VHHPMA3",
+   "VHPMS",
+   "VHPMSA1",
+   "VHPMSA2",
+   "VHPMSA3",
+   "VHXREVA"
+  ],
+  "writes": [
+   "VHPMS"
+  ],
+  "kind": "update"
+ },
+ "VHPS01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "AFCXVLD",
+   "VHPS01A",
+   "VHPS01B",
+   "VHPS01C",
+   "VHPS01E",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHRC01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHCI01B",
+   "VHRC011",
+   "VHYS01A",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHRC02I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHRC02A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHRC03I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "AFCXVLD",
+   "VHRC03A",
+   "VHRC03B",
+   "VHRC03C",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHRV01I": {
+  "module": "MRSVehicleRepair",
+  "programs": [
+   "AFCXVLD",
+   "VHINC2D",
+   "VHRV01A",
+   "VHRV01B",
+   "VHRV01C",
+   "VHRV01D",
+   "VHRV01E",
+   "VHRV01F"
+  ],
+  "writes": [
+   "VHRV01B"
+  ],
+  "kind": "update"
+ },
+ "VHRV02I": {
+  "module": "MRSVehicleRepair",
+  "programs": [
+   "VHRV02A",
+   "VHRV02B",
+   "VHRV02C",
+   "VHRV02D",
+   "VHRV02E",
+   "VHRV02F"
+  ],
+  "writes": [
+   "VHRV02B",
+   "VHRV02D"
+  ],
+  "kind": "update"
+ },
+ "VHRV03I": {
+  "module": "MRSVehicleRepair",
+  "programs": [
+   "AFCXVLD",
+   "VHINC2D",
+   "VHRV01A",
+   "VHRV01F",
+   "VHRV03A"
+  ],
+  "writes": [
+   "VHRV03A"
+  ],
+  "kind": "update"
+ },
+ "VHRV04I": {
+  "module": "MRSVehicleRepair",
+  "programs": [
+   "AFCXVLD",
+   "VHINC2D",
+   "VHRV01A",
+   "VHRV01B",
+   "VHRV01C",
+   "VHRV01D",
+   "VHRV01E",
+   "VHRV01F",
+   "VHRV4A1",
+   "VHRV4A2"
+  ],
+  "writes": [
+   "VHRV01B",
+   "VHRV4A2"
+  ],
+  "kind": "update"
+ },
+ "VHSC01I": {
+  "module": "MRSVehicleConsist",
+  "programs": [
+   "VH01A02",
+   "VHCI01B",
+   "VHMT016",
+   "VHSC2A1",
+   "VHSC2A2",
+   "VHSCX",
+   "VHSCY",
+   "VHTS1A9",
+   "VHTS2A2",
+   "VHTS2A3",
+   "VHXCONB",
+   "VHXREVA"
+  ],
+  "writes": [
+   "VHSCX"
+  ],
+  "kind": "update"
+ },
+ "VHSCM1I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHSCM1A",
+   "VHSCM1B",
+   "VHXREVA"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHSR01I": {
+  "module": "MRSSecondaryRepair",
+  "programs": [
+   "AFCXVLD",
+   "VHINC6A",
+   "VHSR01A",
+   "VHSR01B",
+   "VHSR01C",
+   "VHSR01D",
+   "VHSR01E",
+   "VHSRRA",
+   "VHSRUD",
+   "VHSRVS",
+   "VHSRWT"
+  ],
+  "writes": [
+   "VHSR01E"
+  ],
+  "kind": "update"
+ },
+ "VHSR02I": {
+  "module": "MRSSecondaryRepair",
+  "programs": [
+   "VHSR02A",
+   "VHSR02B",
+   "VHSR02C",
+   "VHSR02D",
+   "VHSR02E",
+   "VHSR02F"
+  ],
+  "writes": [
+   "VHSR02A"
+  ],
+  "kind": "update"
+ },
+ "VHSR03I": {
+  "module": "MRSSecondaryRepair",
+  "programs": [
+   "AFCXVLD",
+   "VHSR03A",
+   "VHSR03B",
+   "VHSR03C",
+   "VHSR03D",
+   "VHSR03E",
+   "VHSR03F",
+   "VHSR09A",
+   "VHSRWEL"
+  ],
+  "writes": [
+   "VHSR03D"
+  ],
+  "kind": "update"
+ },
+ "VHSR04I": {
+  "module": "MRSSecondaryRepair",
+  "programs": [
+   "AFCXVLD",
+   "VHSR02E",
+   "VHSR04A",
+   "VHSR04B",
+   "VHSRWT"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHSR05I": {
+  "module": "MRSSecondaryRepair",
+  "programs": [
+   "VHSR05A",
+   "VHSR05B",
+   "VHSR05C"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHSR08I": {
+  "module": "MRSSecondaryRepair",
+  "programs": [
+   "AFCXVLD",
+   "VHSR01A",
+   "VHSR01D",
+   "VHSR08A",
+   "VHSR08B",
+   "VHSR08C",
+   "VHSRRA",
+   "VHSRVS",
+   "VHSRWT"
+  ],
+  "writes": [
+   "VHSR08C"
+  ],
+  "kind": "update"
+ },
+ "VHSR09I": {
+  "module": "MRSSecondaryRepair",
+  "programs": [
+   "VHSR09A",
+   "VHSR09B",
+   "VHSR09C",
+   "VHSR09D",
+   "VHSR09E",
+   "VHSR09F",
+   "VHSR09G",
+   "VHSR09H"
+  ],
+  "writes": [
+   "VHSR09D"
+  ],
+  "kind": "update"
+ },
+ "VHSR10I": {
+  "module": "MRSSecondaryRepair",
+  "programs": [
+   "VHSR09A",
+   "VHSR10A",
+   "VHSR11A",
+   "VHSRJNX",
+   "VHSRJRN"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHSR11I": {
+  "module": "MRSSecondaryRepair",
+  "programs": [
+   "VHSR11A",
+   "VHSRJNX"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHSR15I": {
+  "module": "MRSSecondaryRepair",
+  "programs": [
+   "VHSR15A",
+   "VHSR15B",
+   "VHSR15C"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHST01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHST011",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHST02I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHST2A1"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHST03I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHST3A1",
+   "VHST3A3",
+   "VHST3A4"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHST04I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHST04A",
+   "VHST04B",
+   "VHST4A2"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHST05I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHST011",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHSV01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "AFCXVLD",
+   "VHINC6A",
+   "VHSV011",
+   "VHSV012",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHSV02I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHNARX",
+   "VHSV02A",
+   "VHSV02C"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHSV04I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "AFCXVLD",
+   "VHINC6A",
+   "VHSV011",
+   "VHSV012",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHSV05I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHNARY",
+   "VHSV05A",
+   "VHSV05C",
+   "VHSV05D",
+   "VHSV05F"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHSV06I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHNARY",
+   "VHSV06A",
+   "VHSV06B",
+   "VHSV06C",
+   "VHSV06D",
+   "VHSV06F",
+   "VHSV06N"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHSV07I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHSV07A",
+   "VHSV07B",
+   "VHSV07C",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHSW01I": {
+  "module": "MRSYardTrackingReport",
+  "programs": [
+   "VHSW01A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHTR01I": {
+  "module": "MRSVehicleConsist",
+  "programs": [
+   "VHLT010",
+   "VHLT011",
+   "VHLT013",
+   "VHLT014",
+   "VHLT015",
+   "VHLT016",
+   "VHLT017",
+   "VHLT018",
+   "VHLT019",
+   "VHSC2A1",
+   "VHTR011",
+   "VHTR012",
+   "VHTR013",
+   "VHTR014",
+   "VHTR015",
+   "VHTR016",
+   "VHTR01A",
+   "VHTS2A3",
+   "VHXREVC"
+  ],
+  "writes": [
+   "VHLT017",
+   "VHLT018",
+   "VHTR016"
+  ],
+  "kind": "update"
+ },
+ "VHTR02I": {
+  "module": "MRSVehicleConsist",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHTS01I": {
+  "module": "MRSVehicleConsist",
+  "programs": [
+   "VH01A02",
+   "VHINC1B",
+   "VHMT016",
+   "VHTS1A9",
+   "VHTS2A1",
+   "VHTS2A2",
+   "VHTS2A3",
+   "VHTSX",
+   "VHXCONA",
+   "VHXCONB",
+   "VHXREVA"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHVM02I": {
+  "module": "MRSVehicleMaintenance",
+  "programs": [
+   "VHVM1A3",
+   "VHVM1A6",
+   "VHVM1A7",
+   "VHVM1AA"
+  ],
+  "writes": [
+   "VHVM1A3"
+  ],
+  "kind": "update"
+ },
+ "VHVM03I": {
+  "module": "MRSVehicleMaintenance",
+  "programs": [
+   "VHCY1A1",
+   "VHVM1A4",
+   "VHVM1A5",
+   "VHVM1A6",
+   "VHVM1A7",
+   "VHVM1A9"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHVM06I": {
+  "module": "MRSVehicleMaintenance",
+  "programs": [
+   "VHVM6A1",
+   "VHVM6A2",
+   "VHVM6A3",
+   "VHVM6A4",
+   "VHVM6A6",
+   "VHYT15A"
+  ],
+  "writes": [
+   "VHVM6A2",
+   "VHVM6A4"
+  ],
+  "kind": "update"
+ },
+ "VHVM08I": {
+  "module": "MRSVehicleMaintenance",
+  "programs": [
+   "VHVM1A5",
+   "VHVM8A1"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHVM10I": {
+  "module": "MRSVehicleMaintenance",
+  "programs": [
+   "AFC5304",
+   "VH01A01",
+   "VHVM10A",
+   "VHVM10C"
+  ],
+  "writes": [
+   "AFC5304"
+  ],
+  "kind": "update"
+ },
+ "VHVM11I": {
+  "module": "MRSVehicleMaintenance",
+  "programs": [
+   "VHVM11A",
+   "VHVM11B",
+   "VHVM11C",
+   "VHVM11E",
+   "VHVM11F",
+   "VHVM11G",
+   "VHVM11H",
+   "VHVM11J",
+   "VHVM11K",
+   "VHVM11L",
+   "VHVM1A5",
+   "VHVMDTA"
+  ],
+  "writes": [
+   "VHVM11B",
+   "VHVM11C",
+   "VHVM11K"
+  ],
+  "kind": "update"
+ },
+ "VHVM12I": {
+  "module": "MRSVehicleMaintenance",
+  "programs": [
+   "VHVM12A",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHVM13i": {
+  "module": "MRSVehicleMaintenance",
+  "programs": [
+   "VHVM11E",
+   "VHVM13A",
+   "VHVM13B",
+   "VHVM13C",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHVM19I": {
+  "module": "MRSVehicleMaintenance",
+  "programs": [
+   "VH01A01",
+   "VHVM19A",
+   "VHVM19B",
+   "VHYT34A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYS01I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHYS01A",
+   "VHYS01B",
+   "VHYS01C",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYS02I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHYS02A",
+   "VHYS02B"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYS03I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHYS02B",
+   "VHYS03A",
+   "VHYS03B"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYS04I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHYS04A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYS05I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHYS05A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYS06I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHYS06A",
+   "VHYS06B",
+   "VHYS06C",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYS07I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHYS07A",
+   "VHYS07B"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYS08I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHYS07B",
+   "VHYS08A",
+   "VHYS08B"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYS09I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHYS09A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYS10I": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHYS10A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT01I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT01A",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT02I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT02A",
+   "VHYT02B",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT03I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT03A",
+   "VHYT03B",
+   "VHYT03D",
+   "VHYT03E",
+   "VHYT03F",
+   "VHYT03G",
+   "VHYT03H",
+   "VHYT03J"
+  ],
+  "writes": [
+   "VHYT03G",
+   "VHYT03H"
+  ],
+  "kind": "update"
+ },
+ "VHYT04I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT04A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT05I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VH01A02",
+   "VHYT07A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT06I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT06A",
+   "VHYT06B",
+   "VHYT06C",
+   "VHYT06D",
+   "VHYT06E"
+  ],
+  "writes": [
+   "VHYT06E"
+  ],
+  "kind": "update"
+ },
+ "VHYT09I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT09A",
+   "VHYT09B",
+   "VHYT09C"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT100I": {
+  "module": "MRSYardTrackingReport",
+  "programs": [
+   "VHYTX0A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT101I": {
+  "module": "MRSYardTrackingReport",
+  "programs": [
+   "VHYTX0A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT105I": {
+  "module": "MRSYardTrackingReport",
+  "programs": [
+   "VHYTX5A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT106I": {
+  "module": "MRSYardTrackingReport",
+  "programs": [
+   "VH01A02",
+   "VHYTX5A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT10I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT04A",
+   "VHYT08C"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT11I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VH01A02",
+   "VHYT08A",
+   "VHYT08B",
+   "VHYT08C",
+   "VHYT08F",
+   "VHYT08H",
+   "VHYT11A",
+   "VHYT11B",
+   "VHYT11C",
+   "VHYT11F"
+  ],
+  "writes": [
+   "VHYT11B",
+   "VHYT11F"
+  ],
+  "kind": "update"
+ },
+ "VHYT12I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT12A",
+   "VHYT12B",
+   "VHYT12C",
+   "VHYT12D",
+   "VHYT12E"
+  ],
+  "writes": [
+   "VHYT12D"
+  ],
+  "kind": "update"
+ },
+ "VHYT13I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT13A",
+   "VHYT13B",
+   "VHYT13C",
+   "VHYT13D",
+   "VHYT13E",
+   "VHYT13F",
+   "VHYT13G"
+  ],
+  "writes": [
+   "VHYT13C"
+  ],
+  "kind": "update"
+ },
+ "VHYT14I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT14A",
+   "VHYT14B",
+   "VHYT14C",
+   "VHYT14D",
+   "VHYT14E",
+   "VHYT14F"
+  ],
+  "writes": [
+   "VHYT14C",
+   "VHYT14D",
+   "VHYT14E"
+  ],
+  "kind": "update"
+ },
+ "VHYT22I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT22A",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT23I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT23A",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT24I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT02C",
+   "VHYT02E",
+   "VHYT02F",
+   "VHYT02G",
+   "VHYT24A",
+   "VHYT24B",
+   "VHYT24C",
+   "VHYT24D",
+   "VHYT24E",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT25I": {
+  "module": "MrsYardTrackingQueries",
+  "programs": [
+   "VHYT25A",
+   "VHYT30A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT26I": {
+  "module": "MrsYardTrackingQueries",
+  "programs": [
+   "VHYT26A",
+   "VHYT26B",
+   "VHYT26C",
+   "VHYT30A"
+  ],
+  "writes": [
+   "VHYT26C"
+  ],
+  "kind": "update"
+ },
+ "VHYT27I": {
+  "module": "MrsYardTrackingQueries",
+  "programs": [
+   "VHRT04A",
+   "VHYT27A",
+   "VHYT27B",
+   "VHYT27C",
+   "VHYT27D",
+   "VHYT27E",
+   "VHYT27F",
+   "VHYT27G",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT29I": {
+  "module": "MrsYardTrackingQueries",
+  "programs": [
+   "VHYT29A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT31I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT31A",
+   "VHYT31B",
+   "VHYT31E",
+   "VHYT31H"
+  ],
+  "writes": [
+   "VHYT31B",
+   "VHYT31E"
+  ],
+  "kind": "update"
+ },
+ "VHYT32I": {
+  "module": "MrsYardTrackingQueries",
+  "programs": [
+   "VHYT32A",
+   "VHYT32B",
+   "VHYT32C",
+   "VHYT32D"
+  ],
+  "writes": [
+   "VHYT32B",
+   "VHYT32D"
+  ],
+  "kind": "update"
+ },
+ "VHYT33I": {
+  "module": "MrsYardTrackingQueries",
+  "programs": [
+   "VHYT33A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT34I": {
+  "module": "MrsYardTrackingQueries",
+  "programs": [
+   "VHYT34A",
+   "VHYT34B",
+   "VHYT34C",
+   "VHYT34D",
+   "VHYT34E",
+   "VHYT34F",
+   "VHYT34G",
+   "VHYT34H",
+   "VHYT34J",
+   "VHYT34K",
+   "VHYT34L",
+   "VHYT34M",
+   "VHYT34N",
+   "VHYT34P"
+  ],
+  "writes": [
+   "VHYT34B",
+   "VHYT34G"
+  ],
+  "kind": "update"
+ },
+ "VHYT40I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT40A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT41I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VH01A02",
+   "VHYT40A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT42I": {
+  "module": "MRSYardTracking",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT50I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT50A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT51I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VH01A02",
+   "VHYT50A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT52I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT52A",
+   "VHYT52B"
+  ],
+  "writes": [
+   "VHYT52B"
+  ],
+  "kind": "update"
+ },
+ "VHYT53I": {
+  "module": "MRSYardTrackingReport",
+  "programs": [
+   "VHYT53B",
+   "VHYT53C",
+   "VHYT53D",
+   "VHYT53E",
+   "VHYT53F",
+   "VHYT53G",
+   "VHYT53H",
+   "VHYT53K",
+   "VHYT53L",
+   "VHYT53M"
+  ],
+  "writes": [
+   "VHYT53F",
+   "VHYT53G",
+   "VHYT53H"
+  ],
+  "kind": "update"
+ },
+ "VHYT54I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT54A",
+   "VHYT54B",
+   "VHYT54C"
+  ],
+  "writes": [
+   "VHYT54C"
+  ],
+  "kind": "update"
+ },
+ "VHYT61I": {
+  "module": "MRSYardTrackingReport",
+  "programs": [
+   "VHYT60A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT70I": {
+  "module": "MRSYardTrackingReport",
+  "programs": [
+   "VHYT70A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT71I": {
+  "module": "MRSYardTrackingReport",
+  "programs": [
+   "VH01A02",
+   "VHYT70A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT80I": {
+  "module": "MRSYardTrackingReport",
+  "programs": [
+   "VHYT80A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT81I": {
+  "module": "MRSYardTrackingReport",
+  "programs": [
+   "VH01A02",
+   "VHYT80A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT90I": {
+  "module": "MRSYardTrackingReport",
+  "programs": [
+   "VHYT90A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT91I": {
+  "module": "MRSYardTrackingReport",
+  "programs": [
+   "VH01A02",
+   "VHYT90A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT95I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT95A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYT96I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT95A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYTM1I": {
+  "module": "MRSYardTracking",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYTM2I": {
+  "module": "MRSYardTracking",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYTM3I": {
+  "module": "MRSYardTracking",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYTM4I": {
+  "module": "MRSYardTracking",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYTM5I": {
+  "module": "MRSYardTracking",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYTM6I": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VH01A02"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "VHYTOTI": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "VHYTOTA",
+   "VHYTOTB",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "Vhccs18i": {
+  "module": "MRSTableMaintenanceApp2",
+  "programs": [
+   "VHCCSHA",
+   "VHCCSHB",
+   "VHCCSHC",
+   "VHCCSHD",
+   "VHCCSHE",
+   "VHCCSHF",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "Vhpt01i": {
+  "module": "MRSVehicleQueries",
+  "programs": [
+   "AFCXVLD",
+   "VHPT01A",
+   "VHPT01B",
+   "VHPT01C",
+   "VHPT01E",
+   "WS70A01"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "Vhyt07i": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT07A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "Vhyt08i": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VH01A02",
+   "VHYT08A",
+   "VHYT08B",
+   "VHYT08C",
+   "VHYT08D",
+   "VHYT08E",
+   "VHYT08F",
+   "VHYT08G",
+   "VHYT08H"
+  ],
+  "writes": [
+   "VHYT08G"
+  ],
+  "kind": "update"
+ },
+ "Vhyt60i": {
+  "module": "MRSYardTracking",
+  "programs": [
+   "VHYT60A"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "WS13I": {
+  "module": "MRSWaysideMaintenance",
+  "programs": [
+   "WS13A01",
+   "WS13A02",
+   "WS13A04",
+   "WS13A05",
+   "WS13A06",
+   "WS13A07",
+   "WS13A08",
+   "WSX2A01",
+   "WSX3A"
+  ],
+  "writes": [
+   "WS13A04",
+   "WS13A05",
+   "WS13A07"
+  ],
+  "kind": "update"
+ },
+ "WS17I": {
+  "module": "MRSWaysideMaintenance",
+  "programs": [
+   "WS15A15",
+   "WS17A05"
+  ],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "XPRINTI": {
+  "module": "MRSCommonCode",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ },
+ "XXM0I": {
+  "module": "MRSCommonCode",
+  "programs": [],
+  "writes": [],
+  "kind": "read-only"
+ }
+}
