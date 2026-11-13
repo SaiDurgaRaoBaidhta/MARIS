@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { fetchFleet } from "@/features/yard-tracking/api";
 import { useApp } from "@/shared/lib/app-state";
 
-type Msg = { source?: string; type: string; message?: string };
+type Msg = { source?: string; type: string; message?: string; code?: string };
 
 export function MapIsland({ map }: { map: { yard: string; shop: boolean } | null }) {
   const app = useApp();
@@ -16,6 +16,7 @@ export function MapIsland({ map }: { map: { yard: string; shop: boolean } | null
   const [shown, setShown] = useState(false);
   const back = useRef(app.back); back.current = app.back;
   const toast = useRef(app.toast); toast.current = app.toast;
+  const open = useRef(app.open); open.current = app.open;
 
   useEffect(() => { if (map) setWanted(true); }, [map]);
   // load it quietly a moment after sign-on, so the first map opens at once
@@ -26,6 +27,7 @@ export function MapIsland({ map }: { map: { yard: string; shop: boolean } | null
       if (e.data.type === "maris-map:ready") setReady(true);
       if (e.data.type === "maris-map:shown") setShown(true);
       if (e.data.type === "maris-map:closed") { setShown(false); back.current(); }
+      if (e.data.type === "maris-map:screen" && e.data.code) open.current({ kind: "screen", key: "egl:" + e.data.code, label: e.data.code });
       if (e.data.type === "maris-map:error") toast.current("The map could not be opened: " + e.data.message, "err");
     };
     addEventListener("message", on);

@@ -57,6 +57,12 @@ const boot = `
   // minimizing the map hides it on a desktop the island does not show: that is a return to the React page too
   const min0 = WM.minimize.bind(WM);
   WM.minimize = function (w) { const was = w && w.win.classList.contains("minimized"); const r = min0.apply(this, arguments); if (w && w === mapWin && !was) { mapWin = null; send({ type: "maris-map:closed" }); } return r; };
+  // the map's buttons open MARIS's own screens (the old screens' wiring, e.g. VHYT71IConnections), not the viewer's stand-ins
+  const real = code => () => send({ type: "maris-map:screen", code });
+  Screens.pseudoStatus = real("VHYT09I");
+  Screens.towerMenu = real("VHMTOI");
+  Screens.mapReports = real("VHYTM3I");
+  Screens.vehicleIncdMaint = real("VHYTM6I");
   addEventListener("message", e => {
     if (e.origin !== location.origin || !e.data) return;
     if (e.data.type === "maris-map:open") { open(e.data).catch(err => send({ type: "maris-map:error", message: String(err) })); }

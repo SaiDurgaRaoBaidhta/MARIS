@@ -11332,7 +11332,7 @@ body.m3d-pref .frame:has(> .win.map:not(.m3d-ready)) { visibility: hidden; }
   const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const txt = e => (e.textContent || "").replace(/\s+/g, " ").trim();
-  let PREF = false; try { PREF = localStorage.getItem("maris.3d") === "on"; } catch (e) { /* storage unavailable */ }
+  let PREF = false;   // every map opens in 2D; 3D is one click away and not remembered
 
   /* ---------- status colours (as in Yard Command) ---------- */
   const GRP = { go: { name: "GO", hex: 0x2fbf8a, css: "var(--go)" }, hi: { name: "High PM", hex: 0xf08a24, css: "var(--hi)" },
@@ -15376,7 +15376,7 @@ html[data-theme=dark] .mvx-view .bxroot .map-btn { background: #13263b !importan
     }
     const fills = () => Object.keys(SHOP_FILL).flatMap(y => SHOP_FILL[y].map(r => { const el = document.createElement("div");
       el.className = "cell c-" + r[5]; Object.assign(el.dataset, { yard: y, track: r[0], idx: r[1], st: r[3], pm: r[4] }); el.textContent = r[2]; return el; }));
-    return { want: () => store.get("map3d") === "3d", save: on => store.set("map3d", on ? "3d" : "2d"), build, dressPlan, state: el => carState(el, ""), fills,
+    return { want: () => false, save: on => store.set("map3d", on ? "3d" : "2d"), build, dressPlan, state: el => carState(el, ""), fills,
       kit: { STATUS, livery, liveryModern, carGeo, engineTex } };   // the car models and status colours, for the sign-on background
   })();
   /* 3D or Plan for one map card: called at the end of every fit */
@@ -17373,6 +17373,12 @@ html[data-theme=dark] .wp-grid td.na { background-color: #0f2236 !important; }
   // minimizing the map hides it on a desktop the island does not show: that is a return to the React page too
   const min0 = WM.minimize.bind(WM);
   WM.minimize = function (w) { const was = w && w.win.classList.contains("minimized"); const r = min0.apply(this, arguments); if (w && w === mapWin && !was) { mapWin = null; send({ type: "maris-map:closed" }); } return r; };
+  // the map's buttons open MARIS's own screens (the old screens' wiring, e.g. VHYT71IConnections), not the viewer's stand-ins
+  const real = code => () => send({ type: "maris-map:screen", code });
+  Screens.pseudoStatus = real("VHYT09I");
+  Screens.towerMenu = real("VHMTOI");
+  Screens.mapReports = real("VHYTM3I");
+  Screens.vehicleIncdMaint = real("VHYTM6I");
   addEventListener("message", e => {
     if (e.origin !== location.origin || !e.data) return;
     if (e.data.type === "maris-map:open") { open(e.data).catch(err => send({ type: "maris-map:error", message: String(err) })); }
