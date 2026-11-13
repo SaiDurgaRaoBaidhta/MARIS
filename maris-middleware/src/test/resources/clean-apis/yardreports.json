@@ -1,0 +1,69 @@
+{
+  "_about": "Screens of the yard reports module rebuilt on the clean API, with their tests. Middleware only so far: no UI page or UI test yet.",
+  "VHIC01": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest"
+  },
+  "VHIC02": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest"
+  },
+  "VHYT80I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest"
+  },
+  "VHYT81I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest"
+  },
+  "VHYT105I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest"
+  },
+  "VHYT106I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest"
+  },
+  "VHYT70I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest"
+  },
+  "VHYT71I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest"
+  },
+  "VHYT90I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest"
+  },
+  "VHYT91I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest"
+  },
+  "VHSW01I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest"
+  }
+}
