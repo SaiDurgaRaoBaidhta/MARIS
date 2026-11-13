@@ -1,0 +1,982 @@
+
+
+package MRSCommonCode;
+ 
+
+Function AFCX6IS-GET_ACCESS ()
+  
+  
+  
+  
+  
+  
+  
+   
+    if (AFCX6A_CRIT.USER-GRP == "VEHSHOPS" ||
+     AFCX6A_CRIT.USER-GRP == "SHOPSUPR")
+        AFCX6A_CRIT.GUI-NAME = "VHMVSI";
+    end
+    if (AFCX6A_CRIT.USER-GRP == "TRBLDESK" ||
+     AFCX6A_CRIT.USER-GRP == "SHOPSUPR")
+        AFCX6A_CRIT.GUI-NAME = "VH001I";
+    end
+
+    
+    XXEXT_CALL_Level77Items.UEXTNAM = "AFCX6I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "AFCX6A";
+
+    
+    try
+        call "AFCX6A"(XDCONTROL, AFCX6A_CRIT, AFCX6A_DATA);
+    
+    end
+    
+
+    
+    XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4 || XDCONTROL.UROWCNT == 0)
+            AFCX6IW_Level77Items.SECURITY-RETRIEVED = 1;
+            AFCX6A_DATA.NO_OF_ROWS = XDCONTROL.UROWCNT;
+        else
+
+        
+        
+            set AFCX6A_DATA empty;
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+end 
+
+Function AFCXVLD-VALIDATE ()
+   
+    AFCXVLD_CRIT.DATE-ERROR = "N";
+    AFCXVLD_CRIT.OTHER-SQL-ERROR = "N";
+    AFCXVLDW.NO-ERROR = "N";
+    AFCXVLDW.SQL-ERROR = "N";
+    AFCXVLDW.INCORRECT-DATE = "N";
+    if (AFCXVLD_CRIT.FORM-DATE != " ")
+        XXDATEW.DATE-MM-DD-YYYY = AFCXVLD_CRIT.FORM-DATE;
+        XXDATEW.VAGen_FUNCTION = "YMD";
+        XXDATES-CONVERT();
+        AFCXVLD_CRIT.FORM-DATE = XXDATEW.DATE-YYYY-MM-DD;
+        try
+            call "AFCXVLD"(XDCONTROL, AFCXVLD_CRIT);
+        
+        end
+        if (AFCXVLD_CRIT.DATE-ERROR == "Y" &&
+         AFCXVLD_CRIT.OTHER-SQL-ERROR == "N")
+            AFCXVLDW.INCORRECT-DATE = "Y";
+        else
+            if (AFCXVLD_CRIT.DATE-ERROR == "N" &&
+             AFCXVLD_CRIT.OTHER-SQL-ERROR == "Y")
+                AFCXVLDW.SQL-ERROR = "Y";
+            else
+                AFCXVLDW.NO-ERROR = "Y";
+            end
+        end
+    end
+end 
+
+Function VHXREVIS-GET-RDATE ()
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHTS01I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHXREVA";
+
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+    VHXREVA_CRIT.SEL-IDX = 3;
+
+    
+    try
+        call "VHXREVA"(XDCONTROL, VHXREVA_CRIT, VHXREVA_DATA);
+    
+    end
+    
+
+    
+    XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+end 
+
+Function XDATECON-GREG2JUL ()
+  
+  
+  
+  
+
+  
+
+  
+  
+  
+  
+
+  
+  
+  
+   
+    set XDATECON-W1 empty;
+
+  
+  
+
+  
+    if (XDATECON-W2.WS-GREG-IN-FLAG == "D")
+        XDATECON-W1.WS-DATES-CYMD-CC = XDATECON-W2.WS-DB2-GREG-IN-CC;
+        XDATECON-W1.WS-DATES-CYMD-YR = XDATECON-W2.WS-DB2-GREG-IN-YR;
+        XDATECON-W1.WS-DATES-CYMD-MO = XDATECON-W2.WS-DB2-GREG-IN-MO;
+        XDATECON-W1.WS-DATES-CYMD-DY = XDATECON-W2.WS-DB2-GREG-IN-DY;
+    else
+  
+        if (XDATECON-W2.WS-GREG-IN-FLAG == "R")
+            XDATECON-W1.WS-DATES-CYMD-CC = XDATECON-W2.WS-RPT-GREG-IN-CC;
+            XDATECON-W1.WS-DATES-CYMD-YR = XDATECON-W2.WS-RPT-GREG-IN-YR;
+            XDATECON-W1.WS-DATES-CYMD-MO = XDATECON-W2.WS-RPT-GREG-IN-MO;
+            XDATECON-W1.WS-DATES-CYMD-DY = XDATECON-W2.WS-RPT-GREG-IN-DY;
+        else
+  
+            if (XDATECON-W2.WS-GREG-IN-FLAG == "G" || XDATECON-W2.WS-GREG-IN-FLAG == " ")
+                XDATECON-W1.WS-DATES-CYMD = XDATECON-W2.WS-GREG-IN;
+            end
+        end
+    end
+    XDATECON-W1.WS-DATES-CYDDD-CC = XDATECON-W1.WS-DATES-CYMD-CC;
+    XDATECON-W1.WS-DATES-CYDDD-YR = XDATECON-W1.WS-DATES-CYMD-YR;
+    XDATECON-W1.WS-DATES-CYDDD-DDD = XDATECON-W2.WS-MO-TBL-JUL-DY[WS-DATES-CYMD-MO];
+    XDATECON-W1.WS-DATES-CYDDD-DDD = XDATECON-W1.WS-DATES-CYDDD-DDD + XDATECON-W1.WS-DATES-CYMD-DY;
+  
+  
+    XDATECON-W1.WS-DATES-DAYS-1 = XDATECON-W1.WS-DATES-CYDDD-CY;
+    XDATECON-W1.WS-DATES-DAYS-2 = XDATECON-W1.WS-DATES-DAYS-1 / 4;
+  
+  
+  
+  
+  
+    if (XDATECON-W1.WS-DATES-DAYS-3 == 0 && XDATECON-W1.WS-DATES-CYMD-MO > 2)
+        XDATECON-W1.WS-DATES-CYDDD-DDD = XDATECON-W1.WS-DATES-CYDDD-DDD + 1;
+    end
+end 
+
+Function XDATECON-JUL2GREG ()
+  
+  
+  
+
+  
+  
+   
+    set XDATECON-W1 empty;
+    XDATECON-W1.WS-DATES-CYDDD = XDATECON-W2.WS-JUL-IN;
+    XDATECON-W1.WS-DATES-CYMD-CC = XDATECON-W1.WS-DATES-CYDDD-CC;
+    XDATECON-W1.WS-DATES-CYMD-YR = XDATECON-W1.WS-DATES-CYDDD-YR;
+    XDATECON-W1.WS-DATES-DAYS-1 = XDATECON-W1.WS-DATES-CYDDD-DDD;
+  
+  
+  
+    XDATECON-W1.WS-DATES-DAYS-2 = XDATECON-W1.WS-DATES-CYDDD-CY / 4;
+
+  
+  
+    if (XDATECON-W1.WS-DATES-DAYS-3 == 0 && XDATECON-W1.WS-DATES-CYDDD-DDD >
+     59
+    )
+        XDATECON-W1.WS-DATES-CYDDD-DDD = XDATECON-W1.WS-DATES-CYDDD-DDD - 1;
+    end
+  
+
+  
+  
+    XDATECON-W1_Level77Items.WS-DATES-SUB-1 = 13;
+    XDATECON-W1_Level77Items.WS-DATES-MO-SEARCH = "N";
+  
+    while (XDATECON-W1_Level77Items.WS-DATES-MO-SEARCH != "Y")
+        XDATECON-W1_Level77Items.WS-DATES-SUB-1 = XDATECON-W1_Level77Items.WS-DATES-SUB-1 - 1;
+        if (XDATECON-W1.WS-DATES-CYDDD-DDD >
+         XDATECON-W2.WS-MO-TBL-JUL-DY[WS-DATES-SUB-1])
+            XDATECON-W1_Level77Items.WS-DATES-MO-SEARCH = "Y";
+        end
+    end
+  
+    XDATECON-W1.WS-DATES-CYMD-MO = XDATECON-W1_Level77Items.WS-DATES-SUB-1;
+    XDATECON-W1.WS-DATES-CYMD-DY = XDATECON-W1.WS-DATES-CYDDD-DDD - XDATECON-W2.WS-MO-TBL-JUL-DY[WS-DATES-SUB-1];
+
+  
+  
+    if (XDATECON-W1.WS-DATES-DAYS-3 == 0 &&
+     XDATECON-W1.WS-DATES-CYMD-MO == 2 &&
+     XDATECON-W1.WS-DATES-DAYS-1 == 60)
+        XDATECON-W1.WS-DATES-CYMD-DY = XDATECON-W1.WS-DATES-CYMD-DY + 1;
+    end
+
+  
+  
+    XDATECON-W1.WS-DATES-MDCY-CC = XDATECON-W1.WS-DATES-CYMD-CC;
+    XDATECON-W1.WS-DATES-MDCY-YR = XDATECON-W1.WS-DATES-CYMD-YR;
+    XDATECON-W1.WS-DATES-MDCY-MO = XDATECON-W1.WS-DATES-CYMD-MO;
+    XDATECON-W1.WS-DATES-MDCY-DY = XDATECON-W1.WS-DATES-CYMD-DY;
+    XDATECON-W1.WS-DATES-DASH1-MDCY = "-";
+    XDATECON-W1.WS-DATES-DASH2-MDCY = "-";
+end 
+
+Function XDATECON-LOAD-TBL () 
+    XDATECON-W2.WS-MO-TBL[1] = "JAN31000  JANUARY";
+    XDATECON-W2.WS-MO-TBL[2] = "FEB28031 FEBRUARY";
+    XDATECON-W2.WS-MO-TBL[3] = "MAR31059    MARCH";
+    XDATECON-W2.WS-MO-TBL[4] = "APR30090    APRIL";
+    XDATECON-W2.WS-MO-TBL[5] = "MAY31120      MAY";
+    XDATECON-W2.WS-MO-TBL[6] = "JUN30151     JUNE";
+    XDATECON-W2.WS-MO-TBL[7] = "JUL31181     JULY";
+    XDATECON-W2.WS-MO-TBL[8] = "AUG31212   AUGUST";
+    XDATECON-W2.WS-MO-TBL[9] = "SEP30243SEPTEMBER";
+    XDATECON-W2.WS-MO-TBL[10] = "OCT31273  OCTOBER";
+    XDATECON-W2.WS-MO-TBL[11] = "NOV30304 NOVEMBER";
+    XDATECON-W2.WS-MO-TBL[12] = "DEC31334 DECEMBER";
+end 
+
+Function XJULIAN-FIX-S ()
+  
+  
+
+  
+  
+  
+
+   
+    XJULIAN-FIX.LEAPVALUE = XJULIAN-FIX.LOW-DATES-CYDDD-CY / 400;
+    if (XJULIAN-FIX.LEAPVALUE-RM > 0)
+        XJULIAN-FIX.LOW-IS-LEAP = "N";
+    else
+        XJULIAN-FIX.LOW-IS-LEAP = "Y";
+    end
+
+  
+    if (XJULIAN-FIX.LOW-IS-LEAP == "N")
+        XJULIAN-FIX.HIGH-DATES-CYDDD-DDD = XJULIAN-FIX.HIGH-DATES-CYDDD-DDD + 365;
+    else
+        XJULIAN-FIX.HIGH-DATES-CYDDD-DDD = XJULIAN-FIX.HIGH-DATES-CYDDD-DDD + 366;
+    end
+
+  
+  
+  
+
+  
+    XJULIAN-FIX.NEW-DATES-CYDDD = (XJULIAN-FIX.HIGH-DATES-CYDDD - XJULIAN-FIX.LOW-DATES-CYDDD) - 1000;
+
+  
+    XJULIAN-FIX.TOTAL-DAYS = XJULIAN-FIX.NEW-DATES-CYDDD-DDD + (XJULIAN-FIX.NEW-DATES-CYDDD-YR * 365);
+end 
+
+Function XPRINTIS-CALL () 
+    call "DUMBPRNT" { isExternal = yes };
+end 
+
+Function XPRINTIS-CONCAT ()
+
+   
+    STRING-INDEX-1 = 80;
+    while ((STRING-INDEX-1 > 0) &&
+     (CAT-STRING-1-OCCRS[STRING-INDEX-1] == " "))
+        STRING-INDEX-1 = STRING-INDEX-1 - 1;
+    end
+    STRING-INDEX-2 = 1;
+    STRING-INDEX-1 = STRING-INDEX-1 + 1;
+    move STRING-INDEX-1 to TOTAL-INDEX withV60Compat;
+    move CAT-STRING-1 to TOT-STRING withV60Compat;
+    while ((STRING-INDEX-2 < 81))
+        TOT-STRING-OCCRS[TOTAL-INDEX] = CAT-STRING-2-OCCRS[STRING-INDEX-2];
+        STRING-INDEX-2 = STRING-INDEX-2 + 1;
+        TOTAL-INDEX = TOTAL-INDEX + 1;
+    end
+end 
+
+Function XPRINTIS-INIT ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    set XPRINTIW-WORK_REC empty;
+    XPRINTIW-FILE_INFO.INCREMENT-NBR = 0;
+
+  
+  
+    XPRINTIW-FILE_INFO_Level77Items.DRIVE-PATH = "C:\\VGPRINT";
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+    XPRINTIW-FILE_INFO_Level77Items.SUFFIX = ".TXT";
+
+  
+  
+  
+    XPRINTIW-FILE_INFO_Level77Items.VAGen_FUNCTION = "INIT";
+
+  
+  
+    XPRINTIW-WORK_REC.TOT-STRING = " ";
+    XPRINTIW-WORK_REC.CAT-STRING-1 = XPRINTIW-FILE_INFO_Level77Items.DRIVE-PATH;
+    XPRINTIW-WORK_REC.CAT-STRING-2 = "\\";
+    XPRINTIS-CONCAT();
+    XPRINTIW-WORK_REC.CAT-STRING-1 = XPRINTIW-WORK_REC.TOT-STRING;
+    XPRINTIW-WORK_REC.CAT-STRING-2 = XPRINTIW-FILE_INFO_Level77Items.PREFIX;
+    XPRINTIS-CONCAT();
+    XPRINTIW-WORK_REC.CAT-STRING-1 = XPRINTIW-WORK_REC.TOT-STRING;
+    XPRINTIW-WORK_REC.CAT-STRING-2 = "*";
+    XPRINTIS-CONCAT();
+    XPRINTIW-WORK_REC.CAT-STRING-1 = XPRINTIW-WORK_REC.TOT-STRING;
+    XPRINTIW-WORK_REC.CAT-STRING-2 = XPRINTIW-FILE_INFO_Level77Items.SUFFIX;
+    XPRINTIS-CONCAT();
+    move TOT-STRING to TOT-STRING-77 withV60Compat;
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    FLAT-FILE-NAME = "C:\\VGPRINT\\";
+
+  
+    XPRINTIW-WORK_REC.TOT-STRING = " ";
+    XPRINTIW-WORK_REC.CAT-STRING-1 = " ";
+    XPRINTIW-WORK_REC.CAT-STRING-2 = " ";
+    XPRINTIW-WORK_REC.CAT-STRING-1 = XPRINTIW-FILE_INFO_Level77Items.FLAT-FILE-NAME;
+    XPRINTIW-WORK_REC.CAT-STRING-2 = XPRINTIW-FILE_INFO_Level77Items.PREFIX;
+    XPRINTIS-CONCAT();
+    XPRINTIW-WORK_REC.HOLD-STRING = XPRINTIW-WORK_REC.TOT-STRING;
+end 
+
+Function XPRINTIS-NEXT_NAME () 
+    XPRINTIW-FILE_INFO.INCREMENT-NBR = XPRINTIW-FILE_INFO.INCREMENT-NBR + 1;
+
+  
+  
+  
+    XPRINTIW-WORK_REC.TOT-STRING = " ";
+    XPRINTIW-WORK_REC.CAT-STRING-1 = " ";
+    XPRINTIW-WORK_REC.CAT-STRING-2 = " ";
+    XPRINTIW-WORK_REC.CAT-STRING-1 = XPRINTIW-WORK_REC.HOLD-STRING;
+    XPRINTIW-WORK_REC.CAT-STRING-2 = XPRINTIW-FILE_INFO.INCREMENT;
+    XPRINTIS-CONCAT();
+    XPRINTIW-FILE_INFO_Level77Items.FLAT-FILE-NAME = XPRINTIW-WORK_REC.TOT-STRING;
+
+  
+  
+    XPRINTIW-FILE_INFO_Level77Items.SUFFIX = ".TXT";
+    XPRINTIW-WORK_REC.TOT-STRING = " ";
+    XPRINTIW-WORK_REC.CAT-STRING-1 = " ";
+    XPRINTIW-WORK_REC.CAT-STRING-2 = " ";
+    XPRINTIW-WORK_REC.CAT-STRING-1 = XPRINTIW-FILE_INFO_Level77Items.FLAT-FILE-NAME;
+    XPRINTIW-WORK_REC.CAT-STRING-2 = XPRINTIW-FILE_INFO_Level77Items.SUFFIX;
+    XPRINTIS-CONCAT();
+    XPRINTIW-FILE_INFO_Level77Items.FLAT-FILE-NAME = XPRINTIW-WORK_REC.TOT-STRING;
+end 
+
+Function XPRINTIS-PRINT ()
+  
+  
+   
+    XPRINTIW-FILE_INFO.INCREMENT-NBR = XPRINTIW-FILE_INFO.INCREMENT-NBR + 1;
+    XPRINTIW-FILE_INFO_Level77Items.NEW_FILE_PREFIX = XPRINTIW-FILE_INFO_Level77Items.PREFIX;
+    XPRINTIW-FILE_INFO_Level77Items.NEW_FILE_INCREMENT = XPRINTIW-FILE_INFO.INCREMENT;
+
+
+  
+  
+
+
+  
+    XPRINTIW-PARAMETER.VAGen_FUNCTION = "PRT";
+    XPRINTIW-PARAMETER.DRIVE-PATH = XPRINTIW-FILE_INFO_Level77Items.DRIVE-PATH;
+    XPRINTIW-PARAMETER.PREFIX = XPRINTIW-FILE_INFO_Level77Items.PREFIX;
+    XPRINTIW-PARAMETER.SUFFIX = XPRINTIW-FILE_INFO_Level77Items.SUFFIX;
+    XPRINTIW-PARAMETER.NEW_FILE_PREFIX = XPRINTIW-FILE_INFO_Level77Items.NEW_FILE_PREFIX;
+    XPRINTIW-PARAMETER.NEW_FILE_INCREMENT = XPRINTIW-FILE_INFO_Level77Items.NEW_FILE_INCREMENT;
+    XPRINTIW-PARAMETER.NEW_FILE_SUFFIX = XPRINTIW-FILE_INFO_Level77Items.SUFFIX;
+    XPRINTIW-PARAMETER.SERVER = XPRINTIW-FILE_INFO_Level77Items.SERVER;
+    XPRINTIW-PARAMETER.PRINTER = XPRINTIW-FILE_INFO_Level77Items.PRINTER;
+end 
+
+
+
+Function XXA0IS-CHECK_EXT ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    if (sysVar.errorCode == "00000000" || sysVar.errorCode == " ")
+
+    
+        XXEXT_CALL_Level77Items.URC = 0;
+    else
+    
+
+    
+        XXEXT_CALL_Level77Items.URC = 99;
+
+    
+        XXMESSAGE.UMSGCODE = "EXT CALL ERROR";
+        XXMESSAGE.UMSGINS[1] = XXEXT_CALL_Level77Items.UEXTNAM;
+        XXMESSAGE.UMSGINS[2] = XXEXT_CALL_Level77Items.UAPPLNAM;
+        XXMESSAGE.UMSGINS[3] = sysVar.errorCode;
+    end
+end 
+
+Function XXDATES-CONVERT ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+   
+    if (XXDATEW.VAGen_FUNCTION == "YMD")
+
+    
+        if (XXDATEW.YEAR-MM-DD-YYYY is numeric)
+            XXDATEW.MONTH-YYYY-MM-DD = XXDATEW.MONTH-MM-DD-YYYY;
+            XXDATEW.SEP1-YYYY-MM-DD = "-";
+            XXDATEW.DAY-YYYY-MM-DD = XXDATEW.DAY-MM-DD-YYYY;
+            XXDATEW.SEP2-YYYY-MM-DD = "-";
+            XXDATEW.YEAR-YYYY-MM-DD = XXDATEW.YEAR-MM-DD-YYYY;
+        else
+
+      
+            XXDATEW.DATE-YYYY-MM-DD = XXDATEW.DATE-MM-DD-YYYY;
+        end
+    else
+        if (XXDATEW.VAGen_FUNCTION == "MDY")
+
+      
+            if (XXDATEW.YEAR-YYYY-MM-DD is numeric)
+                XXDATEW.MONTH-MM-DD-YYYY = XXDATEW.MONTH-YYYY-MM-DD;
+                XXDATEW.SEP1-MM-DD-YYYY = "-";
+                XXDATEW.DAY-MM-DD-YYYY = XXDATEW.DAY-YYYY-MM-DD;
+                XXDATEW.SEP2-MM-DD-YYYY = "-";
+                XXDATEW.YEAR-MM-DD-YYYY = XXDATEW.YEAR-YYYY-MM-DD;
+            else
+
+        
+                XXDATEW.DATE-MM-DD-YYYY = XXDATEW.DATE-YYYY-MM-DD;
+            end
+        end
+    end
+end 
+
+
+
+Function XXM0IS-BUILD_MSG ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    XXM0IW.UMESSAGE = " ";
+
+  
+    if (XXM0IW_PUB_Level77Items.UMSGCODE in XXM0IT1.UMSGCODE)
+        XXM0IW.UMESSAGE = XXM0IT1.UMESSAGE[sysVar.arrayIndex];
+    end
+
+  
+    if (sysVar.arrayIndex != 0)
+
+    
+        XXM0IW_Level77Items.UMSGTYPE = XXM0IT1.UMSGTYPE[sysVar.arrayIndex];
+
+    
+        if (XXM0IW_PUB.UMSGINS[1] != " " || XXM0IW_PUB.UMSGINS[2] != " " || XXM0IW_PUB.UMSGINS[3] != " ")
+
+      
+            XXM0IS-INSERTS();
+
+      
+            XXM0IW.UMESSAGE = XXM0IW.USTRING;
+        end
+         
+    else
+    
+
+    
+        XXM0IW_PUB.UMSGINS[1] = XXM0IW_PUB_Level77Items.UMSGCODE;
+        XXM0IW_PUB_Level77Items.UMSGCODE = "NRF MSG CODE";
+  
+        if (XXM0IW_PUB_Level77Items.UMSGCODE in XXM0IT1.UMSGCODE)
+            XXM0IW.UMESSAGE = XXM0IT1.UMESSAGE[sysVar.arrayIndex];
+        end
+        
+
+    
+        XXM0IS-INSERTS();
+
+    
+        XXM0IW.UMESSAGE = XXM0IW.USTRING;
+    end
+end 
+
+
+
+Function XXM0IS-BUTTON ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    if ((XXM0IW_PUB_Level77Items.UBUTTON_TYPE < 1 || XXM0IW_PUB_Level77Items.UBUTTON_TYPE > 6))
+
+    
+        if (XXM0IW_Level77Items.UMSGTYPE == "E")
+            XXM0IW_PUB_Level77Items.UBUTTON_TYPE = 1;
+        else
+            if (XXM0IW_Level77Items.UMSGTYPE == "I")
+                XXM0IW_PUB_Level77Items.UBUTTON_TYPE = 1;
+            else
+                if (XXM0IW_Level77Items.UMSGTYPE == "W")
+                    XXM0IW_PUB_Level77Items.UBUTTON_TYPE = 1;
+                else
+                    if (XXM0IW_Level77Items.UMSGTYPE == "A")
+                        XXM0IW_PUB_Level77Items.UBUTTON_TYPE = 5;
+                    else
+                        XXM0IW_PUB_Level77Items.UBUTTON_TYPE = 2;
+                    end 
+                end 
+            end 
+        end 
+    end
+end 
+
+Function XXM0IS-CLEAN-UP ()
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    XXM0IW_PUB_Level77Items.UBUTTON_TYPE = 0;
+    XXM0IW_PUB_Level77Items.UMSG_TITLE = " ";
+end 
+
+
+
+Function XXM0IS-DISPLAY ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    if (XXM0IW_PUB_Level77Items.UMSGCODE not blanks)
+
+  
+        XXM0IW_PUB_Level77Items.URESULT = " ";
+        
+
+  
+        XXM0IS-BUILD_MSG();
+
+  
+        XXM0IS-TITLE();
+
+  
+        XXM0IS-BUTTON();
+
+  
+        XXM0IS-ICON();
+        XXM0IW_Level77Items.SHOW-MESSAGE = " ";
+    end
+end 
+
+
+
+Function XXM0IS-ICON ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    if (XXM0IW_Level77Items.UMSGTYPE == "E")
+
+    
+        XXM0IW_Level77Items.UICON = 1;
+    else 
+
+  
+        if (XXM0IW_Level77Items.UMSGTYPE == "I")
+
+    
+            XXM0IW_Level77Items.UICON = 2;
+        else 
+
+  
+            if (XXM0IW_Level77Items.UMSGTYPE == "A")
+
+    
+                XXM0IW_Level77Items.UICON = 4;
+            else 
+
+  
+                if (XXM0IW_Level77Items.UMSGTYPE == "W")
+
+    
+                    XXM0IW_Level77Items.UICON = 5;
+                else 
+
+
+    
+                    XXM0IW_Level77Items.UICON = 3;
+                end
+            end
+        end
+    end
+end 
+
+
+
+Function XXM0IS-INIT_GUI ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+
+end 
+
+
+
+Function XXM0IS-INSERTS ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    move " " to XXM0IW.UCHAR[1] for all;
+    XXM0IW_Level77Items.UMAXMSG = sysVar.arrayIndex;
+    move " " to XXM0IW.UCHAR2[1] for all;
+    XXM0IW_Level77Items.UMAXINS = sysVar.arrayIndex;
+
+  
+    XXM0IW_Level77Items.UMSGLEN = XXM0IW_Level77Items.UMAXMSG;
+
+  
+    XXM0IW.USTRING = XXM0IW.UMESSAGE;
+
+  
+    while (XXM0IW.UCHAR[UMSGLEN] == " ")
+
+    
+        XXM0IW_Level77Items.UMSGLEN = XXM0IW_Level77Items.UMSGLEN - 1;
+    end 
+
+  
+    XXM0IW_Level77Items.UINSNUM = 1;
+
+  
+    while (XXM0IW_Level77Items.UINSNUM <= 3 && XXM0IW_Level77Items.UMSGLEN < XXM0IW_Level77Items.UMAXMSG)
+
+    
+        XXM0IW_Level77Items.UINSPOS = 1;
+
+    
+        XXM0IW_Level77Items.UFOUND = "N";
+
+    
+        while (XXM0IW_Level77Items.UFOUND != "Y" && XXM0IW_PUB.UMSGINS[UINSNUM] != " " && XXM0IW_Level77Items.UINSPOS <= XXM0IW_Level77Items.UMSGLEN)
+
+      
+            while (XXM0IW.UCHAR[UINSPOS] != "~" && XXM0IW_Level77Items.UINSPOS <= XXM0IW_Level77Items.UMSGLEN)
+
+        
+                XXM0IW_Level77Items.UINSPOS = XXM0IW_Level77Items.UINSPOS + 1;
+            end 
+
+      
+            XXM0IW_Level77Items.UINDX1 = XXM0IW_Level77Items.UINSPOS;
+            XXM0IW_Level77Items.UINSPOS = XXM0IW_Level77Items.UINSPOS + 1;
+
+      
+            XXM0IW.UINSNUMS = XXM0IW_Level77Items.UINSNUM;
+            if (XXM0IW.UCHAR[UINDX1] == "~" && XXM0IW.UCHAR[UINSPOS] == XXM0IW.UINSCHAR)
+
+        
+                XXM0IW_Level77Items.UFOUND = "Y";
+
+        
+                XXM0IW_Level77Items.USTRLEN = XXM0IW_Level77Items.UMAXINS;
+                XXM0IW.UMSGINS = XXM0IW_PUB.UMSGINS[UINSNUM];
+                while (XXM0IW.UCHAR2[USTRLEN] == " ")
+                    XXM0IW_Level77Items.USTRLEN = XXM0IW_Level77Items.USTRLEN - 1;
+                end 
+
+        
+                XXM0IW_Level77Items.UTOTALLEN = XXM0IW_Level77Items.UMSGLEN + XXM0IW_Level77Items.USTRLEN - 2;
+                if (XXM0IW_Level77Items.UTOTALLEN > XXM0IW_Level77Items.UMAXMSG)
+                    XXM0IW_Level77Items.USTRLEN = XXM0IW_Level77Items.UMAXMSG - XXM0IW_Level77Items.UMSGLEN - 2;
+                end
+
+        
+
+        
+                XXM0IW_Level77Items.UINDX1 = XXM0IW_Level77Items.UINSPOS + 1;
+                XXM0IW_Level77Items.UINDX2 = XXM0IW_Level77Items.UINSPOS + XXM0IW_Level77Items.USTRLEN - 1;
+                XXM0IW_Level77Items.UINDX3 = XXM0IW_Level77Items.UMSGLEN - XXM0IW_Level77Items.UINSPOS;
+                if (XXM0IW_Level77Items.UINDX3 != 0)
+                    move XXM0IW.UCHAR[UINDX1] to XXM0IW.UCHAR3[1] for XXM0IW_Level77Items.UINDX3;
+                    move XXM0IW.UCHAR3[1] to XXM0IW.UCHAR[UINDX2] for XXM0IW_Level77Items.UINDX3;
+                end
+
+        
+                XXM0IW_Level77Items.UINDX1 = XXM0IW_Level77Items.UINDX1 - 2;
+                move XXM0IW.UCHAR2[1] to XXM0IW.UCHAR[UINDX1] for XXM0IW_Level77Items.USTRLEN;
+
+        
+                XXM0IW_Level77Items.UMSGLEN = XXM0IW_Level77Items.UMSGLEN + XXM0IW_Level77Items.USTRLEN - 2;
+                XXM0IW_Level77Items.UINDX1 = XXM0IW_Level77Items.UMSGLEN + 1;
+                if (XXM0IW_Level77Items.UINDX1 <= XXM0IW_Level77Items.UMAXMSG)
+                    move " " to XXM0IW.UCHAR[UINDX1] for all;
+                end
+                XXM0IW.UMESSAGE = XXM0IW.USTRING;
+            end
+             
+        end 
+
+    
+        XXM0IW_Level77Items.UINSNUM = XXM0IW_Level77Items.UINSNUM + 1;
+    end
+end 
+
+
+
+Function XXM0IS-TITLE ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    if (XXM0IW_PUB_Level77Items.UMSG_TITLE == " ")
+
+    
+        if (XXM0IW_Level77Items.UMSGTYPE == "E")
+            XXM0IW_PUB_Level77Items.UMSG_TITLE = "Error Message";
+        else
+            if (XXM0IW_Level77Items.UMSGTYPE == "I")
+                XXM0IW_PUB_Level77Items.UMSG_TITLE = "Information Message";
+            else
+                if (XXM0IW_Level77Items.UMSGTYPE == "W")
+                    XXM0IW_PUB_Level77Items.UMSG_TITLE = "Warning Message";
+                else
+                    if (XXM0IW_Level77Items.UMSGTYPE == "A")
+                        XXM0IW_PUB_Level77Items.UMSG_TITLE = "Action Message";
+                    else
+                        XXM0IW_PUB_Level77Items.UMSG_TITLE = "Message Window";
+                    end 
+                end 
+            end 
+        end 
+    end
+end

@@ -1,0 +1,11 @@
+# Local Mac setup: legacy Tomcat from ~/Desktop/MARIS/maris-local on :8080.
+maris:
+  legacy:
+    base-url: http://localhost:8080/MARIS_RUI_Services_Web
+  dev-api:
+    enabled: true
+
+management:
+  endpoint:
+    health:
+      show-details: always

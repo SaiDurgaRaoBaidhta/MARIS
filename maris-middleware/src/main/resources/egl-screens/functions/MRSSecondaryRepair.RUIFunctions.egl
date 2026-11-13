@@ -1,0 +1,4892 @@
+
+
+package MRSSecondaryRepair;
+
+
+Function VHMSRIS-EXIT () 
+    if (VHMSRIW-PASS.EXIT-IND != " ")
+        VHMSRIW-PASS.EXIT-SHOP = "Y";
+    end
+end 
+
+Function VHMSRIS-INIT () 
+    VHSR01_DATA.PARENT-GUI = "VHMSRI";
+end 
+
+Function VHSR01IS-CAR-VAL () 
+    VHSR01IW.FINAL-MESSAGE = " ";
+    VHSR01IW.CAR-NO = VHSR01IW.CAR-NO-NUM;
+    if (VHSR01IW.CAR-NO != "0000")
+  
+  
+        VHSR01IW.DEPT-CD = " ";
+        VHSR01IW.EQUIP-TYPE = " ";
+        VHSR01IW.EQUIP-TYPE-CLR = " ";
+        VHSR01IW.EQUIP-ID = " ";
+        VHSR01IW.EQUIP-LOC = " ";
+        DISABLE-WAYSIDE = "Y";
+    else
+        ENABLE-WAYSIDE = "Y";
+  
+        DEPTCD-SETFOCUS = "Y";
+        VHSR01IW.CAR-NO = " ";
+        
+  
+    end
+end 
+
+Function VHSR01IS-CLEAR () 
+    set VHSR01IW empty;
+    VHSR01IW.DATE-IN = VGVar.currentFormattedGregorianDate;
+    VHSR01IW.CNT-CMPNTS-IN = 1;
+    VHSR01IW.NARR-NO = 1;
+    VHSR01IW.DATE-NARR = VGVar.currentFormattedGregorianDate;
+    VHSR01IW.TIME-NARR = VGVar.currentFormattedTime;
+    VHSR01IW.WORK-TYPE = "REPAIR";
+    VHSR01IW.USER-GRP = VHSR01IW-PASSVALUE.USER-GRP;
+    ENABLE-CREATE = "Y";
+    DISABLE-JOBSPLIT = "Y";
+    DISABLE-WAYSIDE = "Y";
+    DISABLE-PCTNO = "Y";
+    WORKTYPE-SETFOCUS = "Y";
+end 
+
+Function VHSR01IS-CLR-AFTDB () 
+    VHSR01IW-TRIGGER.TEMP-FINAL-MESSAGE = VHSR01IW.FINAL-MESSAGE;
+    VHSR01IW-TEMP.CAR-NO = VHSR01IW.CAR-NO;
+    VHSR01IW-TEMP.JOB-PRT-CTL-NO = VHSR01IW.JOB-PRT-CTL-NO;
+    VHSR01IW-TEMP.DEPT-CD = VHSR01IW.DEPT-CD;
+    VHSR01IW-TEMP.EQUIP-TYPE = VHSR01IW.EQUIP-TYPE;
+    VHSR01IW-TEMP.EQUIP-ID = VHSR01IW.EQUIP-ID;
+    VHSR01IW-TEMP.EQUIP-LOC = VHSR01IW.EQUIP-LOC;
+    VHSR01IW-TEMP.SENT-FROM = VHSR01IW.SENT-FROM;
+    VHSR01IW-TEMP.INCD-NO = VHSR01IW.INCD-NO;
+    VHSR01IW-TEMP.JOB-STAT = "OPN";
+    set VHSR01IW empty;
+    VHSR01IW.WORK-TYPE = "REPAIR";
+    VHSR01IW.FINAL-MESSAGE = VHSR01IW-TRIGGER.TEMP-FINAL-MESSAGE;
+    VHSR01IW.DATE-IN = VGVar.currentFormattedGregorianDate;
+    VHSR01IW.CNT-CMPNTS-IN = 1;
+    VHSR01IW.NARR-NO = 1;
+    VHSR01IW.DATE-NARR = VGVar.currentFormattedGregorianDate;
+    VHSR01IW.TIME-NARR = VGVar.currentFormattedTime;
+    VHSR01IW.USER-GRP = VHSR01IW-PASSVALUE.USER-GRP;
+    ENABLE-CREATE = "Y";
+    DISABLE-JOBSPLIT = "Y";
+    DISABLE-WAYSIDE = "Y";
+    DISABLE-PCTNO = "Y";
+  
+    SENTFROM-SETFOCUS = "Y";
+end 
+
+Function VHSR01IS-CREATE () 
+    VHSR01IW.FINAL-MESSAGE = " ";
+    VHSR01IW.ERROR-MESSAGE = " ";
+    VHSR01IW.SYSTEM-DATE = VGVar.currentFormattedGregorianDate;
+    INVALID-CAR-NO = "N";
+    INVALID-WORK-TYPE = "N";
+    INVALID-REPR-AREA = "N";
+    INVALID-EQUIP-TYPE = "N";
+    INVALID-EQUIP-ID = "N";
+    INVALID-STOCK-NO = "N";
+    INVALID-BATCH-QTY = "N";
+    INVALID-DATE-IN = "N";
+    INVALID-FUTURE-DATE = "N";
+    INVALID-OLD-DATE = "N";
+    INVALID-NARR = "N";
+    VHSR01IW.ERROR-COUNT = 0;
+    VHSR01IW.TEMP-SUM = 0;
+    set VHINC6A_CRIT empty;
+    set VHSR01A_CRIT empty;
+    set VHSR01C_CRIT empty;
+    set VHSR01D_CRIT empty;
+    VHSR01IW.CAR-NO = VHSR01IW.CAR-NO-NUM;
+    if (VHSR01IW.WORK-TYPE == " ")
+        ERROR-COUNT = ERROR-COUNT + 1;
+        VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Work Type.";
+        INVALID-WORK-TYPE = "Y";
+    else
+        if (VHSR01IW.WORK-TYPE in VHSRWT_DATA.WORK-TYPE)
+
+        else
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Work Type.";
+            INVALID-WORK-TYPE = "Y";
+        end
+    end
+    if (VHSR01IW.DATE-IN == " ")
+        ERROR-COUNT = ERROR-COUNT + 1;
+        VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Date.";
+        INVALID-DATE-IN = "Y";
+    else
+        if (VHSR01IW.DATE-IN != " ")
+            AFCXVLD_CRIT.FORM-DATE = VHSR01IW.DATE-IN;
+            MRSCommonCode.AFCXVLD-VALIDATE();
+            if (AFCXVLDW.INCORRECT-DATE == "Y")
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Date.";
+                VHSR01IW.INVALID-DATE-IN = "Y";
+            else
+                if (AFCXVLDW.SQL-ERROR == "Y")
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                    return;
+                else
+                    if (AFCXVLDW.NO-ERROR == "Y")
+                        XDATECON-W2.WS-GREG-IN-FLAG = "R";
+                        XDATECON-W2.WS-RPT-GREG-IN = VGVar.currentFormattedGregorianDate;
+                        MRSCommonCode.XDATECON-LOAD-TBL();
+                        MRSCommonCode.XDATECON-GREG2JUL();
+                        JULIAN-DATE-1 = XDATECON-W1.WS-DATES-CYDDD;
+                        XDATECON-W2.WS-GREG-IN-FLAG = "R";
+                        XDATECON-W2.WS-RPT-GREG-IN = VHSR01IW.DATE-IN;
+                        MRSCommonCode.XDATECON-LOAD-TBL();
+                        MRSCommonCode.XDATECON-GREG2JUL();
+                        JULIAN-DATE-2 = XDATECON-W1.WS-DATES-CYDDD;
+                        VHSR01IS-DATE-CHK();
+                    end
+                end
+            end
+        end
+    end
+    if (VHSR01IW.REPR-AREA == " ")
+        ERROR-COUNT = ERROR-COUNT + 1;
+        VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Repr Area.";
+        INVALID-REPR-AREA = "Y";
+    else
+        if (VHSR01IW.REPR-AREA in VHSRRA_DATA.REPR-AREA)
+
+        else
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Repr Area.";
+            INVALID-REPR-AREA = "Y";
+        end
+    end
+    if (VHSR01IW.CAR-NO == "0000")
+        VHSR01IW.CAR-NO = " ";
+    else
+        if (VHSR01IW.CAR-NO not numeric)
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid car no.";
+            INVALID-CAR-NO = "Y";
+             
+        else
+            if (VHSR01IW.CAR-NO != " " && VHSR01IW.CAR-NO != "0088")
+        
+                VHINC6A_CRIT.CAR-NO = VHSR01IW.CAR-NO;
+                try
+                    call "MRSVehicleIncident.VHINC6A"(XDCONTROL, VHINC6A_CRIT, VHINC6A_DATA);
+                
+                end
+                if (XDCONTROL.UROWCNT == 1)
+                    if (VHINC6A_DATA.CAR-TYPE-OCCR[1] == "A" ||
+                       VHINC6A_DATA.CAR-TYPE-OCCR[1] == "B" ||
+                       VHINC6A_DATA.CAR-TYPE-OCCR[1] == "C" || 
+                       VHINC6A_DATA.CAR-TYPE-OCCR[1] == "D" ||
+                       VHINC6A_DATA.CAR-TYPE-OCCR[1] == "E" || 
+                       VHINC6A_DATA.CAR-TYPE-OCCR[1] == "L" ||
+                       VHINC6A_DATA.CAR-TYPE-OCCR[1] == "M" || 
+                       VHINC6A_DATA.CAR-TYPE-OCCR[1] == "K"
+                       )
+
+                    else
+                        ERROR-COUNT = ERROR-COUNT + 1;
+                        VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Car type.";
+                        INVALID-CAR-NO = "Y";
+                    end
+                else
+                    if (XDCONTROL.URC == 100)
+                        ERROR-COUNT = ERROR-COUNT + 1;
+                        VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Car no does not exist.";
+                        INVALID-CAR-NO = "Y";
+                         
+                    else
+                        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                        return;
+                    end
+                end
+            end
+        end
+    end
+    if (VHSR01IW.DEPT-CD != " ")
+        if (VHSR01IW.DEPT-CD == "A" || VHSR01IW.DEPT-CD == "D")
+            if (VHSR01IW.EQUIP-ID == " ")
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Equip Id required.";
+                INVALID-EQUIP-ID = "Y";
+            else
+                VHSR01C_CRIT.DEPT-CD = VHSR01IW.DEPT-CD;
+                VHSR01C_CRIT.EQUIP-ID = VHSR01IW.EQUIP-ID;
+                try
+                    call "VHSR01C"(XDCONTROL, VHSR01C_CRIT, VHSR01C_DATA);
+                
+                end
+                if (XDCONTROL.UROWCNT == 1)
+
+                else
+                    ERROR-COUNT = ERROR-COUNT + 1;
+                    VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Equip ID does not exist.";
+                    INVALID-EQUIP-ID = "Y";
+                end
+            end
+        else
+            if (VHSR01IW.EQUIP-TYPE == " ")
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Equip Type required.";
+                INVALID-EQUIP-TYPE = "Y";
+            else
+        
+                if (VHSR01IW.EQUIP-TYPE in VHSR01B_DATA.EQUIP-TYPE)
+
+                else
+                    ERROR-COUNT = ERROR-COUNT + 1;
+                    VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Equipment does not exist.";
+                    INVALID-EQUIP-TYPE = "Y";
+                end
+            end
+        end
+    else
+        if (VHSR01IW.CAR-NO == " " && VHSR01IW.DEPT-CD == " ")
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Vehicle/Wayside data required.";
+            INVALID-CAR-NO = "Y";
+        end
+    end
+    if (VHSR01IW.STOCK-NO == " ")
+        ERROR-COUNT = ERROR-COUNT + 1;
+        VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Stock No required.";
+        INVALID-STOCK-NO = "Y";
+    else
+     
+        VHSRVS_DATA.STOCK-NO = VHSR01IW.STOCK-NO;
+        try
+            call "VHSRVS"(XDCONTROL, VHSRVS_DATA);
+        
+        end
+        if (VHSRVS_DATA.RECORD-FOUND == "Y")
+
+        else
+            if (VHSRVS_DATA.RECORD-FOUND == "N")
+                VHSR01IW.STOCKNO-COUNT = 0;
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Stock No.";
+                INVALID-STOCK-NO = "Y";
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                return;
+            end
+        end
+    end
+    if (INVALID-STOCK-NO == "N")
+        if (VHSR01IW.CNT-CMPNTS-IN < 1)
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Batch qty must be > 0.";
+            INVALID-BATCH-QTY = "Y";
+        else
+            if (VHSR01IW.STOCK-NO != " ")
+    
+                VHSR01D_CRIT.STOCK-NO = VHSR01IW.STOCK-NO;
+                try
+                    call "VHSR01D"(XDCONTROL, VHSR01D_CRIT);
+                
+                end
+                if (VHSR01D_CRIT.ROW-COUNT >= 1)
+                    VHSR01A_CRIT.RET-IND = "BOTH";
+                else
+                    VHSR01A_CRIT.RET-IND = " ";
+                end
+    
+                VHSR01A_CRIT.STOCK-NO = VHSR01IW.STOCK-NO;
+                try
+                    call "VHSR01A"(XDCONTROL, VHSR01A_CRIT, VHSR01A_DATA);
+                
+                end
+                if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                    if (VHSR01A_DATA.CNT-THRESHOLD > 0)
+                        VHSR01IW.TEMP-SUM = VHSR01A_DATA.SUM-CNT-CMPNTS-IN + VHSR01IW.CNT-CMPNTS-IN;
+                        if (VHSR01IW.TEMP-SUM > VHSR01A_DATA.CNT-THRESHOLD)
+            
+            
+                            INVALID-BATCH-QTY = "Y";
+                        end
+                    else
+                        INVALID-BATCH-QTY = "N";
+                    end
+                end
+            end
+        end
+    end
+
+  
+  
+  
+  
+  
+    if (ERROR-COUNT > 0)
+    
+        VHSR01IS-MOVE-MSG();
+    else
+    
+        VHSR01IS-DB-STORE();
+    end
+end 
+
+Function VHSR01IS-DATE-CHK () 
+    if (JULIAN-DATE-1-CCYY == JULIAN-DATE-2-CCYY)
+        if (JULIAN-DATE-2-DDD > JULIAN-DATE-1-DDD)
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Future Date not allowed.";
+            INVALID-FUTURE-DATE = "Y";
+        else
+            JULIAN-DAYS-DIFF = JULIAN-DATE-1 - JULIAN-DATE-2;
+            if (JULIAN-DAYS-DIFF > 548) 
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Date too old (548 days).";
+                INVALID-OLD-DATE = "Y";
+            end
+        end
+    else
+        if (JULIAN-DATE-1-CCYY > JULIAN-DATE-2-CCYY)
+            JULIAN-DATE-YR-DIFF = JULIAN-DATE-1-CCYY - JULIAN-DATE-2-CCYY;
+        else
+            JULIAN-DATE-YR-DIFF = JULIAN-DATE-2-CCYY - JULIAN-DATE-1-CCYY;
+        end
+        if (JULIAN-DATE-YR-DIFF > 1)
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Date too old (548 days).";
+            INVALID-OLD-DATE = "Y";
+        else
+      
+            if (JULIAN-DATE-1-CCYY > JULIAN-DATE-2-CCYY)
+                JULIAN-DATE-QUOT = JULIAN-DATE-2-CCYY / 4;
+                JULIAN-DATE-REM = JULIAN-DATE-2-CCYY - (JULIAN-DATE-QUOT * 4);
+                if (JULIAN-DATE-REM > 0)
+                    JULIAN-DATE-1-DDD = JULIAN-DATE-1-DDD + 365;
+                else
+                    JULIAN-DATE-1-DDD = JULIAN-DATE-1-DDD + 366;
+                end
+                JULIAN-DAYS-DIFF = JULIAN-DATE-1-DDD - JULIAN-DATE-2-DDD;
+                if (JULIAN-DAYS-DIFF > 548) 
+                    ERROR-COUNT = ERROR-COUNT + 1;
+                    VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Date too old (548 days).";
+                    INVALID-OLD-DATE = "Y";
+                end
+            else
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR01IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Future Date not allowed.";
+                INVALID-FUTURE-DATE = "Y";
+            end
+        end
+    end
+end 
+
+Function VHSR01IS-DB-STORE () 
+    VHSR01IW.FINAL-MESSAGE = " ";
+    VHSR01E_DATA.CAR-NO = VHSR01IW.CAR-NO;
+    VHSR01E_DATA.DEPT-CD = VHSR01IW.DEPT-CD;
+    VHSR01E_DATA.EQUIP-TYPE = VHSR01IW.EQUIP-TYPE;
+    VHSR01E_DATA.EQUIP-ID = VHSR01IW.EQUIP-ID;
+    VHSR01E_DATA.EQUIP-LOC = VHSR01IW.EQUIP-LOC;
+    VHSR01E_DATA.INCD-NO = VHSR01IW.INCD-NO;
+    VHSR01E_DATA.JOB-PRT-CTL-NO = VHSR01IW.JOB-PRT-CTL-NO;
+    VHSR01E_DATA.WORK-TYPE = VHSR01IW.WORK-TYPE;
+    VHSR01E_DATA.DATE-IN = VHSR01IW.DATE-IN;
+    VHSR01E_DATA.REPR-AREA = VHSR01IW.REPR-AREA;
+    VHSR01E_DATA.CNT-CMPNTS-IN = VHSR01IW.CNT-CMPNTS-IN;
+    VHSR01E_DATA.STOCK-NO = VHSR01IW.STOCK-NO;
+    VHSR01E_DATA.SER-NO = VHSR01IW.SER-NO;
+    VHSR01E_DATA.SENT-FROM = VHSR01IW.SENT-FROM;
+    VHSR01E_DATA.USER-GRP = VHSR01IW-PASSVALUE.USER-GRP;
+    VHSR01E_DATA.TERM-LAST-UPD = VHSR01IW-PASSVALUE.TERM-LAST-UPD;
+    VHSR01E_DATA.NARR = VHSR01IW.NARR;
+    try
+        call "VHSR01E"(XDCONTROL, VHSR01E_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHSR01IW.FINAL-MESSAGE-1 = "Job No ";
+        VHSR01IW.FINAL-MESSAGE-2 = VHSR01E_DATA.JOB-NO;
+        VHSR01IW.FINAL-MESSAGE-3 = " has been created.";
+        if (INVALID-BATCH-QTY == "Y")
+            VHSR01IW.FINAL-MESSAGE-4 = "          Warning :- Stock no. exceeds limit.";
+        else
+            VHSR01IW.FINAL-MESSAGE-4 = " ";
+        end
+        VHSR01IS-MOVE-JOBS();
+        if (JOB-DATA-COUNT > 30)
+            VHSR01IW.FINAL-MESSAGE-4 = "Reached the no. of max job rows allowed.";
+            DISABLE-JOBSPLIT = "Y";
+        else
+            ENABLE-JOBSPLIT = "Y";
+        end
+        DISABLE-CREATE = "Y";
+        VHSR01IS-CLR-AFTDB(); 
+                                   
+  
+    else
+        VHSR01IW.FINAL-MESSAGE = "Database error. No job created.";
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        VHSR01IW.PRN-STK-SUM = 0;
+         
+    end
+end 
+
+Function VHSR01IS-DEPT-VAL () 
+    VHSR01IW.EQUIP-TYPE = " ";
+    VHSR01IW.EQUIP-ID = " ";
+    VHSR01IW.EQUIP-LOC = " ";
+    VHSR01IW.EQUIPTYPE-COUNT = 0;
+    if (VHSR01IW.DEPT-CD != " ")
+        VHSR01IW.FINAL-MESSAGE = " ";
+        if (VHSR01IW.DEPT-CD == "A" || VHSR01IW.DEPT-CD == "D")
+            DISABLE-EQPTYPE = "Y";
+            ENABLE-EQPID = "Y";
+        else
+            ENABLE-EQPTYPE = "Y";
+            DISABLE-EQPID = "Y";
+            VHSR01B_CRIT.DEPT-CD = VHSR01IW.DEPT-CD;
+            try
+                call "VHSR01B"(XDCONTROL, VHSR01B_CRIT, VHSR01B_DATA);
+            
+            end
+            if (XDCONTROL.UROWCNT > 0)
+                VHSR01IW.EQUIPTYPE-COUNT = XDCONTROL.UROWCNT;
+                LOAD-EQUIP-TYPE = "Y";
+            else
+                if (XDCONTROL.URC == 100)
+                    set VHSR01B_DATA empty;
+                    LOAD-EQUIP-TYPE = "Y";
+                end
+            end
+        end
+    end
+    DISABLE-LOC = "Y";
+end 
+
+Function VHSR01IS-EQUIP-ID () 
+    VHSR01IW.FINAL-MESSAGE = " ";
+    if (VHSR01IW.DEPT-CD == "A" || VHSR01IW.DEPT-CD == "D")
+        VHSR01IW.EQUIP-TYPE = " ";
+        VHSR01IW.EQUIP-LOC = " ";
+        if (VHSR01IW.EQUIP-ID != " ")
+            VHSR01C_CRIT.DEPT-CD = VHSR01IW.DEPT-CD;
+            VHSR01C_CRIT.EQUIP-ID = VHSR01IW.EQUIP-ID;
+            try
+                call "VHSR01C"(XDCONTROL, VHSR01C_CRIT, VHSR01C_DATA);
+            
+            end
+            if (XDCONTROL.UROWCNT == 1)
+                VHSR01IW.EQUIP-TYPE = VHSR01C_DATA.EQUIP-TYPE;
+                VHSR01IW.EQUIP-LOC = VHSR01C_DATA.EQUIP-LOC;
+            end
+        end
+    end
+end 
+
+Function VHSR01IS-INIT () 
+    set VHSR01IW empty;
+    set VHSR01IW-JOB empty;
+    VHSR01IW-TRIGGER.JOB-DATA-COUNT = 0;
+    VHSR01IW.DATE-IN = VGVar.currentFormattedGregorianDate;
+    VHSR01IW.NARR-NO = 1;
+    VHSR01IW.DATE-NARR = VGVar.currentFormattedGregorianDate;
+    VHSR01IW.TIME-NARR = VGVar.currentFormattedTime;
+    VHSR01IW.USER-GRP = VHSR01IW-PASSVALUE.USER-GRP;
+
+  
+    try
+        call "VHSRWT"(XDCONTROL, VHSRWT_DATA);
+    
+    end
+    if (XDCONTROL.UROWCNT > 0)
+        VHSR01IW.WORKTYPE-COUNT = XDCONTROL.UROWCNT;
+    else
+        VHSR01IW.WORKTYPE-COUNT = 0;
+    end
+    LOAD-WORKTYPE = "Y";
+    VHSR01IW.WORK-TYPE = "REPAIR";
+
+  
+    try
+        call "VHSRRA"(XDCONTROL, VHSRRA_DATA);
+    
+    end
+    if (XDCONTROL.UROWCNT > 0)
+        VHSR01IW.REPRAREA-COUNT = XDCONTROL.UROWCNT;
+    else
+        VHSR01IW.REPRAREA-COUNT = 0;
+    end
+    LOAD-REPRAREA = "Y";
+
+  
+    VHSRUD_CRIT.USER-GRP = VHSR01IW-PASSVALUE.USER-GRP;
+    try
+        call "VHSRUD"(XDCONTROL, VHSRUD_CRIT, VHSRUD_DATA);
+    
+    end
+    if (XDCONTROL.UROWCNT > 0)
+        VHSR01IW.DEPTCD-COUNT = XDCONTROL.UROWCNT;
+    else
+        VHSR01IW.DEPTCD-COUNT = 0;
+    end
+    LOAD-DEPTCD = "Y";
+    VHSR01IW.CNT-CMPNTS-IN = 1;
+    DISABLE-WAYSIDE = "Y";
+    DISABLE-PCTNO = "Y";
+    ENABLE-CREATE = "Y";
+    DISABLE-JOBSPLIT = "Y";
+end 
+
+Function VHSR01IS-MOVE-JOBS ()
+   
+    JOB-DATA-COUNT = JOB-DATA-COUNT + 1;
+    VHSR01IW-JOB.JOB-NO[JOB-DATA-COUNT] = VHSR01E_DATA.JOB-NO;
+    VHSR01IW-JOB.SUB-JOB-DOC-NO[JOB-DATA-COUNT] = 0;
+    VHSR01IW-STOCK.SER-NO[JOB-DATA-COUNT] = VHSR01E_DATA.SER-NO;
+    VHSR01IW-STOCK.STOCK-NO[JOB-DATA-COUNT] = VHSR01E_DATA.STOCK-NO;
+    VHSR01IW-STOCK.PRN-STK-SUM[JOB-DATA-COUNT] = VHSR01IW.PRN-STK-SUM;
+end 
+
+Function VHSR01IS-MOVE-MSG () 
+    VHSR01IW.ERROR-LOOP-INDEX = 1;
+    VHSR01IW.FINAL-INDEX = 0;
+    VHSR01IW.FINAL-ERROR-MSG = " ";
+    VHSR01IW.TEMP-ERROR-MSG = " ";
+    if (ERROR-COUNT > 0)
+        while (((ERROR-LOOP-INDEX <= 8) &&
+         (ERROR-MESSAGE-OCCR[ERROR-LOOP-INDEX] != " ")))
+            ERROR-COUNT = 1;
+            TEMP-ERROR-MSG = ERROR-MESSAGE-OCCR[ERROR-LOOP-INDEX];
+            while ((ERROR-COUNT <= 30))
+                if (TEMP-MSG[ERROR-COUNT] != ".")
+                    FINAL-INDEX = FINAL-INDEX + 1;
+                    FINAL-MSG[FINAL-INDEX] = TEMP-MSG[ERROR-COUNT];
+                else
+                    if (TEMP-MSG[ERROR-COUNT] == ".")
+                        FINAL-INDEX = FINAL-INDEX + 1;
+                        FINAL-MSG[FINAL-INDEX] = ",";
+                        FINAL-INDEX = FINAL-INDEX + 1;
+                        FINAL-MSG[FINAL-INDEX] = " ";
+                        ERROR-COUNT = 30;
+                    end
+                end
+                ERROR-COUNT = ERROR-COUNT + 1;
+            end
+            ERROR-LOOP-INDEX = ERROR-LOOP-INDEX + 1;
+        end
+        FINAL-INDEX = FINAL-INDEX - 1;
+        FINAL-MSG[FINAL-INDEX] = " ";
+        VHSR01IW.FINAL-MESSAGE = FINAL-ERROR-MSG;
+        EXECUTE-SETFOCUS = "Y";
+    end
+end 
+
+Function VHSR01IS-PASS-VAL () 
+    VHSR01IW.PASSVALUE-JOB-NO = VHSR01IW-JOB.JOB-NO[JOB-DATA-COUNT];
+    VHSR01IW.PARENT-GUI = "VHSR01I";
+end 
+
+Function VHSR01IS-RETURN () 
+    if (VHSR01IW-JOB.JOB-NO[1] == " " &&
+     VHSR01IW-JOB.SUB-JOB-DOC-NO[1] == 0)
+        VHSR01IW-TRIGGER.CLOSE-GUI = "Y";
+    else
+        VHSR01IW-TRIGGER.OPEN-GUI = "Y";
+    end
+end 
+
+Function VHSR01IS-SETFOCUS () 
+    if (INVALID-WORK-TYPE == "Y")
+        WORKTYPE-SETFOCUS = "Y";
+    else
+        if (INVALID-DATE-IN == "Y")
+            DATEIN-SETFOCUS = "Y";
+        else
+            if (INVALID-REPR-AREA == "Y")
+                REPRAREA-SETFOCUS = "Y";
+            else
+                if (INVALID-CAR-NO == "Y")
+                    CARNO-SETFOCUS = "Y";
+                else
+                    if (INVALID-EQUIP-TYPE == "Y")
+                        EQUIPTYPE-SETFOCUS = "Y";
+                    else
+                        if (INVALID-EQUIP-ID == "Y")
+                            EQUIPID-SETFOCUS = "Y";
+                        else
+                            if (INVALID-STOCK-NO == "Y")
+                                STOCKNO-SETFOCUS = "Y";
+                            else
+                                if (INVALID-BATCH-QTY == "Y")
+                                    BATCHQTY-SETFOCUS = "Y";
+                                else
+                                    if (INVALID-NARR == "Y")
+                                        NARR-SETFOCUS = "Y";
+                                    else
+
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end 
+
+Function VHSR02IS-ADDNARR ()
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+   
+    if (VHSR02IW.CURRENT-NARR != " ")
+        VHSR02IW.FINAL-MESSAGE = " ";
+
+  
+  
+  
+  
+  
+  
+        if (VHSR02IW-PASSVALUE.PARENT-GUI == "VHMSRI")
+            VHSR02A_DATA.JOB-NO = VHSR02IW.JOB-NO;
+            VHSR02A_DATA.SUB-JOB-DOC-NO = VHSR02IW.SUB-JOB-DOC-NO;
+            VHSR02IW-PASSVALUE.JOB-NO = VHSR02IW.JOB-NO;
+            VHSR02IW-PASSVALUE.SUB-JOB-DOC-NO = VHSR02IW.SUB-JOB-DOC-NO;
+        else
+            VHSR02A_DATA.JOB-NO = VHSR02IW-PASSVALUE.JOB-NO;
+            VHSR02A_DATA.SUB-JOB-DOC-NO = VHSR02IW-PASSVALUE.SUB-JOB-DOC-NO;
+        end
+        VHSR02A_DATA.NARR-NO = VHSR02IW-PASSVALUE.MAX-ROWS + 1;
+        VHSR02A_DATA.NARR = VHSR02IW.CURRENT-NARR;
+        VHSR02A_DATA.USER-GRP = VHSR02IW-PASSVALUE.STORE-USER-GRP;
+        VHSR02A_DATA.TERM-NARR = VHSR02IW-PASSVALUE.TERM-LAST-UPD;
+        if (VHSR02IW-PASSVALUE.JOB-INDICATOR == "JOB")
+            VHSR02A_DATA.JOB-INDICATOR = "JOB";
+        else
+            if (VHSR02IW-PASSVALUE.JOB-INDICATOR == "REPAIR")
+                VHSR02A_DATA.JOB-INDICATOR = "REPAIR";
+            end
+        end
+        XXEXT_CALL_Level77Items.UEXTNAM = "VHSR02I";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "VHSR02A";
+        try
+            call "VHSR02A"(XDCONTROL, VHSR02A_DATA);
+        
+        end
+        MRSCommonCode.XXA0IS-CHECK_EXT();
+        if (XXEXT_CALL_Level77Items.URC == 0)
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                ENABLE-UPDATE = "Y";
+                VHSR02IW-PASSVALUE.REFRESH-GUI = "Y";
+                VHSR02IW.CURRENT-NARR = " ";
+                VHSR02IS-JOB-NARR(); 
+                                   
+                ADDNARR-SETFOCUS = "Y";
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end
+    else
+        VHSR02IW.FINAL-MESSAGE = "Invalid comment.";
+        VHSR02IW-TRIGGER.ADDNARR-SETFOCUS = "Y";
+    end
+end 
+
+Function VHSR02IS-CLEAR () 
+    VHSR02IW.FINAL-MESSAGE = " ";
+    VHSR02IW.JOB-NO = " ";
+    VHSR02IW.SUB-JOB-DOC-NO = 1;
+    VHSR02IW.SEL-ACTION = 1;
+    VHSR02IW.UPD-NARR = " ";
+    VHSR02IW-PASSVALUE.NARR = " ";
+    VHSR02IW-PASSVALUE.DATE-NARR = VGVar.currentFormattedGregorianDate;
+    VHSR02IW-PASSVALUE.TIME-NARR = VGVar.currentFormattedTime;
+    VHSR02IW-PASSVALUE.USER-GRP = VHSR02IW-PASSVALUE.STORE-USER-GRP;
+    VHSR02IW-PASSVALUE.NARR-NO = 0;
+    VHSR02IW-PASSVALUE.CURRENT-ROW = 1;
+    VHSR02IW.CURRENT-NARR = " ";
+    ENABLE-LIST = "Y";
+    DISABLE-UPDNARR = "Y";
+    DISABLE-ADDNARR = "Y";
+    JOB-SETFOCUS = "Y";
+    ENABLE-JOBCRIT = "Y";
+end 
+
+Function VHSR02IS-INIT () 
+    VHSR02IW.FINAL-MESSAGE = " ";
+    VHSR02IW-PASSVALUE.REFRESH-GUI = "N";
+    if (VHSR02IW-PASSVALUE.PARENT-GUI == "VHMSRI")
+        SEL-ACTION = 1;
+        ENABLE-JOBCRIT = "Y";
+        ENABLE-SELECTION = "Y";
+        ENABLE-LIST = "Y";
+        ENABLE-CLEAR = "Y";
+        DISABLE-ADDNARR = "Y";
+        DISABLE-UPDNARR = "Y";
+        EXECUTE-CLEAR = "Y";
+    else
+        if (VHSR02IW-PASSVALUE.JOB-INDICATOR == "JOB")
+            SEL-ACTION = 1;
+        else
+            SEL-ACTION = 2;
+        end
+        DISABLE-JOBCRIT = "Y";
+        DISABLE-SELECTION = "Y";
+        DISABLE-LIST = "Y";
+        DISABLE-CLEAR = "Y";
+        ENABLE-ADDNARR = "Y";
+        if (VHSR02IW-PASSVALUE.CURRENT-ROW > 0)
+            ENABLE-UPDNARR = "Y";
+            TIME-NARR-FILLER-1 = ":";
+            TIME-NARR-FILLER-2 = ":";
+            ENABLE-UPDATE = "Y";
+            if (VHSR02IW-PASSVALUE.CURRENT-ROW == 1)
+                DISABLE-PRV = "Y";
+            else
+                ENABLE-PRV = "Y";
+            end
+            if (VHSR02IW-PASSVALUE.CURRENT-ROW < VHSR02IW-PASSVALUE.MAX-ROWS)
+                ENABLE-NXT = "Y";
+            else
+                DISABLE-NXT = "Y";
+            end
+        else
+            TIME-NARR-FILLER-1 = " ";
+            TIME-NARR-FILLER-2 = " ";
+            DISABLE-UPDNARR = "Y";
+        end
+        ADDNARR-SETFOCUS = "Y";
+    end
+end 
+
+Function VHSR02IS-JOB-NARR () 
+    set VHSR02D_CRIT empty;
+    VHSR02D_CRIT.JOB-NO = VHSR02IW-PASSVALUE.JOB-NO;
+    VHSR02D_CRIT.SUB-JOB-DOC-NO = VHSR02IW-PASSVALUE.SUB-JOB-DOC-NO;
+    VHSR02D_CRIT.NARR-NO = 0;
+    if (VHSR02IW-PASSVALUE.JOB-INDICATOR == "JOB")
+        VHSR02D_CRIT.JOB-INDICATOR = "JOB";
+    else
+        if (VHSR02IW-PASSVALUE.JOB-INDICATOR == "REPAIR")
+            VHSR02D_CRIT.JOB-INDICATOR = "REPAIR";
+        end
+    end
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHSR02I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHSR02D";
+    try
+        call "VHSR02D"(XDCONTROL, VHSR02D_CRIT, VHSR02D_DATA);
+    
+    end
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+    if (XXEXT_CALL_Level77Items.URC == 0)
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            ENABLE-UPDNARR = "Y";
+            VHSR02IW-PASSVALUE.USER-GRP = VHSR02D_DATA.USER-GRP;
+            VHSR02IW-PASSVALUE.DATE-NARR = VHSR02D_DATA.DATE-NARR;
+            VHSR02IW-PASSVALUE.TIME-NARR = VHSR02D_DATA.TIME-NARR;
+            VHSR02IW-PASSVALUE.TIME-NARR-FILLER-1 = ":";
+            VHSR02IW-PASSVALUE.TIME-NARR-FILLER-2 = ":";
+            VHSR02IW-PASSVALUE.NARR = VHSR02D_DATA.NARR;
+            VHSR02IW-PASSVALUE.NARR-NO = VHSR02D_DATA.NARR-NO;
+            VHSR02IW-PASSVALUE.MAX-ROWS = VHSR02D_DATA.CURRENT-ROW;
+            VHSR02IW-PASSVALUE.CURRENT-ROW = VHSR02D_DATA.NARR-NO;
+            if (VHSR02IW-PASSVALUE.CURRENT-ROW <= 1)
+                VHSR02IW-TRIGGER.DISABLE-PRV = "Y";
+            else
+                VHSR02IW-TRIGGER.ENABLE-PRV = "Y";
+            end
+            VHSR02IW-TRIGGER.DISABLE-NXT = "Y";
+            if (VHSR02D_CRIT.JOB-INDICATOR == "JOB")
+                FINAL-MESSAGE = "Job comment added successfully.";
+            else
+                if (VHSR02D_CRIT.JOB-INDICATOR == "REPAIR")
+                    FINAL-MESSAGE = "Job repr comment added successfully.";
+                end
+            end
+        else
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHSR02IS-LIST () 
+    VHSR02IW.FINAL-MESSAGE = " ";
+    VHSR02IW.CURRENT-NARR = " ";
+    ERROR-MESSAGE = " ";
+    INVALID-JOB = "N";
+    INVALID-DOCNO = "N";
+    INVALID-ACTION = "N";
+    ERROR-COUNT = 0;
+    if (VHSR02IW-PASSVALUE.PARENT-GUI == "VHMSRI")
+        VHSR02IW-PASSVALUE.JOB-NO = VHSR02IW.JOB-NO;
+        VHSR02IW-PASSVALUE.SUB-JOB-DOC-NO = VHSR02IW.SUB-JOB-DOC-NO;
+    end
+    if (VHSR02IW.JOB-NO == " ")
+        ERROR-COUNT = ERROR-COUNT + 1;
+        ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Job no required.";
+        INVALID-JOB = "Y";
+        ENABLE-JOBCRIT = "Y";
+    end
+    if (VHSR02IW.SUB-JOB-DOC-NO < 1)
+        ERROR-COUNT = ERROR-COUNT + 1;
+        ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Doc no should be greater than zero.";
+        INVALID-DOCNO = "Y";
+        ENABLE-JOBCRIT = "Y";
+    end
+    if (VHSR02IW.SEL-ACTION == 0)
+        ERROR-COUNT = ERROR-COUNT + 1;
+        ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid selection action.";
+        INVALID-ACTION = "Y";
+        ENABLE-JOBCRIT = "Y";
+    end
+    if (ERROR-COUNT > 0)
+        VHSR02IS-MOVE-MSG();
+    else
+    
+    
+        VHSR02E_CRIT.JOB-NO = VHSR02IW.JOB-NO;
+        VHSR02E_CRIT.SUB-JOB-DOC-NO = VHSR02IW.SUB-JOB-DOC-NO;
+        try
+            call "VHSR02E"(XDCONTROL, VHSR02E_CRIT, VHSR02E_DATA);
+        
+        end
+        if (XDCONTROL.UROWCNT == 1)
+            DISABLE-JOBCRIT = "Y";
+        else
+            if (XDCONTROL.URC == 100)
+                FINAL-MESSAGE = "The entered job and doc no does not exist in the database.";
+                JOB-SETFOCUS = "Y";
+                ENABLE-JOBCRIT = "Y";
+                return;
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                return;
+            end
+        end
+        VHSR02F_CRIT.JOB-NO = VHSR02IW.JOB-NO;
+        VHSR02F_CRIT.SUB-JOB-DOC-NO = VHSR02IW.SUB-JOB-DOC-NO;
+        if (VHSR02IW.SEL-ACTION == 1)
+            VHSR02F_CRIT.JOB-INDICATOR = "JOB";
+            VHSR02IW-PASSVALUE.JOB-INDICATOR = "JOB";
+        else
+            if (VHSR02IW.SEL-ACTION == 2)
+                VHSR02F_CRIT.JOB-INDICATOR = "REPAIR";
+                VHSR02IW-PASSVALUE.JOB-INDICATOR = "REPAIR";
+            end
+        end
+        try
+            call "VHSR02F"(XDCONTROL, VHSR02F_CRIT, VHSR02F_DATA);
+        
+        end
+        if ((XDCONTROL.URC == 0 || XDCONTROL.URC == 4) &&
+         VHSR02F_DATA.MAX-ROWS >= 1)
+            ENABLE-UPDNARR = "Y";
+            if (VHSR02F_DATA.MAX-ROWS == 1)
+                DISABLE-PRV = "Y";
+                DISABLE-NXT = "Y";
+            else
+                DISABLE-PRV = "Y";
+                ENABLE-NXT = "Y";
+            end
+            VHSR02IW-PASSVALUE.MAX-ROWS = VHSR02F_DATA.MAX-ROWS;
+            VHSR02IW-PASSVALUE.USER-GRP = VHSR02F_DATA.USER-GRP;
+            VHSR02IW-PASSVALUE.DATE-NARR = VHSR02F_DATA.DATE-NARR;
+            VHSR02IW-PASSVALUE.TIME-NARR = VHSR02F_DATA.TIME-NARR;
+            VHSR02IW-PASSVALUE.TIME-NARR-FILLER-1 = ":";
+            VHSR02IW-PASSVALUE.TIME-NARR-FILLER-2 = ":";
+            VHSR02IW-PASSVALUE.NARR = VHSR02F_DATA.NARR;
+            VHSR02IW-PASSVALUE.NARR-NO = VHSR02F_DATA.NARR-NO;
+            VHSR02IW-PASSVALUE.CURRENT-ROW = VHSR02F_DATA.NARR-NO;
+        else
+            if ((XDCONTROL.URC == 0 || XDCONTROL.URC == 4) &&
+             VHSR02F_DATA.MAX-ROWS == 0)
+                VHSR02IW-PASSVALUE.USER-GRP = VHSR02IW-PASSVALUE.STORE-USER-GRP;
+                VHSR02IW-PASSVALUE.DATE-NARR = VGVar.currentFormattedGregorianDate;
+                VHSR02IW-PASSVALUE.TIME-NARR = VGVar.currentFormattedTime;
+                VHSR02IW-PASSVALUE.TIME-NARR-FILLER-1 = ":";
+                VHSR02IW-PASSVALUE.TIME-NARR-FILLER-2 = ":";
+                VHSR02IW-PASSVALUE.NARR = " ";
+                DISABLE-UPDNARR = "Y";
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                return;
+            end
+        end
+        ENABLE-ADDNARR = "Y";
+        ADDNARR-SETFOCUS = "Y";
+    end
+end 
+
+Function VHSR02IS-MOVE-MSG () 
+    VHSR02IW.ERROR-LOOP-INDEX = 1;
+    VHSR02IW.FINAL-INDEX = 0;
+    VHSR02IW.FINAL-ERROR-MSG = " ";
+    VHSR02IW.TEMP-ERROR-MSG = " ";
+    if (ERROR-COUNT > 0)
+        while (((ERROR-LOOP-INDEX <= 3) &&
+         (ERROR-MESSAGE-OCCR[ERROR-LOOP-INDEX] != " ")))
+            ERROR-COUNT = 1;
+            TEMP-ERROR-MSG = ERROR-MESSAGE-OCCR[ERROR-LOOP-INDEX];
+            while ((ERROR-COUNT <= 40))
+                if (TEMP-MSG[ERROR-COUNT] != ".")
+                    FINAL-INDEX = FINAL-INDEX + 1;
+                    FINAL-MSG[FINAL-INDEX] = TEMP-MSG[ERROR-COUNT];
+                else
+                    if (TEMP-MSG[ERROR-COUNT] == ".")
+                        FINAL-INDEX = FINAL-INDEX + 1;
+                        FINAL-MSG[FINAL-INDEX] = ",";
+                        FINAL-INDEX = FINAL-INDEX + 1;
+                        FINAL-MSG[FINAL-INDEX] = " ";
+                        ERROR-COUNT = 40;
+                    end
+                end
+                ERROR-COUNT = ERROR-COUNT + 1;
+            end
+            ERROR-LOOP-INDEX = ERROR-LOOP-INDEX + 1;
+        end
+        FINAL-INDEX = FINAL-INDEX - 1;
+        FINAL-MSG[FINAL-INDEX] = " ";
+        VHSR02IW.FINAL-MESSAGE = FINAL-ERROR-MSG;
+        EXECUTE-SETFOCUS = "Y";
+    end
+end 
+
+Function VHSR02IS-PRV-NXT () 
+    VHSR02IW.FINAL-MESSAGE = " ";
+    if (VHSR02IW.BUTTON-CLICK == "PRV")
+        VHSR02IW.UPD-NARR-NO = VHSR02IW.UPD-NARR-NO - 1;
+        if (VHSR02IW.UPD-NARR-NO == 1)
+            DISABLE-PRV = "Y";
+            if (VHSR02IW.UPD-NARR-NO == VHSR02IW-PASSVALUE.MAX-ROWS)
+                DISABLE-NXT = "Y";
+            else
+                ENABLE-NXT = "Y";
+                NXT-SETFOCUS = "Y";
+            end
+        else
+            ENABLE-PRV = "Y";
+            ENABLE-NXT = "Y";
+            PRV-SETFOCUS = "Y";
+        end
+    else
+        if (VHSR02IW.BUTTON-CLICK == "NXT")
+            VHSR02IW.UPD-NARR-NO = VHSR02IW.UPD-NARR-NO + 1;
+            ENABLE-PRV = "Y";
+            if (VHSR02IW.UPD-NARR-NO == VHSR02IW-PASSVALUE.MAX-ROWS)
+                DISABLE-NXT = "Y";
+                PRV-SETFOCUS = "Y";
+            else
+                ENABLE-NXT = "Y";
+                NXT-SETFOCUS = "Y";
+            end
+        end
+    end
+    VHSR02C_CRIT.JOB-NO = VHSR02IW-PASSVALUE.JOB-NO;
+    VHSR02C_CRIT.SUB-JOB-DOC-NO = VHSR02IW-PASSVALUE.SUB-JOB-DOC-NO;
+    VHSR02C_CRIT.NARR-NO = VHSR02IW.UPD-NARR-NO;
+    if (VHSR02IW-PASSVALUE.JOB-INDICATOR == "JOB")
+        VHSR02C_CRIT.JOB-INDICATOR = "JOB";
+    else
+        if (VHSR02IW-PASSVALUE.JOB-INDICATOR == "REPAIR")
+            VHSR02C_CRIT.JOB-INDICATOR = "REPAIR";
+        end
+    end
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHSR02I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHSR02C";
+    try
+        call "VHSR02C"(XDCONTROL, VHSR02C_CRIT, VHSR02C_DATA);
+    
+    end
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+    if (XXEXT_CALL_Level77Items.URC == 0)
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHSR02IW-PASSVALUE.USER-GRP = VHSR02C_DATA.USER-GRP;
+            VHSR02IW-PASSVALUE.DATE-NARR = VHSR02C_DATA.DATE-NARR;
+            VHSR02IW-PASSVALUE.TIME-NARR = VHSR02C_DATA.TIME-NARR;
+            VHSR02IW-PASSVALUE.TIME-NARR-FILLER-1 = ":";
+            VHSR02IW-PASSVALUE.TIME-NARR-FILLER-2 = ":";
+            VHSR02IW-PASSVALUE.NARR = VHSR02C_DATA.NARR;
+            VHSR02IW-PASSVALUE.CURRENT-ROW = VHSR02IW.UPD-NARR-NO;
+        else
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHSR02IS-SETFOCUS () 
+    if (INVALID-JOB == "Y")
+        JOB-SETFOCUS = "Y";
+    else
+        if (INVALID-DOCNO == "Y")
+            DOCNO-SETFOCUS = "Y";
+        else
+            if (INVALID-ACTION == "Y")
+                ACTION-SETFOCUS = "Y";
+            end
+        end
+    end
+end 
+
+Function VHSR02IS-UPDNARR ()
+  
+  
+  
+  
+  
+  
+  
+   
+    if (VHSR02IW.UPD-NARR != " ")
+        VHSR02IW.UPD-NARR-NO = VHSR02IW-PASSVALUE.CURRENT-ROW;
+        if (VHSR02IW-PASSVALUE.PARENT-GUI == "VHMSRI")
+            VHSR02B_CRIT.JOB-NO = VHSR02IW.JOB-NO;
+            VHSR02B_CRIT.NARR-NO = VHSR02IW.UPD-NARR-NO;
+            VHSR02B_CRIT.SUB-JOB-DOC-NO = VHSR02IW.SUB-JOB-DOC-NO;
+            VHSR02IW-PASSVALUE.JOB-NO = VHSR02IW.JOB-NO;
+            VHSR02IW-PASSVALUE.SUB-JOB-DOC-NO = VHSR02IW.SUB-JOB-DOC-NO;
+        else
+            VHSR02B_CRIT.JOB-NO = VHSR02IW-PASSVALUE.JOB-NO;
+            VHSR02B_CRIT.NARR-NO = VHSR02IW.UPD-NARR-NO;
+            VHSR02B_CRIT.SUB-JOB-DOC-NO = VHSR02IW-PASSVALUE.SUB-JOB-DOC-NO;
+        end
+        VHSR02B_DATA.NARR = VHSR02IW.UPD-NARR;
+        VHSR02B_DATA.USER-GRP = VHSR02IW-PASSVALUE.STORE-USER-GRP;
+        VHSR02B_DATA.TERM-NARR = VHSR02IW-PASSVALUE.TERM-LAST-UPD;
+        if (VHSR02IW-PASSVALUE.JOB-INDICATOR == "JOB")
+            VHSR02B_CRIT.JOB-INDICATOR = "JOB";
+        else
+            if (VHSR02IW-PASSVALUE.JOB-INDICATOR == "REPAIR")
+                VHSR02B_CRIT.JOB-INDICATOR = "REPAIR";
+            end
+        end
+
+    
+        XXEXT_CALL_Level77Items.UEXTNAM = "VHSR02I";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "VHSR02B";
+        try
+            call "VHSR02B"(XDCONTROL, VHSR02B_CRIT, VHSR02B_DATA);
+        
+        end
+        MRSCommonCode.XXA0IS-CHECK_EXT();
+        if (XXEXT_CALL_Level77Items.URC == 0)
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                if (VHSR02IW-PASSVALUE.JOB-INDICATOR == "JOB")
+                    FINAL-MESSAGE = "Job comment updated successfully";
+                else
+                    if (VHSR02IW-PASSVALUE.JOB-INDICATOR == "REPAIR")
+                        FINAL-MESSAGE = "Job repr comment updated successfully";
+                    end
+                end
+                VHSR02IW-PASSVALUE.REFRESH-GUI = "Y";
+                ADDNARR-SETFOCUS = "Y";
+            else
+                if (VHSR02IW-PASSVALUE.JOB-INDICATOR == "JOB")
+                    FINAL-MESSAGE = "Job comment update unsuccessful";
+                else
+                    if (VHSR02IW-PASSVALUE.JOB-INDICATOR == "REPAIR")
+                        FINAL-MESSAGE = "Job repr comment update unsuccessful";
+                    end
+                end
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end
+    else
+        VHSR02IW.FINAL-MESSAGE = "Invalid comment.";
+        VHSR02IW-TRIGGER.UPDNARR-SETFOCUS = "Y";
+    end
+end 
+
+Function VHSR03IS-ADDLABOR () 
+    VHSR03IS-INPUT();
+    VHSR03IW.LOOP-INDEX = VHSR03IW.NEXT-ROW-COUNT;
+    VHSR03IW.ERROR-MESSAGE = " ";
+    VHSR03IW.FINAL-MESSAGE = " ";
+    VHSR03IW.ERROR-COUNT = 0;
+    VHSR03IW.SET-ROW-IND = "N";
+    VHSR03IW.SET-INDEX = 0;
+    LOAD-NEXT-DATA = "Y";
+    VHSR03IW.COUNT-BLANK-ROW = 0;
+    while ((LOOP-INDEX <= 100 && COUNT-BLANK-ROW <= 2 &&
+     ERROR-COUNT <= 6))
+        VHSR03IW.SET-INDEX = VHSR03IW.SET-INDEX + 1;
+        if (VHSR03A_DATA-X.DATE-WORK[LOOP-INDEX] == " " &&
+         VHSR03A_DATA-X.REPR-LABOR-HRS[LOOP-INDEX] == 0.0)
+            COUNT-BLANK-ROW = COUNT-BLANK-ROW + 1;
+        end
+        if (VHSR03A_DATA-X.DATE-WORK[LOOP-INDEX] == " " &&
+         VHSR03A_DATA-X.REPR-LABOR-HRS[LOOP-INDEX] == 0.0 &&
+         VHSR03IW.SET-INDEX == 1)
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR03IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+            VHSR03IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+            VHSR03IW.ERROR-MSG-3[ERROR-COUNT] = " - Data required.";
+            LOOP-INDEX = 101;
+        else
+            if (COUNT-BLANK-ROW <= 2 &&
+             (VHSR03A_DATA-X.DATE-WORK[LOOP-INDEX] != " " || 
+       
+       
+       
+             VHSR03A_DATA-X.EMPL-NO[LOOP-INDEX] != " " ||
+             VHSR03A_DATA-X.REPR-LABOR-HRS[LOOP-INDEX] > 0.0))
+                if (VHSR03A_DATA-X.DATE-WORK[LOOP-INDEX] == " ")
+                    ERROR-COUNT = ERROR-COUNT + 1;
+                    VHSR03IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+                    VHSR03IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+                    VHSR03IW.ERROR-MSG-3[ERROR-COUNT] = " - Date Work required.";
+                else
+
+          
+                    VHSR03IW.TEMP-DATE = " ";
+                    VHSR03IW.FINAL-DATE = " ";
+                    VHSR03IW.TEMP-DATE = VHSR03A_DATA-X.DATE-WORK[LOOP-INDEX];
+                    VHSR03IW.FINAL-DATE-MM = VHSR03IW.TEMP-DATE-MM;
+                    VHSR03IW.FINAL-DATE-FILLER-1 = "-";
+                    VHSR03IW.FINAL-DATE-DD = VHSR03IW.TEMP-DATE-DD;
+                    VHSR03IW.FINAL-DATE-FILLER-2 = "-";
+                    VHSR03IW.FINAL-DATE-YYYY = VHSR03IW.TEMP-DATE-YYYY;
+  
+                    AFCXVLD_CRIT.FORM-DATE = VHSR03IW.FINAL-DATE;
+                    MRSCommonCode.AFCXVLD-VALIDATE();
+                    if (AFCXVLDW.INCORRECT-DATE == "Y")
+                        ERROR-COUNT = ERROR-COUNT + 1;
+                        VHSR03IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+                        VHSR03IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+                        VHSR03IW.ERROR-MSG-3[ERROR-COUNT] = " - Invalid Date Work.";
+                    else
+                        if (AFCXVLDW.SQL-ERROR == "Y")
+                            ERROR-COUNT = ERROR-COUNT + 1;
+                            VHSR03IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+                            VHSR03IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+                            VHSR03IW.ERROR-MSG-3[ERROR-COUNT] = " - Date DB Error.";
+                        else
+                            if (AFCXVLDW.NO-ERROR == "Y")
+                
+                
+                                VHSR03IS-DATE-CHK();
+                            end
+                        end
+                    end
+                end
+                if (ERROR-COUNT == 6)
+                    LOOP-INDEX = 101;
+                end
+                VHSR03IS-VALIDATE(); 
+            end
+        end
+        LOOP-INDEX = LOOP-INDEX + 1;
+    end
+    if (ERROR-COUNT > 0)
+        VHSR03IS-MOVE-MSG();
+    else
+        VHSR03IS-DB-STORE(); 
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            GO-COMMENTS = "Y";
+        end
+    end
+end 
+
+Function VHSR03IS-AFT-CHKST () 
+    VHSR03IW.NARR = " ";
+    VHSR03IW.NARR-NO = 0;
+    set VHSR03A_DATA-X empty;
+    if (VHSR03IW-PASSVALUE.PARENT-GUI == "VHSR09I")
+        DISABLE-JOBLIST = "Y";
+        VHSR03IW.JOB-NO = VHSR03IW-PASSVALUE.JOB-NO;
+        VHSR03IW.SUB-JOB-DOC-NO = VHSR03IW-PASSVALUE.SUB-JOB-DOC-NO;
+        
+
+    
+        VHSR03F_CRIT.JOB-NO = VHSR03IW.JOB-NO;
+        VHSR03F_CRIT.SUB-JOB-DOC-NO = VHSR03IW.SUB-JOB-DOC-NO;
+        try
+            call "VHSR03F"(XDCONTROL, VHSR03F_CRIT, VHSR03F_DATA);
+        
+        end
+        if (VHSR03F_DATA.DOC-COUNT == 1)
+            if (VHSR03F_DATA.SUB-JOB-STAT == "CLO")
+                VHSR03IW.FINAL-MESSAGE-1 = "Job ";
+                VHSR03IW.FINAL-MESSAGE-2 = VHSR03IW.JOB-NO;
+                VHSR03IW.FINAL-MESSAGE-3 = "-";
+                VHSR03IW.FINAL-MESSAGE-4 = VHSR03IW.SUB-JOB-DOC-NO;
+                VHSR03IW.FINAL-MESSAGE-5 = " Closed.";
+                VHSR03IW.PREV-ROW-COUNT = 0;
+                LOAD-PREV-DATA = "Y";
+                VHSR03IW.NEXT-ROW-COUNT = 101;
+                LOAD-NEXT-DATA = "Y";
+                VHSR03IW.NARR = " ";
+                VHSR03IW.NARR-NO = 0;
+                DISABLE-ADDLABOR = "Y";
+                DISABLE-COMMENTS = "Y";
+                DISABLE-CLOSEJOB = "Y";
+                DISABLE-NARR = "Y";
+                DISABLE-PRV = "Y";
+                DISABLE-NXT = "Y";
+                DETAILS1-SETFOCUS = "Y";
+            else
+                if (VHSR03F_DATA.SUB-JOB-STAT == "OTV" ||
+                 VHSR03F_DATA.SUB-JOB-STAT == "REP" ||
+                 VHSR03F_DATA.SUB-JOB-STAT == "DEF" ||
+                 VHSR03F_DATA.SUB-JOB-STAT == "NWP")
+          
+                    VHSR03A_CRIT.JOB-NO = VHSR03IW.JOB-NO;
+                    VHSR03A_CRIT.SUB-JOB-DOC-NO = VHSR03IW.SUB-JOB-DOC-NO;
+                    try
+                        call "VHSR03A"(XDCONTROL, VHSR03A_CRIT, VHSR03A_DATA);
+                    
+                    end
+                    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                        VHSR03IW.PREV-ROW-COUNT = XDCONTROL.UROWCNT;
+                        LOAD-PREV-DATA = "Y";
+                        VHSR03IW.NEXT-ROW-COUNT = XDCONTROL.UROWCNT + 1;
+                        LOAD-NEXT-DATA = "Y";
+
+            
+                        VHSR09A_CRIT.JOB-NO = VHSR03IW.JOB-NO;
+                        VHSR09A_CRIT.SUB-JOB-DOC-NO = VHSR03IW.SUB-JOB-DOC-NO;
+                        try
+                            call "VHSR09A"(XDCONTROL, VHSR09A_CRIT, VHSR09A_DATA_01, VHSR09A_DATA_02);
+                        
+                        end
+                        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                            ENABLE-CLOSEJOB = "Y";
+                        else
+                            if (XDCONTROL.URC == 100)
+                                VHSR03IW.FINAL-MESSAGE = "Atleast One Repair Detail required to Close this job";
+                                DISABLE-CLOSEJOB = "Y";
+                            end
+                        end
+                        ENABLE-ADDLABOR = "Y";
+                        ENABLE-COMMENTS = "Y";
+                        EXECUTE-PRVNXT = "Y";
+                        DETAILS1-SETFOCUS = "Y";
+                    else
+                        if (XDCONTROL.URC == 100)
+                            VHSR03A_DATA.DATA_ROW = "  ";
+                            VHSR03IW.PREV-ROW-COUNT = 0;
+             
+                            VHSR03IW.NEXT-ROW-COUNT = 1;
+                            LOAD-NEXT-DATA = "Y";
+                            DISABLE-CLOSEJOB = "Y";
+                            DETAILS1-SETFOCUS = "Y";
+                            ENABLE-ADDLABOR = "Y";
+                            ENABLE-COMMENTS = "Y";
+                            EXECUTE-PRVNXT = "Y";
+                        else
+                            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                            return;
+                        end
+                    end
+                else
+                    VHSR03IW.FINAL-MESSAGE = "Sub Job NOT OUT THE DOOR.";
+                    set VHSR03A_DATA empty;
+                    VHSR03IW.PREV-ROW-COUNT = 0;
+                    LOAD-PREV-DATA = "Y";
+                    VHSR03IW.NEXT-ROW-COUNT = 101;
+                    LOAD-NEXT-DATA = "Y";
+                    VHSR03IW.NARR = " ";
+                    VHSR03IW.NARR-NO = 0;
+                    DISABLE-ADDLABOR = "Y";
+                    DISABLE-COMMENTS = "Y";
+                    DISABLE-CLOSEJOB = "Y";
+                    DISABLE-NARR = "Y";
+                    DISABLE-PRV = "Y";
+                    DISABLE-NXT = "Y";
+                end
+            end
+        else
+            set VHSR03A_DATA empty;
+            VHSR03IW.PREV-ROW-COUNT = 0;
+            LOAD-PREV-DATA = "Y";
+            VHSR03IW.NEXT-ROW-COUNT = 101;
+            LOAD-NEXT-DATA = "Y";
+            VHSR03IW.NARR = " ";
+            VHSR03IW.NARR-NO = 0;
+            DISABLE-ADDLABOR = "Y";
+            DISABLE-COMMENTS = "Y";
+            DISABLE-CLOSEJOB = "Y";
+            DISABLE-NARR = "Y";
+            DISABLE-PRV = "Y";
+            DISABLE-NXT = "Y";
+        end
+    else
+        if (VHSR03IW-PASSVALUE.PARENT-GUI == "VHMSRI")
+            DISABLE-ADDLABOR = "Y";
+            DISABLE-COMMENTS = "Y";
+            DISABLE-CLOSEJOB = "Y";
+            DISABLE-NARR = "Y";
+            DISABLE-PRV = "Y";
+            DISABLE-NXT = "Y";
+            ENABLE-JOBLIST = "Y";
+            VHSR03IW.JOB-NO = " ";
+            VHSR03IW.NARR = " ";
+            VHSR03IW.SUB-JOB-DOC-NO = 1;
+            set VHSR03A_DATA empty;
+            VHSR03IW.PREV-ROW-COUNT = 0;
+            LOAD-PREV-DATA = "Y";
+            VHSR03IW.NEXT-ROW-COUNT = 101;
+            LOAD-NEXT-DATA = "Y";
+            JOBNO-SETFOCUS = "Y";
+        end
+    end
+end 
+
+Function VHSR03IS-AFT-NARR () 
+    VHSR03IW.FINAL-MESSAGE = " ";
+    VHSR03IW.BUTTON-CLICK = " ";
+    if (VHSR03IW.REFRESH-GUI == "Y")
+        VHSR03IW.NARR-COUNT = 0;
+        EXECUTE-PRVNXT = "Y";
+    end
+    DISABLE-JOBLIST = "Y";
+    AFT-NARR-SW = "Y";
+end 
+
+Function VHSR03IS-CLEAR () 
+    set VHSR03IW-INPUT empty;
+    set VHSR03IW empty;
+    VHSR03IS-AFT-CHKST();
+    ENABLE-JOBLIST = "Y";
+    set VHSR03A_DATA empty;
+    PREV-ROW-COUNT = 0;
+    LOAD-PREV-DATA = "Y";
+end 
+
+Function VHSR03IS-CLEAR-X () 
+    set VHSR03IW-INPUT empty;
+end 
+
+Function VHSR03IS-CLOSEJOB () 
+    VHSR03IW.LOOP-INDEX = VHSR03IW.NEXT-ROW-COUNT;
+    VHSR03IW.ERROR-MESSAGE = " ";
+    VHSR03IW.FINAL-MESSAGE = " ";
+    VHSR03IW.ERROR-COUNT = 0;
+    VHSR03IW.SET-ROW-IND = "N";
+    VHSR03IW.SET-INDEX = 0;
+    VHSR03IW.COUNT-BLANK-ROW = 0;
+    while ((LOOP-INDEX <= 100 && COUNT-BLANK-ROW <= 2))
+        VHSR03IW.SET-INDEX = VHSR03IW.SET-INDEX + 1;
+        if (VHSR03A_DATA.DATE-WORK[LOOP-INDEX] == " " &&
+         VHSR03A_DATA.REPR-LABOR-HRS[LOOP-INDEX] == 0.0)
+            COUNT-BLANK-ROW = COUNT-BLANK-ROW + 1;
+        end
+        if (COUNT-BLANK-ROW <= 2 &&
+         (VHSR03A_DATA.DATE-WORK[LOOP-INDEX] != " " || 
+     
+     
+     
+         VHSR03A_DATA.EMPL-NO[LOOP-INDEX] != " " ||
+         VHSR03A_DATA.REPR-LABOR-HRS[LOOP-INDEX] > 0.0))
+            if (VHSR03A_DATA.DATE-WORK[LOOP-INDEX] == " ")
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR03IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+                VHSR03IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+                VHSR03IW.ERROR-MSG-3[ERROR-COUNT] = " - Date Work required.";
+            else
+          
+                AFCXVLD_CRIT.FORM-DATE = VHSR03A_DATA.DATE-WORK[LOOP-INDEX];
+                MRSCommonCode.AFCXVLD-VALIDATE();
+                if (AFCXVLDW.INCORRECT-DATE == "Y")
+                    ERROR-COUNT = ERROR-COUNT + 1;
+                    VHSR03IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+                    VHSR03IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+                    VHSR03IW.ERROR-MSG-3[ERROR-COUNT] = " - Invalid Date Work.";
+                else
+                    if (AFCXVLDW.SQL-ERROR == "Y")
+                        ERROR-COUNT = ERROR-COUNT + 1;
+                        VHSR03IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+                        VHSR03IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+                        VHSR03IW.ERROR-MSG-3[ERROR-COUNT] = " - Date DB Error.";
+                    else
+                        if (AFCXVLDW.NO-ERROR == "Y")
+                            VHSR03IS-VALIDATE(); 
+                        end
+                    end
+                end
+            end
+        end
+        LOOP-INDEX = LOOP-INDEX + 1;
+    end
+    if (ERROR-COUNT > 0)
+        VHSR03IS-MOVE-MSG();
+    else
+        VHSR03IS-DB-CLOSE(); 
+        RETURN-TO-REPAIR = "Y";
+    end
+    if (AFT-NARR-SW == "Y")
+        RETURN-TO-REPAIR = "Y";
+    end
+end 
+
+Function VHSR03IS-CLR-CLOSE () 
+    VHSR03IW-TRIGGER.TEMP-FINAL-MESSAGE = " ";
+    VHSR03IW-TRIGGER.TEMP-FINAL-MESSAGE = VHSR03IW.FINAL-MESSAGE;
+    set VHSR03IW empty;
+    VHSR03IW.FINAL-MESSAGE = VHSR03IW-TRIGGER.TEMP-FINAL-MESSAGE;
+    DISABLE-ADDLABOR = "Y";
+    DISABLE-COMMENTS = "Y";
+    DISABLE-CLOSEJOB = "Y";
+    DISABLE-NARR = "Y";
+    DISABLE-PRV = "Y";
+    DISABLE-NXT = "Y";
+    if (VHSR03IW-PASSVALUE.PARENT-GUI == "VHMSRI")
+        VHSR03IW.JOB-NO = " ";
+        VHSR03IW.SUB-JOB-DOC-NO = 1;
+        ENABLE-JOBLIST = "Y";
+        JOBNO-SETFOCUS = "Y";
+    else
+        DISABLE-JOBLIST = "Y";
+        VHSR03IW.JOB-NO = VHSR03IW-PASSVALUE.JOB-NO;
+        VHSR03IW.SUB-JOB-DOC-NO = VHSR03IW-PASSVALUE.SUB-JOB-DOC-NO;
+    end
+    VHSR03IW.PREV-ROW-COUNT = 0;
+    LOAD-PREV-DATA = "Y";
+    VHSR03IW.NEXT-ROW-COUNT = 101;
+    LOAD-NEXT-DATA = "Y";
+end 
+
+Function VHSR03IS-COMMENTS () 
+    VHSR03IW-PASSVALUE.JOB-NO = VHSR03IW.JOB-NO;
+    VHSR03IW-PASSVALUE.SUB-JOB-DOC-NO = VHSR03IW.SUB-JOB-DOC-NO;
+    VHSR03IW-PASS-COMM.PARENT-GUI = "VHSR03I";
+    VHSR03IW-PASSVALUE.JOB-INDICATOR = "REPAIR";
+end 
+
+Function VHSR03IS-DATE-CHK ()
+   
+    VHSR03IW.TEMP-DATE-WORK = VHSR03IW.FINAL-DATE;
+    if ((VHSR03IW.TEMP-DATE-WORK-YYYY < VHSR03F_DATA.DATE-IN-YYYY) ||
+     (VHSR03IW.TEMP-DATE-WORK-YYYY == VHSR03F_DATA.DATE-IN-YYYY &&
+     VHSR03IW.TEMP-DATE-WORK-MM < VHSR03F_DATA.DATE-IN-MM) ||
+     (VHSR03IW.TEMP-DATE-WORK-YYYY == VHSR03F_DATA.DATE-IN-YYYY &&
+     VHSR03IW.TEMP-DATE-WORK-MM == VHSR03F_DATA.DATE-IN-MM &&
+     VHSR03IW.TEMP-DATE-WORK-DD < VHSR03F_DATA.DATE-IN-DD))
+        ERROR-COUNT = ERROR-COUNT + 1;
+        VHSR03IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+        VHSR03IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+        VHSR03IW.ERROR-MSG-3[ERROR-COUNT] = " - Date older than Date In.";
+    else
+        if ((VHSR03IW.TEMP-DATE-WORK-YYYY > VHSR03F_DATA.DATE-OUT-YYYY) ||
+         (VHSR03IW.TEMP-DATE-WORK-YYYY == VHSR03F_DATA.DATE-OUT-YYYY &&
+         VHSR03IW.TEMP-DATE-WORK-MM > VHSR03F_DATA.DATE-OUT-MM) ||
+         (VHSR03IW.TEMP-DATE-WORK-YYYY == VHSR03F_DATA.DATE-OUT-YYYY &&
+         VHSR03IW.TEMP-DATE-WORK-MM == VHSR03F_DATA.DATE-OUT-MM &&
+         VHSR03IW.TEMP-DATE-WORK-DD > VHSR03F_DATA.DATE-OUT-DD))
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR03IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+            VHSR03IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+            VHSR03IW.ERROR-MSG-3[ERROR-COUNT] = " - Date after Date Out.";
+        end
+    end
+end 
+
+Function VHSR03IS-DB-CLOSE ()
+  
+   
+    set VHSR03D_DATA empty;
+    VHSR03IW.LOOP-INDEX = 0;
+    VHSR03IW.ERROR-ROW-COUNT = 0;
+    while ((VHSR03IW.NEXT-ROW-COUNT < 100) &&
+     VHSR03IW.ERROR-ROW-COUNT <= 2)
+        if (VHSR03A_DATA.DATE-WORK[NEXT-ROW-COUNT] != " ")
+            VHSR03IW.LOOP-INDEX = VHSR03IW.LOOP-INDEX + 1;
+            VHSR03D_DATA.DATE-WORK[LOOP-INDEX] = VHSR03A_DATA.DATE-WORK[NEXT-ROW-COUNT];
+  
+  
+            VHSR03D_DATA.REPR-LABOR-HRS[LOOP-INDEX] = VHSR03A_DATA.REPR-LABOR-HRS[NEXT-ROW-COUNT];
+            VHSR03D_DATA.EMPL-NO[LOOP-INDEX] = VHSR03A_DATA.EMPL-NO[NEXT-ROW-COUNT];
+            
+  
+  
+  
+  
+  
+  
+  
+  
+        else
+            VHSR03IW.ERROR-ROW-COUNT = VHSR03IW.ERROR-ROW-COUNT + 1;
+        end
+        NEXT-ROW-COUNT = NEXT-ROW-COUNT + 1;
+    end
+    VHSR03D_DATA.JOB-NO = VHSR03IW.JOB-NO;
+    VHSR03D_DATA.SUB-JOB-DOC-NO = VHSR03IW.SUB-JOB-DOC-NO;
+    VHSR03D_DATA.TERM-LAST-UPD = VHSR03IW-PASSVALUE.TERM-LAST-UPD;
+    VHSR03IW-PASSVALUE.JOB-NO = VHSR03IW.JOB-NO;
+    VHSR03IW-PASSVALUE.SUB-JOB-DOC-NO = VHSR03IW.SUB-JOB-DOC-NO;
+    if (VHSR03IW.LOOP-INDEX >= 1)
+        try
+            call "VHSR03D"(XDCONTROL, VHSR03D_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+            VHSR03IW.FINAL-MESSAGE = "Database access error. Labor Details not added successfully.";
+            DISABLE-ADDLABOR = "Y";
+            DISABLE-CLOSEJOB = "Y";
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            return;
+        end
+    end
+
+  
+    VHSR03E_CRIT.JOB-NO = VHSR03IW.JOB-NO;
+    VHSR03E_CRIT.SUB-JOB-DOC-NO = VHSR03IW.SUB-JOB-DOC-NO;
+    VHSR03E_DATA.TERM-LAST-UPD = VHSR03IW-PASSVALUE.TERM-LAST-UPD;
+    VHSR03E_DATA.USER-GRP = VHSR03IW-PASSVALUE.USER-GRP;
+    try
+        call "VHSR03E"(XDCONTROL, VHSR03E_CRIT, VHSR03E_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHSR03IW.FINAL-MESSAGE = "Job Closed.";
+    else
+        VHSR03IW.FINAL-MESSAGE = "Database access error. Job not closed successfully.";
+        DISABLE-ADDLABOR = "Y";
+        DISABLE-CLOSEJOB = "Y";
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        return;
+    end
+    VHSR03IW-TRIGGER.DESELECT-ALLCELLS = "Y";
+    VHSR03IS-CLR-CLOSE();
+end 
+
+Function VHSR03IS-DB-STORE () 
+    set VHSR03D_DATA empty;
+    VHSR03D_DATA.ADD-NARR-IND = "N";
+    VHSR03IW.LOOP-INDEX = 0;
+    VHSR03IW.ERROR-ROW-COUNT = 0;
+    while ((VHSR03IW.NEXT-ROW-COUNT < 100) &&
+     VHSR03IW.ERROR-ROW-COUNT <= 2)
+        if (VHSR03A_DATA-X.DATE-WORK[NEXT-ROW-COUNT] != " ")
+            VHSR03IW.LOOP-INDEX = VHSR03IW.LOOP-INDEX + 1;
+            VHSR03IW.TEMP-DATE = " ";
+            VHSR03IW.FINAL-DATE = " ";
+            VHSR03IW.TEMP-DATE = VHSR03A_DATA-X.DATE-WORK[NEXT-ROW-COUNT];
+  
+            VHSR03IW.FINAL-DATE-MM = VHSR03IW.TEMP-DATE-MM;
+            VHSR03IW.FINAL-DATE-FILLER-1 = "-";
+            VHSR03IW.FINAL-DATE-DD = VHSR03IW.TEMP-DATE-DD;
+            VHSR03IW.FINAL-DATE-FILLER-2 = "-";
+            VHSR03IW.FINAL-DATE-YYYY = VHSR03IW.TEMP-DATE-YYYY;
+            VHSR03D_DATA.DATE-WORK[LOOP-INDEX] = VHSR03IW.FINAL-DATE;
+
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+            VHSR03D_DATA.REPR-LABOR-HRS[LOOP-INDEX] = VHSR03A_DATA-X.REPR-LABOR-HRS[NEXT-ROW-COUNT];
+            VHSR03D_DATA.EMPL-NO[LOOP-INDEX] = VHSR03A_DATA-X.EMPL-NO[NEXT-ROW-COUNT];
+            
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+        end
+        NEXT-ROW-COUNT = NEXT-ROW-COUNT + 1;
+    end
+    VHSR03IW-PASSVALUE.JOB-NO = VHSR03IW.JOB-NO;
+    VHSR03IW-PASSVALUE.SUB-JOB-DOC-NO = VHSR03IW.SUB-JOB-DOC-NO;
+    VHSR03D_DATA.JOB-NO = VHSR03IW.JOB-NO;
+    VHSR03D_DATA.SUB-JOB-DOC-NO = VHSR03IW.SUB-JOB-DOC-NO;
+    VHSR03D_DATA.TERM-LAST-UPD = VHSR03IW-PASSVALUE.TERM-LAST-UPD;
+    VHSR03D_DATA.USER-GRP = VHSR03IW-PASSVALUE.USER-GRP;
+    if (VHSR03IW.NARR-COUNT == 0)
+        if (VHSR03IW.NARR == " ")
+            VHSR03D_DATA.ADD-NARR-IND = "N";
+            VHSR03D_DATA.NARR = " ";
+        else
+            VHSR03D_DATA.ADD-NARR-IND = "Y";
+            VHSR03D_DATA.NARR = VHSR03IW.NARR;
+        end
+    else
+        VHSR03D_DATA.ADD-NARR-IND = "N";
+        VHSR03D_DATA.NARR = " ";
+    end
+    if (VHSR03IW.LOOP-INDEX >= 1)
+        try
+            call "VHSR03D"(XDCONTROL, VHSR03D_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHSR03IW.FINAL-MESSAGE = "Labor Details added.";
+            VHSR03IS-RET-AFTDB(); 
+  
+  
+            ENABLE-COMMENTS = "Y";
+        else
+            VHSR03IW.FINAL-MESSAGE = "Database access error. Records not added successfully.";
+            DISABLE-ADDLABOR = "Y";
+            DISABLE-CLOSEJOB = "Y";
+            ENABLE-JOBLIST = "Y";
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+    VHSR03IW-TRIGGER.DESELECT-ALLCELLS = "Y";
+end 
+
+Function VHSR03IS-INIT ()
+  
+  
+
+   
+    AFT-NARR-SW = "N";
+    set VHSR03D_DATA empty;
+    try
+        call "VHSRWEL"(XDCONTROL, VHSRWEL_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+    else
+
+    end
+    try
+        call "VHSR03C"(XDCONTROL, VHSR03C_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        set VHSR03IW empty;
+        VHSR03IS-AFT-CHKST();
+    else
+
+    end
+    DETAILS1-SETFOCUS = "Y";
+    VHSR03IW.FINAL-MESSAGE = "Need to add more Repair, press RETURN";
+end 
+
+Function VHSR03IS-INPUT () 
+    X = VHSR03IW.NEXT-ROW-COUNT;
+    VHSR03A_DATA-X.DATE-WORK[X] = VHSR03IW-INPUT.DATE-WORK-1;
+    VHSR03A_DATA-X.EMPL-NO[X] = VHSR03IW-INPUT.EMPL-NO-1;
+  
+  
+    VHSR03A_DATA-X.JOB-LABOR-DOC-NO[X] = VHSR03IW-INPUT.JOB-LABOR-DOC-NO-1;
+  
+  
+    VHSR03A_DATA-X.REPR-LABOR-HRS[X] = VHSR03IW-INPUT.REPR-LABOR-HRS-1;
+  
+  
+  
+  
+  
+  
+    X = X + 1;
+    VHSR03A_DATA-X.DATE-WORK[X] = VHSR03IW-INPUT.DATE-WORK-2;
+    VHSR03A_DATA-X.EMPL-NO[X] = VHSR03IW-INPUT.EMPL-NO-2;
+  
+  
+    VHSR03A_DATA-X.JOB-LABOR-DOC-NO[X] = VHSR03IW-INPUT.JOB-LABOR-DOC-NO-2;
+  
+  
+    VHSR03A_DATA-X.REPR-LABOR-HRS[X] = VHSR03IW-INPUT.REPR-LABOR-HRS-2;
+  
+  
+  
+  
+  
+  
+    X = X + 1;
+    VHSR03A_DATA-X.DATE-WORK[X] = VHSR03IW-INPUT.DATE-WORK-3;
+    VHSR03A_DATA-X.EMPL-NO[X] = VHSR03IW-INPUT.EMPL-NO-3;
+  
+  
+    VHSR03A_DATA-X.JOB-LABOR-DOC-NO[X] = VHSR03IW-INPUT.JOB-LABOR-DOC-NO-3;
+  
+  
+    VHSR03A_DATA-X.REPR-LABOR-HRS[X] = VHSR03IW-INPUT.REPR-LABOR-HRS-3;
+  
+  
+  
+  
+  
+  
+    X = X + 1;
+    VHSR03A_DATA-X.DATE-WORK[X] = VHSR03IW-INPUT.DATE-WORK-4;
+    VHSR03A_DATA-X.EMPL-NO[X] = VHSR03IW-INPUT.EMPL-NO-4;
+  
+  
+    VHSR03A_DATA-X.JOB-LABOR-DOC-NO[X] = VHSR03IW-INPUT.JOB-LABOR-DOC-NO-4;
+  
+  
+    VHSR03A_DATA-X.REPR-LABOR-HRS[X] = VHSR03IW-INPUT.REPR-LABOR-HRS-4;
+  
+  
+  
+  
+  
+  
+    X = X + 1;
+    VHSR03A_DATA-X.DATE-WORK[X] = VHSR03IW-INPUT.DATE-WORK-5;
+    VHSR03A_DATA-X.EMPL-NO[X] = VHSR03IW-INPUT.EMPL-NO-5;
+  
+  
+    VHSR03A_DATA-X.JOB-LABOR-DOC-NO[X] = VHSR03IW-INPUT.JOB-LABOR-DOC-NO-5;
+  
+  
+    VHSR03A_DATA-X.REPR-LABOR-HRS[X] = VHSR03IW-INPUT.REPR-LABOR-HRS-5;
+  
+  
+  
+  
+  
+  
+    X = X + 1;
+    VHSR03A_DATA-X.DATE-WORK[X] = VHSR03IW-INPUT.DATE-WORK-6;
+    VHSR03A_DATA-X.EMPL-NO[X] = VHSR03IW-INPUT.EMPL-NO-6;
+  
+  
+    VHSR03A_DATA-X.JOB-LABOR-DOC-NO[X] = VHSR03IW-INPUT.JOB-LABOR-DOC-NO-6;
+  
+  
+    VHSR03A_DATA-X.REPR-LABOR-HRS[X] = VHSR03IW-INPUT.REPR-LABOR-HRS-6;
+end 
+
+Function VHSR03IS-MOVE-MSG () 
+    VHSR03IW.ERROR-LOOP-INDEX = 1;
+    VHSR03IW.FINAL-INDEX = 0;
+    VHSR03IW.FINAL-ERROR-MSG = " ";
+    VHSR03IW.TEMP-ERROR-MSG = " ";
+    while (((ERROR-LOOP-INDEX <= 6) &&
+     (ERROR-MESSAGE-OCCR[ERROR-LOOP-INDEX] != " ")))
+        ERROR-INDEX = 1;
+        TEMP-ERROR-MSG = ERROR-MESSAGE-OCCR[ERROR-LOOP-INDEX];
+        while ((ERROR-INDEX <= 53))
+            if (TEMP-MSG[ERROR-INDEX] != ".")
+                FINAL-INDEX = FINAL-INDEX + 1;
+                FINAL-MSG[FINAL-INDEX] = TEMP-MSG[ERROR-INDEX];
+            else
+                if (TEMP-MSG[ERROR-INDEX] == ".")
+                    FINAL-INDEX = FINAL-INDEX + 1;
+                    FINAL-MSG[FINAL-INDEX] = ",";
+                    FINAL-INDEX = FINAL-INDEX + 1;
+                    FINAL-MSG[FINAL-INDEX] = " ";
+                    ERROR-INDEX = 53;
+                end
+            end
+            ERROR-INDEX = ERROR-INDEX + 1;
+        end
+        ERROR-LOOP-INDEX = ERROR-LOOP-INDEX + 1;
+    end
+    FINAL-INDEX = FINAL-INDEX - 1;
+    FINAL-MSG[FINAL-INDEX] = " ";
+    VHSR03IW.FINAL-MESSAGE = FINAL-ERROR-MSG;
+    DETAILS1-SETFOCUS = "Y";
+end 
+
+Function VHSR03IS-PRV-NXT () 
+    if (BUTTON-CLICK == "PRV")
+        DISABLE-NARR = "Y";
+        VHSR03IW.NARR-INDEX = VHSR03IW.NARR-INDEX - 1;
+        ENABLE-NXT = "Y";
+        if (VHSR03IW.NARR-INDEX <= 1)
+            VHSR03IW.NARR-INDEX = 1;
+            DISABLE-PRV = "Y";
+            NXT-SETFOCUS = "Y";
+        else
+            ENABLE-PRV = "Y";
+            PRV-SETFOCUS = "Y";
+        end
+    else
+        if (BUTTON-CLICK == "NXT")
+            DISABLE-NARR = "Y";
+            VHSR03IW.NARR-INDEX = VHSR03IW.NARR-INDEX + 1;
+            ENABLE-PRV = "Y";
+            if (VHSR03IW.NARR-INDEX >= VHSR03IW.NARR-COUNT)
+                VHSR03IW.NARR-INDEX = VHSR03IW.NARR-COUNT;
+                DISABLE-NXT = "Y";
+                PRV-SETFOCUS = "Y";
+            else
+                ENABLE-NXT = "Y";
+                NXT-SETFOCUS = "Y";
+            end
+        else
+            if (BUTTON-CLICK == " ")
+                VHSR03IW.NARR-INDEX = 1;
+                VHSR03B_CRIT.JOB-NO = VHSR03IW.JOB-NO;
+                VHSR03B_CRIT.SUB-JOB-DOC-NO = VHSR03IW.SUB-JOB-DOC-NO;
+                try
+                    call "VHSR03B"(XDCONTROL, VHSR03B_CRIT, VHSR03B_DATA);
+                
+                end
+                if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                    ENABLE-COMMENTS = "Y";
+                    DISABLE-PRV = "Y";
+                    VHSR03IW.NARR-COUNT = XDCONTROL.UROWCNT;
+                    if (VHSR03IW.NARR-COUNT <= 1)
+                        DISABLE-NXT = "Y";
+                    else
+                        ENABLE-NXT = "Y";
+                    end
+                    DISABLE-NARR = "Y";
+                else
+                    VHSR03IW.NARR-COUNT = 0;
+                    ENABLE-NARR = "Y";
+                    DISABLE-COMMENTS = "Y";
+                    DISABLE-PRV = "Y";
+                    DISABLE-NXT = "Y";
+                end
+            end
+        end
+    end
+    if (VHSR03IW.NARR-COUNT >= 1)
+        VHSR03IW.NARR = VHSR03B_DATA.NARR[NARR-INDEX];
+        VHSR03IW.NARR-NO = VHSR03B_DATA.NARR-NO[NARR-INDEX];
+        VHSR03IW.USER-GRP = VHSR03B_DATA.USER-GRP[NARR-INDEX];
+        VHSR03IW.DATE-NARR = VHSR03B_DATA.DATE-NARR[NARR-INDEX];
+        VHSR03IW.TIME-NARR = VHSR03B_DATA.TIME-NARR[NARR-INDEX];
+    else
+        VHSR03IW.NARR = " ";
+  
+        VHSR03IW.NARR-NO = 0;
+        VHSR03IW.USER-GRP = VHSR03IW-PASSVALUE.USER-GRP;
+        VHSR03IW.DATE-NARR = " ";
+        VHSR03IW.TIME-NARR = " ";
+    end
+end 
+
+Function VHSR03IS-RET-AFTDB ()
+   
+    set VHSR03A_DATA-X empty;
+    set VHSR03IW-INPUT empty;
+    DETAILS1-SETFOCUS = "Y";
+    if (VHSR03IW-PASSVALUE.PARENT-GUI == "VHSR09I") 
+        VHSR03A_CRIT.JOB-NO = VHSR03IW.JOB-NO;
+        VHSR03A_CRIT.SUB-JOB-DOC-NO = VHSR03IW.SUB-JOB-DOC-NO;
+        try
+            call "VHSR03A"(XDCONTROL, VHSR03A_CRIT, VHSR03A_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHSR03IW.PREV-ROW-COUNT = XDCONTROL.UROWCNT;
+            LOAD-PREV-DATA = "Y";
+            VHSR03IW.NEXT-ROW-COUNT = XDCONTROL.UROWCNT + 1;
+            LOAD-NEXT-DATA = "Y";
+            
+
+    
+            VHSR09A_CRIT.JOB-NO = VHSR03IW.JOB-NO;
+            VHSR09A_CRIT.SUB-JOB-DOC-NO = VHSR03IW.SUB-JOB-DOC-NO;
+            try
+                call "VHSR09A"(XDCONTROL, VHSR09A_CRIT, VHSR09A_DATA_01, VHSR09A_DATA_02);
+            
+            end
+            if ((XDCONTROL.URC == 0 || XDCONTROL.URC == 4) &&
+             XDCONTROL.UROWCNT > 0)
+                ENABLE-CLOSEJOB = "Y";
+            else
+                if (XDCONTROL.URC == 100 && XDCONTROL.UROWCNT == 0)
+                    DISABLE-CLOSEJOB = "Y";
+                else
+                    DISABLE-CLOSEJOB = "Y";
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                    return;
+                end
+            end
+            DETAILS1-SETFOCUS = "Y";
+        else
+            if (XDCONTROL.URC == 100)
+                VHSR03IW.PREV-ROW-COUNT = 0;
+                LOAD-PREV-DATA = "Y";
+                VHSR03IW.NEXT-ROW-COUNT = 1;
+                LOAD-NEXT-DATA = "Y";
+                DISABLE-CLOSEJOB = "Y";
+                DETAILS1-SETFOCUS = "Y";
+            end
+        end
+    else
+  
+        if (VHSR03D_DATA.ADD-NARR-IND == "Y")
+            DISABLE-NARR = "Y";
+            ENABLE-COMMENTS = "Y";
+            VHSR03IW.NARR = " ";
+            VHSR03IW.BUTTON-CLICK = " ";
+            VHSR03IS-PRV-NXT();
+        else
+  
+            LOAD-NEXT-DATA = "Y";
+            VHSR03IW-PASSVALUE.PARENT-GUI = "VHMSRI";
+            VHSR03A_CRIT.JOB-NO = VHSR03IW.JOB-NO;
+            VHSR03A_CRIT.SUB-JOB-DOC-NO = VHSR03IW.SUB-JOB-DOC-NO;
+            try
+                call "VHSR03A"(XDCONTROL, VHSR03A_CRIT, VHSR03A_DATA);
+            
+            end
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                VHSR03IW.PREV-ROW-COUNT = XDCONTROL.UROWCNT;
+                LOAD-PREV-DATA = "Y";
+                VHSR03IW.NEXT-ROW-COUNT = XDCONTROL.UROWCNT + 1;
+                VHSR03IS-PRV-NXT();
+
+  
+            else
+                VHSR03IS-CLEAR();
+            end
+        end
+    end
+end 
+
+Function VHSR03IS-RET-DATA () 
+    set VHSR03IW-INPUT empty;
+    VHSR03IW.FINAL-MESSAGE = " ";
+    VHSR03IW.PREV-ROW-COUNT = 0;
+    VHSR03IW.NEXT-ROW-COUNT = 0;
+    VHSR03IW.BUTTON-CLICK = " ";
+    if (VHSR03IW.JOB-NO == " " &&
+     VHSR03IW.SUB-JOB-DOC-NO == 0)
+        VHSR03IW.FINAL-MESSAGE = "Job & Doc No required.";
+        JOBNO-SETFOCUS = "Y";
+        ENABLE-JOBLIST = "Y";
+    else
+        if (VHSR03IW.JOB-NO == " " &&
+         VHSR03IW.SUB-JOB-DOC-NO > 0)
+            VHSR03IW.FINAL-MESSAGE = "Job No required.";
+            JOBNO-SETFOCUS = "Y";
+            ENABLE-JOBLIST = "Y";
+        else
+            if (VHSR03IW.JOB-NO != " " &&
+             VHSR03IW.SUB-JOB-DOC-NO == 0)
+                VHSR03IW.FINAL-MESSAGE = "Doc No required.";
+                DOCNO-SETFOCUS = "Y";
+                ENABLE-JOBLIST = "Y";
+            else
+        
+                VHSR03F_CRIT.JOB-NO = VHSR03IW.JOB-NO;
+                VHSR03F_CRIT.SUB-JOB-DOC-NO = VHSR03IW.SUB-JOB-DOC-NO;
+                try
+                    call "VHSR03F"(XDCONTROL, VHSR03F_CRIT, VHSR03F_DATA);
+                
+                end
+                if (VHSR03F_DATA.DOC-COUNT == 1)
+                    if (VHSR03F_DATA.SUB-JOB-STAT == "CLO")
+                        VHSR03IW.FINAL-MESSAGE-1 = "Job ";
+                        VHSR03IW.FINAL-MESSAGE-2 = VHSR03IW.JOB-NO;
+                        VHSR03IW.FINAL-MESSAGE-3 = "-";
+                        VHSR03IW.FINAL-MESSAGE-4 = VHSR03IW.SUB-JOB-DOC-NO;
+                        VHSR03IW.FINAL-MESSAGE-5 = " Closed.";
+                        VHSR03IS-AFT-CHKST();
+                        ENABLE-JOBLIST = "Y";
+                    else
+                        if (VHSR03F_DATA.SUB-JOB-STAT == "OTV" ||
+                         VHSR03F_DATA.SUB-JOB-STAT == "REP" ||
+                         VHSR03F_DATA.SUB-JOB-STAT == "DEF" ||
+                         VHSR03F_DATA.SUB-JOB-STAT == "NWP")
+                            VHSR03A_CRIT.JOB-NO = VHSR03IW.JOB-NO;
+                            VHSR03A_CRIT.SUB-JOB-DOC-NO = VHSR03IW.SUB-JOB-DOC-NO;
+                            try
+                                call "VHSR03A"(XDCONTROL, VHSR03A_CRIT, VHSR03A_DATA);
+                            
+                            end
+                            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                                VHSR03IW.PREV-ROW-COUNT = XDCONTROL.UROWCNT;
+                                LOAD-PREV-DATA = "Y";
+                                VHSR03IW.NEXT-ROW-COUNT = XDCONTROL.UROWCNT + 1;
+                                LOAD-NEXT-DATA = "Y";
+                                
+
+                
+                                VHSR09A_CRIT.JOB-NO = VHSR03IW.JOB-NO;
+                                VHSR09A_CRIT.SUB-JOB-DOC-NO = VHSR03IW.SUB-JOB-DOC-NO;
+                                try
+                                    call "VHSR09A"(XDCONTROL, VHSR09A_CRIT, VHSR09A_DATA_01, VHSR09A_DATA_02);
+                                
+                                end
+                                if ((XDCONTROL.URC == 0 || XDCONTROL.URC == 4) &&
+                                 XDCONTROL.UROWCNT > 0)
+                                    ENABLE-CLOSEJOB = "Y";
+                                    DISABLE-JOBLIST = "Y";
+                                else
+                                    if (XDCONTROL.URC == 100 && XDCONTROL.UROWCNT == 0)
+                                        VHSR03IW.FINAL-MESSAGE = "Repair Details required to Close this job.";
+                                        DISABLE-CLOSEJOB = "Y";
+                                        DISABLE-JOBLIST = "Y";
+                                    else
+                                        DISABLE-CLOSEJOB = "Y";
+                                        DISABLE-JOBLIST = "Y";
+                                        VHSR03IW.FINAL-MESSAGE = "Database error. Further Processing stopped.";
+                                        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                                        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                                        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                                        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                                        return;
+                                    end
+                                end
+                                ENABLE-ADDLABOR = "Y";
+                                ENABLE-COMMENTS = "Y";
+                                EXECUTE-PRVNXT = "Y";
+                                DETAILS1-SETFOCUS = "Y";
+                                DISABLE-JOBLIST = "Y";
+                            else
+                                if (XDCONTROL.URC == 100)
+                                    VHSR03IW.PREV-ROW-COUNT = 0;
+                                    LOAD-PREV-DATA = "Y";
+                                    VHSR03IW.NEXT-ROW-COUNT = 1;
+                                    LOAD-NEXT-DATA = "Y";
+                                    DISABLE-CLOSEJOB = "Y";
+                                    DETAILS1-SETFOCUS = "Y";
+                                    ENABLE-ADDLABOR = "Y";
+                                    EXECUTE-PRVNXT = "Y";
+                                    DISABLE-JOBLIST = "Y";
+                                    ENABLE-COMMENTS = "Y";
+                                else
+                                    VHSR03IW.FINAL-MESSAGE = "Database error. Further Processing stopped.";
+                                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                                    return;
+                                end
+                            end
+                        else
+                            VHSR03IW.FINAL-MESSAGE-1 = "Job ";
+                            VHSR03IW.FINAL-MESSAGE-2 = VHSR03IW.JOB-NO;
+                            VHSR03IW.FINAL-MESSAGE-3 = "-";
+                            VHSR03IW.FINAL-MESSAGE-4 = VHSR03IW.SUB-JOB-DOC-NO;
+                            VHSR03IW.FINAL-MESSAGE-5 = " :- Not Out The Door.";
+                            VHSR03IS-AFT-CHKST();
+                            ENABLE-JOBLIST = "Y";
+                        end
+                    end
+                else
+                    VHSR03IW.FINAL-MESSAGE-1 = "Job ";
+                    VHSR03IW.FINAL-MESSAGE-2 = VHSR03IW.JOB-NO;
+                    VHSR03IW.FINAL-MESSAGE-3 = "-";
+                    VHSR03IW.FINAL-MESSAGE-4 = VHSR03IW.SUB-JOB-DOC-NO;
+                    VHSR03IW.FINAL-MESSAGE-5 = " does not exist.";
+                    VHSR03IS-AFT-CHKST();
+                    ENABLE-JOBLIST = "Y";
+                end
+            end
+        end
+    end
+end 
+
+Function VHSR03IS-VALIDATE () 
+    VHSR03IW.SHIFT-ERR-IND = "N";
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    if (ERROR-COUNT == 6)
+        LOOP-INDEX = 101;
+        return;
+    end
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    if (ERROR-COUNT == 6)
+        LOOP-INDEX = 101;
+        return;
+    end
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    if (ERROR-COUNT == 6)
+        LOOP-INDEX = 101;
+        return;
+    end
+    if (ERROR-COUNT < 6)
+        if (VHSR03A_DATA-X.EMPL-NO[LOOP-INDEX] == " ")
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR03IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+            VHSR03IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+            VHSR03IW.ERROR-MSG-3[ERROR-COUNT] = " - Empl No required.";
+        else
+            if (VHSR03A_DATA-X.EMPL-NO[LOOP-INDEX] not numeric)
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR03IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+                VHSR03IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+                VHSR03IW.ERROR-MSG-3[ERROR-COUNT] = " - Empl No not numeric.";
+            end
+        end
+    end
+    if (ERROR-COUNT == 6)
+        LOOP-INDEX = 101;
+        return;
+    end
+    if (ERROR-COUNT < 6)
+        if (VHSR03A_DATA-X.REPR-LABOR-HRS[LOOP-INDEX] <= 0.0)
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR03IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+            VHSR03IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+            VHSR03IW.ERROR-MSG-3[ERROR-COUNT] = " - Labor Hrs required.";
+        else
+            if (VHSR03A_DATA-X.REPR-LABOR-HRS[LOOP-INDEX] > 99.9)
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR03IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+                VHSR03IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+                VHSR03IW.ERROR-MSG-3[ERROR-COUNT] = " - Labor Hrs can not exceed 99:9.";
+            end
+        end
+    end
+    if (ERROR-COUNT == 6)
+        LOOP-INDEX = 101;
+        return;
+    end
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    if (ERROR-COUNT == 6)
+        LOOP-INDEX = 101;
+        return;
+    end
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    if (ERROR-COUNT == 6)
+        LOOP-INDEX = 101;
+    end
+end 
+
+Function VHSR04IS-CLEAR () 
+    VHSR04IS-CLR-FLDS();
+    VHSR04IW.FINAL-MESSAGE = " ";
+    VHSR04IW.JOB-NO = " ";
+    VHSR04IW.SUB-JOB-DOC-NO = 1;
+    ENABLE-LIST = "Y";
+    DISABLE-DETAILS = "Y";
+    DISABLE-UPDATE = "Y";
+    JOBNO-SETFOCUS = "Y";
+end 
+
+Function VHSR04IS-CLR-AFTDB () 
+    VHSR04IS-CLR-FLDS();
+    VHSR04IW.JOB-NO = " ";
+    VHSR04IW.SUB-JOB-DOC-NO = 1;
+    ENABLE-LIST = "Y";
+    DISABLE-DETAILS = "Y";
+    DISABLE-UPDATE = "Y";
+    JOBNO-SETFOCUS = "Y";
+end 
+
+Function VHSR04IS-CLR-FLDS () 
+    VHSR04IW.SUB-JOB-STAT = " ";
+    VHSR04IW.DATE-OUT = " ";
+    VHSR04IW.CNT-CMPNTS-OUT = 0;
+    VHSR04IW.CNT-CMPNTS-SCRAPPD = 0;
+    VHSR04IW.CMPNT-FAULT-CD = " ";
+    VHSR04IW.DIAG-WORK-TYPE = " ";
+    VHSR04IW.QA-INSPECT-ID = " ";
+    VHSR04IW.TOGGLE-LONGTERM = 0;
+    VHSR04IW.TOGGLE-VENDORID = 0;
+    VHSR04IW.VENDOR-ID = " ";
+    VHSR04IW.TOGGLE-DEF = 0;
+    VHSR04IW.TOGGLE-AWP = 0;
+end 
+
+Function VHSR04IS-DATE-CHK () 
+    if ((VHSR04IW.DATE-OUT-YYYY > VHSR04IW.SYSTEM-DATE-YYYY) ||
+     (VHSR04IW.DATE-OUT-YYYY == VHSR04IW.SYSTEM-DATE-YYYY &&
+     VHSR04IW.DATE-OUT-MM > VHSR04IW.SYSTEM-DATE-MM) ||
+     (VHSR04IW.DATE-OUT-YYYY == VHSR04IW.SYSTEM-DATE-YYYY &&
+     VHSR04IW.DATE-OUT-MM == VHSR04IW.SYSTEM-DATE-MM &&
+     VHSR04IW.DATE-OUT-DD > VHSR04IW.SYSTEM-DATE-DD))
+        ERROR-COUNT = ERROR-COUNT + 1;
+        VHSR04IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Future Date not allowed.";
+        INVALID-FUTURE-DATE = "Y";
+    else
+        if ((VHSR04IW.DATE-OUT-YYYY < VHSR02E_DATA.DATE-IN-YYYY) ||
+         (VHSR04IW.DATE-OUT-YYYY == VHSR02E_DATA.DATE-IN-YYYY &&
+         VHSR04IW.DATE-OUT-MM < VHSR02E_DATA.DATE-IN-MM) ||
+         (VHSR04IW.DATE-OUT-YYYY == VHSR02E_DATA.DATE-IN-YYYY &&
+         VHSR04IW.DATE-OUT-MM == VHSR02E_DATA.DATE-IN-MM &&
+         VHSR04IW.DATE-OUT-DD < VHSR02E_DATA.DATE-IN-DD))
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR04IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Date older than Date In.";
+            INVALID-GR-DATE = "Y";
+        end
+    end
+end 
+
+Function VHSR04IS-DB-STORE () 
+    VHSR04B_CRIT.JOB-NO = VHSR04IW.JOB-NO;
+    VHSR04B_CRIT.SUB-JOB-DOC-NO = VHSR04IW.SUB-JOB-DOC-NO;
+    VHSR04B_DATA.DATE-OUT = VHSR04IW.DATE-OUT;
+    VHSR04B_DATA.CNT-CMPNTS-OUT = VHSR04IW.CNT-CMPNTS-OUT;
+    VHSR04B_DATA.CNT-CMPNTS-SCRAPPD = VHSR04IW.CNT-CMPNTS-SCRAPPD;
+    VHSR04B_DATA.CMPNT-FAULT-CD = VHSR04IW.CMPNT-FAULT-CD;
+    VHSR04B_DATA.DIAG-WORK-TYPE = VHSR04IW.DIAG-WORK-TYPE;
+    VHSR04B_DATA.QA-INSPECT-ID = VHSR04IW.QA-INSPECT-ID;
+    VHSR04B_DATA.USER-GRP = VHSR04IW-PASSVALUE.USER-GRP;
+    VHSR04B_DATA.TERM-LAST-UPD = VHSR04IW-PASSVALUE.TERM-LAST-UPD;
+    if (VHSR04IW.TOGGLE-LONGTERM == 1) 
+        VHSR04B_DATA.LONG-TERM-STOR-IND = "Y";
+        VHSR04B_DATA.VENDOR-ID = VHSR02E_DATA.VENDOR-ID;
+        VHSR04B_DATA.SUB-JOB-STAT = "REP";
+    else
+        if (VHSR04IW.TOGGLE-VENDORID == 1) 
+            VHSR04B_DATA.LONG-TERM-STOR-IND = VHSR02E_DATA.LONG-TERM-STOR-IND;
+            VHSR04B_DATA.VENDOR-ID = VHSR04IW.VENDOR-ID;
+            VHSR04B_DATA.SUB-JOB-STAT = "OTV";
+        else
+            if (VHSR04IW.TOGGLE-DEF == 1) 
+                VHSR04B_DATA.LONG-TERM-STOR-IND = VHSR02E_DATA.LONG-TERM-STOR-IND;
+                VHSR04B_DATA.VENDOR-ID = VHSR02E_DATA.VENDOR-ID;
+                VHSR04B_DATA.SUB-JOB-STAT = "DEF";
+            else
+                if (VHSR04IW.TOGGLE-AWP == 1) 
+                    VHSR04B_DATA.LONG-TERM-STOR-IND = VHSR02E_DATA.LONG-TERM-STOR-IND;
+                    VHSR04B_DATA.VENDOR-ID = VHSR02E_DATA.VENDOR-ID;
+                    VHSR04B_DATA.SUB-JOB-STAT = "NWP";
+                else
+                    VHSR04B_DATA.LONG-TERM-STOR-IND = VHSR02E_DATA.LONG-TERM-STOR-IND;
+                    VHSR04B_DATA.VENDOR-ID = VHSR02E_DATA.VENDOR-ID;
+                    VHSR04B_DATA.SUB-JOB-STAT = "REP";
+                end
+            end
+        end
+    end
+    try
+        call "VHSR04B"(XDCONTROL, VHSR04B_CRIT, VHSR04B_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHSR04IW.FINAL-MESSAGE-1 = "Sub Job ";
+        VHSR04IW.FINAL-MESSAGE-2 = VHSR04IW.JOB-NO;
+        VHSR04IW.FINAL-MESSAGE-3 = " - ";
+        VHSR04IW.FINAL-MESSAGE-4 = VHSR04IW.SUB-JOB-DOC-NO;
+  
+        VHSR04IW.FINAL-MESSAGE-5 = " has been successfully logged Out The Door ";
+  
+  
+  
+  
+        if (VHSR04B_DATA.SUB-JOB-STAT == "DEF")
+            VHSR04IW.FINAL-MESSAGE-6 = " with a Deferred status.";
+        else
+            if (VHSR04B_DATA.SUB-JOB-STAT == "NWP")
+                VHSR04IW.FINAL-MESSAGE-6 = " with a Awaiting Parts status.";
+            else
+                VHSR04IW.FINAL-MESSAGE-6 = " ";
+            end
+        end
+        VHSR04IS-CLR-AFTDB(); 
+                                   
+    else
+        VHSR04IW.FINAL-MESSAGE = "Database error. Job not updated.";
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+    end
+end 
+
+Function VHSR04IS-INIT () 
+    set VHSR04IW empty;
+    VHSR04IW.SUB-JOB-DOC-NO = 1;
+    VHSR04IW.SYSTEM-DATE = VGVar.currentFormattedGregorianDate;
+    VHSR04IW.FINAL-MESSAGE = " ";
+    VHSR04IW.DATE-OUT = " ";
+
+  
+    try
+        call "VHSRWT"(XDCONTROL, VHSRWT_DATA);
+    
+    end
+    if (XDCONTROL.UROWCNT > 0)
+        VHSR04IW.WORKTYPE-COUNT = XDCONTROL.UROWCNT;
+    else
+        VHSR04IW.WORKTYPE-COUNT = 0;
+    end
+    LOAD-WORKTYPE = "Y";
+
+
+  
+    try
+        call "VHSR04A"(XDCONTROL, VHSR04A_DATA);
+    
+    end
+    if (XDCONTROL.UROWCNT > 0)
+        VHSR04IW.CMPNTFAULTCD-COUNT = XDCONTROL.UROWCNT;
+    else
+        VHSR04IW.CMPNTFAULTCD-COUNT = 0;
+    end
+    LOAD-CMPNTFAULTCD = "Y";
+    DISABLE-DETAILS = "Y";
+    DISABLE-UPDATE = "Y";
+    VENDORID-HIDE = "Y";
+    ENABLE-LIST = "Y";
+    JOBNO-SETFOCUS = "Y";
+end 
+
+Function VHSR04IS-MOVE-MSG () 
+    VHSR04IW.ERROR-LOOP-INDEX = 1;
+    VHSR04IW.FINAL-INDEX = 0;
+    VHSR04IW.FINAL-ERROR-MSG = " ";
+    VHSR04IW.TEMP-ERROR-MSG = " ";
+    if (ERROR-COUNT > 0)
+        while (((ERROR-LOOP-INDEX <= 8) &&
+         (ERROR-MESSAGE-OCCR[ERROR-LOOP-INDEX] != " ")))
+            ERROR-COUNT = 1;
+            TEMP-ERROR-MSG = ERROR-MESSAGE-OCCR[ERROR-LOOP-INDEX];
+            while ((ERROR-COUNT <= 30))
+                if (TEMP-MSG[ERROR-COUNT] != ".")
+                    FINAL-INDEX = FINAL-INDEX + 1;
+                    FINAL-MSG[FINAL-INDEX] = TEMP-MSG[ERROR-COUNT];
+                else
+                    if (TEMP-MSG[ERROR-COUNT] == ".")
+                        FINAL-INDEX = FINAL-INDEX + 1;
+                        FINAL-MSG[FINAL-INDEX] = ",";
+                        FINAL-INDEX = FINAL-INDEX + 1;
+                        FINAL-MSG[FINAL-INDEX] = " ";
+                        ERROR-COUNT = 30;
+                    end
+                end
+                ERROR-COUNT = ERROR-COUNT + 1;
+            end
+            ERROR-LOOP-INDEX = ERROR-LOOP-INDEX + 1;
+        end
+        FINAL-INDEX = FINAL-INDEX - 1;
+        FINAL-MSG[FINAL-INDEX] = " ";
+        VHSR04IW.FINAL-MESSAGE = FINAL-ERROR-MSG;
+        EXECUTE-SETFOCUS = "Y";
+    end
+end 
+
+Function VHSR04IS-MOVE-VAL () 
+    VHSR04IW.SUB-JOB-STAT = VHSR02E_DATA.SUB-JOB-STAT;
+    VHSR04IW.DATE-OUT = VGVar.currentFormattedGregorianDate;
+    VHSR04IW.CNT-CMPNTS-OUT = 1;
+    VHSR04IW.CNT-CMPNTS-SCRAPPD = 0;
+    VHSR04IW.CMPNT-FAULT-CD = " ";
+    VHSR04IW.DIAG-WORK-TYPE = " ";
+    VHSR04IW.QA-INSPECT-ID = " ";
+    VHSR04IW.TOGGLE-LONGTERM = 0;
+    VHSR04IW.TOGGLE-VENDORID = 0;
+    VHSR04IW.VENDOR-ID = " ";
+    VENDORID-HIDE = "Y";
+end 
+
+Function VHSR04IS-RET-DATA () 
+    VHSR04IW.FINAL-MESSAGE = " ";
+    if (VHSR04IW.JOB-NO == " " &&
+     VHSR04IW.SUB-JOB-DOC-NO > 0)
+        VHSR04IW.FINAL-MESSAGE = "Job No required.";
+        JOBNO-SETFOCUS = "Y";
+    else
+        if (VHSR04IW.JOB-NO != " " &&
+         VHSR04IW.SUB-JOB-DOC-NO == 0)
+            VHSR04IW.FINAL-MESSAGE = "Doc No required.";
+            DOCNO-SETFOCUS = "Y";
+        else
+            if (VHSR04IW.JOB-NO == " " &&
+             VHSR04IW.SUB-JOB-DOC-NO == 0)
+                VHSR04IW.FINAL-MESSAGE = "Job & Doc No required.";
+                JOBNO-SETFOCUS = "Y";
+            else
+                VHSR02E_CRIT.JOB-NO = VHSR04IW.JOB-NO;
+                VHSR02E_CRIT.SUB-JOB-DOC-NO = VHSR04IW.SUB-JOB-DOC-NO;
+                try
+                    call "VHSR02E"(XDCONTROL, VHSR02E_CRIT, VHSR02E_DATA);
+                
+                end
+                if (XDCONTROL.UROWCNT == 1)
+                    if (VHSR02E_DATA.SUB-JOB-STAT == "CLO")
+                        DISABLE-UPDATE = "Y";
+                        DISABLE-DETAILS = "Y";
+                        ENABLE-LIST = "Y";
+                        VHSR04IW.FINAL-MESSAGE = "Sub Job closed.";
+                        VHSR04IS-CLR-FLDS();
+                        JOBNO-SETFOCUS = "Y";
+                    else
+                        if (VHSR02E_DATA.SUB-JOB-STAT == "REP")
+                            DISABLE-UPDATE = "Y";
+                            DISABLE-DETAILS = "Y";
+                            ENABLE-LIST = "Y";
+                            VHSR04IW.FINAL-MESSAGE = "Sub Job already Repaired.";
+                            VHSR04IS-CLR-FLDS();
+                            JOBNO-SETFOCUS = "Y";
+                        else
+                            if (VHSR02E_DATA.SUB-JOB-STAT == "DEF")
+                                DISABLE-UPDATE = "Y";
+                                DISABLE-DETAILS = "Y";
+                                ENABLE-LIST = "Y";
+                                VHSR04IW.FINAL-MESSAGE = "Sub Job already Deferred.";
+                                VHSR04IS-CLR-FLDS();
+                                JOBNO-SETFOCUS = "Y";
+                            else
+                                if (VHSR02E_DATA.SUB-JOB-STAT == "NWP")
+                                    DISABLE-UPDATE = "Y";
+                                    DISABLE-DETAILS = "Y";
+                                    ENABLE-LIST = "Y";
+                                    VHSR04IW.FINAL-MESSAGE = "Sub Job already Awaiting Parts.";
+                                    VHSR04IS-CLR-FLDS();
+                                    JOBNO-SETFOCUS = "Y";
+                                else
+                                    if (VHSR02E_DATA.SUB-JOB-STAT == "OTV")
+                                        DISABLE-UPDATE = "Y";
+                                        DISABLE-DETAILS = "Y";
+                                        ENABLE-LIST = "Y";
+                                        VHSR04IW.FINAL-MESSAGE = "Sub Job already Out To Vendor.";
+                                        VHSR04IS-CLR-FLDS();
+                                        JOBNO-SETFOCUS = "Y";
+                                    else
+                                        if (VHSR02E_DATA.SUB-JOB-STAT == "OPN")
+                                            ENABLE-UPDATE = "Y";
+                                            ENABLE-DETAILS = "Y";
+                                            DISABLE-LIST = "Y";
+                                            VHSR04IS-MOVE-VAL(); 
+                                   
+                                            DATEOUT-SETFOCUS = "Y";
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                else
+                    DISABLE-UPDATE = "Y";
+                    DISABLE-DETAILS = "Y";
+                    ENABLE-LIST = "Y";
+                    VHSR04IW.FINAL-MESSAGE = "Sub Job does not exist in the database.";
+                    VHSR04IS-CLR-FLDS();
+                    JOBNO-SETFOCUS = "Y";
+                end
+            end
+        end
+    end
+end 
+
+Function VHSR04IS-SETFOCUS () 
+    if (INVALID-DATE-OUT == "Y" || INVALID-GR-DATE == "Y" ||
+     INVALID-FUTURE-DATE == "Y")
+        DATEOUT-SETFOCUS = "Y";
+    else
+        if (INVALID-QTY-OUT == "Y")
+            QTYOUT-SETFOCUS = "Y";
+        else
+            if (INVALID-QTY-SCRAPPD == "Y")
+                QTYSCRAPPD-SETFOCUS = "Y";
+            else
+                if (INVALID-FAULT-CD == "Y")
+                    FAULTCD-SETFOCUS = "Y";
+                else
+                    if (INVALID-DIAG-WORK-TYPE == "Y")
+                        DIAGWORKTYPE-SETFOCUS = "Y";
+                    else
+                        if (INVALID-SELECTION == "Y")
+                            LONGTERM-SETFOCUS = "Y";
+                        else
+                            if (INVALID-VENDOR-ID == "Y")
+                                VENDORID-SETFOCUS = "Y";
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end 
+
+Function VHSR04IS-TOGGLE-1 () 
+    if (TOGGLE-LONGTERM == 1)
+        TOGGLE-VENDORID = 0;
+        TOGGLE-DEF = 0;
+        TOGGLE-AWP = 0;
+        VHSR04IW.VENDOR-ID = " ";
+        VENDORID-HIDE = "Y";
+    end
+end 
+
+Function VHSR04IS-TOGGLE-2 () 
+    if (TOGGLE-VENDORID == 1)
+        TOGGLE-LONGTERM = 0;
+        TOGGLE-DEF = 0;
+        TOGGLE-AWP = 0;
+        VENDORID-SHOW = "Y";
+        VENDORID-SETFOCUS = "Y";
+    else
+        VENDORID-HIDE = "Y";
+    end
+end 
+
+Function VHSR04IS-TOGGLE-3 () 
+    if (TOGGLE-DEF == 1)
+        TOGGLE-VENDORID = 0;
+        TOGGLE-LONGTERM = 0;
+        TOGGLE-AWP = 0;
+        VHSR04IW.VENDOR-ID = " ";
+        VENDORID-HIDE = "Y";
+    end
+end 
+
+Function VHSR04IS-TOGGLE-4 () 
+    if (TOGGLE-AWP == 1)
+        TOGGLE-LONGTERM = 0;
+        TOGGLE-VENDORID = 0;
+        TOGGLE-DEF = 0;
+        VHSR04IW.VENDOR-ID = " ";
+        VENDORID-HIDE = "Y";
+    end
+end 
+
+Function VHSR04IS-UPDATE () 
+    VHSR04IW.FINAL-MESSAGE = " ";
+    VHSR04IW.ERROR-MESSAGE = " ";
+    INVALID-DIAG-WORK-TYPE = "N";
+    INVALID-FAULT-CD = "N";
+    INVALID-QTY-OUT = "N";
+    INVALID-QTY-SCRAPPD = "N";
+    INVALID-DATE-OUT = "N";
+    INVALID-GR-DATE = "N";
+    INVALID-FUTURE-DATE = "N";
+    INVALID-SELECTION = "N";
+    INVALID-VENDOR-ID = "N";
+    VHSR04IW.ERROR-COUNT = 0;
+    VHSR04IW.TEMP-CNT = 0;
+    if (VHSR04IW.DATE-OUT == " ")
+        ERROR-COUNT = ERROR-COUNT + 1;
+        VHSR04IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Date.";
+        INVALID-DATE-OUT = "Y";
+    else
+        if (VHSR04IW.DATE-OUT != " ")
+            AFCXVLD_CRIT.FORM-DATE = VHSR04IW.DATE-OUT;
+            MRSCommonCode.AFCXVLD-VALIDATE();
+            if (AFCXVLDW.INCORRECT-DATE == "Y")
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR04IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Date.";
+                VHSR04IW.INVALID-DATE-OUT = "Y";
+            else
+                if (AFCXVLDW.SQL-ERROR == "Y")
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                    return;
+                else
+                    if (AFCXVLDW.NO-ERROR == "Y")
+                        VHSR04IS-DATE-CHK();
+                    end
+                end
+            end
+        end
+    end
+    if (VHSR04IW.CNT-CMPNTS-OUT < 0)
+        ERROR-COUNT = ERROR-COUNT + 1;
+        VHSR04IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Qty Out must be >= 0.";
+        INVALID-QTY-OUT = "Y";
+    else
+        if (VHSR04IW.CNT-CMPNTS-SCRAPPD < 0)
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR04IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Qty Scrapped must be >= 0.";
+            INVALID-QTY-SCRAPPD = "Y";
+        else
+            VHSR04IW.TEMP-CNT = VHSR04IW.CNT-CMPNTS-OUT + VHSR04IW.CNT-CMPNTS-SCRAPPD;
+            if (VHSR04IW.TEMP-CNT != VHSR02E_DATA.CNT-CMPNTS-IN)
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR04IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "QtyOut + QtyScrapped = QtyIn";
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR04IW-X.CNT-CMPNTS-IN = VHSR02E_DATA.CNT-CMPNTS-IN;
+                VHSR04IW-X.CNT-CMPNT-IN-X = VHSR04IW-X.CNT-CMPNTS-IN;
+                VHSR04IW-X.MSG-X-2 = VHSR04IW-X.CNT-CMPNT-IN-X;
+                VHSR04IW-X.MSG-X-1 = "QtyIn = ";
+                VHSR04IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = VHSR04IW-X.MESSAGE-X;
+                INVALID-QTY-OUT = "Y";
+            end
+        end
+    end
+    if (VHSR04IW.CMPNT-FAULT-CD == " ")
+        ERROR-COUNT = ERROR-COUNT + 1;
+        VHSR04IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Fault Cd.";
+        INVALID-FAULT-CD = "Y";
+    else
+        if (VHSR04IW.CMPNT-FAULT-CD in VHSR04A_DATA.CMPNT-FAULT-CD)
+
+        else
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR04IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Fault Cd.";
+            INVALID-FAULT-CD = "Y";
+        end
+    end
+    if (VHSR04IW.DIAG-WORK-TYPE == " ")
+        ERROR-COUNT = ERROR-COUNT + 1;
+        VHSR04IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Diag Work Type.";
+        INVALID-DIAG-WORK-TYPE = "Y";
+    else
+        if (VHSR04IW.DIAG-WORK-TYPE in VHSRWT_DATA.WORK-TYPE)
+
+        else
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR04IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Diag Work Type.";
+            INVALID-DIAG-WORK-TYPE = "Y";
+        end
+    end
+    if (VHSR04IW.TOGGLE-LONGTERM == 0 &&
+     VHSR04IW.TOGGLE-VENDORID == 0)
+  
+  
+  
+
+    else
+        if (VHSR04IW.TOGGLE-VENDORID == 1 && VHSR04IW.VENDOR-ID == " ")
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR04IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Vendor Id required.";
+            INVALID-VENDOR-ID = "Y";
+        end
+    end
+    if (ERROR-COUNT > 0)
+    
+        VHSR04IS-MOVE-MSG();
+    else
+    
+        VHSR04IS-DB-STORE();
+    end
+end 
+
+
+
+Function VHSR05IS-CLEAR () 
+    set VHSR05A_DATA empty;
+    set VHSR05B_DATA empty;
+    set VHSR05IW empty;
+    VHSR05IW-TRIGGER.LOAD-DATA = "Y";
+    VHSR05IW-TRIGGER.INIT-STAT = "Y";
+    VHSR05IW-TRIGGER.INT-LONG-TERM-STOR = "Y";
+    VHSR05IW-TRIGGER.DISABLE-PRINT = "Y";
+    VHSR05IW.ROW-COUNT = 0;
+end 
+
+
+
+Function VHSR05IS-CLEAR-X () 
+    set VHSR05A_DATA empty;
+    set VHSR05B_DATA empty;
+    set VHSR05IW empty;
+    VHSR05IW-TRIGGER.LOAD-DATA = "Y";
+    VHSR05IW-TRIGGER.INIT-STAT = "Y";
+    VHSR05IW-TRIGGER.INT-LONG-TERM-STOR = "Y";
+    VHSR05IW-TRIGGER.DISABLE-PRINT = "Y";
+end 
+
+Function VHSR05IS-DETAIL () 
+    VHSR05IW.REPORT-TYPE = "D";
+    VHSR05IW-TRIGGER.OPEN-GUI = "Y";
+end 
+
+Function VHSR05IS-HISTORY () 
+    VHSR05IW-PASSVALUE.JOB-NO = VHSR05A_DATA.JOB-NO[SEL-IDX];
+    VHSR05IW-TRIGGER.OPEN-HIST = "Y";
+end 
+
+
+
+Function VHSR05IS-LIST () 
+    VHSR05IW.SEL-IDX = 0;
+    VHSR05IW.ROW-COUNT = 0;
+    VHSR05IS-VAL-STOCK();
+    if (STOCK-IS-VALID == "Y")
+        VHSR05IS-VAL-OTHER();
+        if (OTHER-IS-VALID == "Y")
+            VHSR05A_CRIT.STOCK-NO = VHSR05IW.STOCK-NO;
+            VHSR05A_CRIT.SER-NO = VHSR05IW.SER-NO;
+            VHSR05A_CRIT.SUB-JOB-STAT = VHSR05IW.SUB-JOB-STATUS;
+            VHSR05A_CRIT.LONG-TERM-STOR-IND = VHSR05IW.LONG-TERM-STORAGE;
+            set VHSR05A_DATA empty;
+            VHSR05IW-TRIGGER.LOAD-DATA = "N";
+            try
+                call "VHSR05A"(XDCONTROL, VHSR05A_CRIT, VHSR05A_DATA);
+            
+            end
+            if ((XDCONTROL.URC == 0 || XDCONTROL.URC == 4))
+                VHSR05IW.ROW-COUNT = XDCONTROL.UROWCNT;
+                if (XDCONTROL.UROWCNT >= 200)
+                    VHSR05IW.FINAL-MESSAGE = "ONLY FIRST 200 ROWS WILL BE DISPLAYED";
+                end
+                LOAD-DATA = "Y";
+                ENABLE-PRINT = "Y";
+            else
+                if (XDCONTROL.URC == 100)
+                    VHSR05IW.FINAL-MESSAGE = "No information was found for this selection";
+                    VHSR05IW.ROW-COUNT = 0;
+                    STOCKNO-SETFOCUS = "Y";
+                    DISABLE-PRINT = "Y";
+                else
+                    VHSR05IW.FINAL-MESSAGE = "SQL ERROR";
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end
+            end
+        else
+            set VHSR05A_DATA empty;
+            VHSR05IW-TRIGGER.LOAD-DATA = "N";
+        end
+    else
+        set VHSR05A_DATA empty;
+        VHSR05IW-TRIGGER.LOAD-DATA = "N";
+    end
+end 
+
+
+
+Function VHSR05IS-PRINT ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   
+
+end 
+
+
+
+Function VHSR05IS-STAT-LOAD () 
+    try
+        call "VHSR05C"(XDCONTROL, VHSR05C_CRIT, VHSR05C_DATA);
+    
+    end
+    if ((XDCONTROL.URC == 0 || XDCONTROL.URC == 4))
+        LOAD-STAT = "Y";
+    else
+        if (XDCONTROL.URC == 100)
+            VHSR05IW.FINAL-MESSAGE = "Sub Job Status is not exist";
+        else
+            VHSR05IW.FINAL-MESSAGE = "SQL ERROR";
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHSR05IS-SUMMARY () 
+    VHSR05IW.REPORT-TYPE = "S";
+    VHSR05IW-TRIGGER.OPEN-GUI = "Y";
+end 
+
+
+
+Function VHSR05IS-VAL-OTHER () 
+    VHSR05IW.FINAL-MESSAGE = " ";
+    VHSR05IW.ROW-COUNT = 0;
+    OTHER-IS-VALID = "N";
+    if (VHSR05IW.SUB-JOB-STATUS == " " ||
+     VHSR05IW.SUB-JOB-STATUS in VHSR05C_DATA.SUB-JOB-STAT)
+        if (VHSR05IW.LONG-TERM-STORAGE == " " || VHSR05IW.LONG-TERM-STORAGE == "Y" || VHSR05IW.LONG-TERM-STORAGE == "N")
+            OTHER-IS-VALID = "Y";
+        else
+            VHSR05IW.FINAL-MESSAGE = "INVALID LONG TERM STORAGE";
+            VHSR05IW-TRIGGER.DISABLE-PRINT = "Y";
+        end
+    else
+        VHSR05IW.FINAL-MESSAGE = "INVALID SUB JOB STATUS";
+        VHSR05IW-TRIGGER.DISABLE-PRINT = "Y";
+    end
+end 
+
+
+
+Function VHSR05IS-VAL-STOCK () 
+    VHSR05IW.FINAL-MESSAGE = " ";
+    STOCK-IS-VALID = "N";
+    if (VHSR05IW.STOCK-NO == " ")
+        VHSR05IW.FINAL-MESSAGE = "Please Enter Stork Number";
+        STOCKNO-SETFOCUS = "Y";
+        VHSR05IW-TRIGGER.DISABLE-PRINT = "Y";
+    else
+        VHSR05B_CRIT.STOCK-NO = VHSR05IW.STOCK-NO;
+        try
+            call "VHSR05B"(XDCONTROL, VHSR05B_CRIT, VHSR05B_DATA);
+        
+        end
+        if ((XDCONTROL.URC == 0 || XDCONTROL.URC == 4))
+            STOCK-IS-VALID = "Y";
+        else
+            if (XDCONTROL.URC == 100)
+                VHSR05IW.FINAL-MESSAGE = "Stock Number does not exist";
+                STOCKNO-SETFOCUS = "Y";
+                VHSR05IW-TRIGGER.DISABLE-PRINT = "Y";
+            else
+                VHSR05IW.FINAL-MESSAGE = "SQL ERROR";
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end
+    end
+end 
+
+Function VHSR08IS-AFT-NARR () 
+    VHSR08IW.NARR-COUNT = 0;
+    VHSR08IW.BUTTON-CLICK = " ";
+    VHSR08IW.FINAL-MESSAGE = " ";
+    if (VHSR08IW.REFRESH-GUI == "Y")
+        if (VHSR08IW.SELECTION-INDEX > 0)
+            VHSR08IW.SUB-JOB-DOC-NO = VHSR08A_DATA.SUB-JOB-DOC-NO[SELECTION-INDEX];
+            VHSR08B_CRIT.JOB-NO = VHSR08IW.JOB-NO;
+            VHSR08B_CRIT.SUB-JOB-DOC-NO = VHSR08IW.SUB-JOB-DOC-NO;
+            try
+                call "VHSR08B"(XDCONTROL, VHSR08B_CRIT, VHSR08B_DATA);
+            
+            end
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                VHSR08IW.NARR-COUNT = XDCONTROL.UROWCNT;
+                VHSR08IS-MOVE-SUB(); 
+                EXECUTE-PRV-NXT = "Y";
+            else
+                if (XDCONTROL.URC == 100)
+                    VHSR08IW.NARR-COUNT = 0;
+                    NARR-INDEX = 0;
+                    VHSR08IW.NARR = " ";
+                    VHSR08IW.NARR-NO = 0;
+                    VHSR08IW.DATE-NARR = " ";
+                    VHSR08IW.TIME-NARR = " ";
+                    VHSR08IW.USER-GRP = " ";
+                    DISABLE-PRV = "Y";
+                    DISABLE-NXT = "Y";
+                end
+            end
+            DISABLE-JOBDETAILS = "Y";
+            ENABLE-COMMENTS = "Y";
+            DISABLE-CREATE = "Y";
+            COMMENTS-SETFOCUS = "Y";
+        end
+    end
+end 
+
+Function VHSR08IS-CLEAR () 
+    ENABLE-JOBDETAILS = "Y";
+    if (VHSR08IW-PASSVALUE.PARENT-GUI == "VHSR01I")
+        DISABLE-JOBNO = "Y";
+        VHSR08IS-CLR-FLDS();
+        VHSR08IW.SUB-JOB-DOC-NO = VHSR08IW.PREV-ACTIONS-COUNT + 1;
+        ENABLE-CREATE = "Y";
+    else
+        set VHSR08IW empty;
+        set VHSR08A_DATA empty;
+        VHSR08IW.PREV-ACTIONS-COUNT = 0;
+        VHSR08IW.DATE-IN = " ";
+        VHSR08IW.TIME-NARR = " ";
+        VHSR08IW.WORK-TYPE = "REPAIR";
+        ENABLE-JOBNO = "Y";
+        LOAD-PREV-ACTIONS = "Y";
+        DISABLE-CREATE = "Y";
+        ENABLE-NARR = "Y";
+        DISABLE-PRV = "Y";
+        DISABLE-NXT = "Y";
+        JOBNO-SETFOCUS = "Y";
+    end
+    VHSR08IW.FINAL-MESSAGE = " ";
+    VHSR08IW.SUB-JOB-STAT = "OPN";
+    DISABLE-COMMENTS = "Y";
+end 
+
+Function VHSR08IS-CLR-AFTDB () 
+    VHSR08IW.PREV-ACTIONS-COUNT = 0;
+    VHSR08A_CRIT.JOB-NO = VHSR08IW.JOB-NO;
+    try
+        call "VHSR08A"(XDCONTROL, VHSR08A_CRIT, VHSR08A_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHSR08IW.PREV-ACTIONS-COUNT = XDCONTROL.UROWCNT;
+        VHSR08IW.SUB-JOB-DOC-NO = XDCONTROL.UROWCNT + 1;
+        LOAD-PREV-ACTIONS = "Y";
+    else
+        return;
+    end
+    ENABLE-JOBDETAILS = "Y";
+    DISABLE-JOBNO = "Y";
+    VHSR08IW.WORK-TYPE = " ";
+    
+  
+    VHSR08IW.REPR-AREA = VHSR08A_DATA.REPR-AREA[UROWCNT];
+    VHSR08IW.DATE-IN = VGVar.currentFormattedGregorianDate;
+    VHSR08IW.CNT-CMPNTS-IN = 1;
+    VHSR08IW.STOCK-NO = " ";
+    VHSR08IW.SER-NO = " ";
+    VHSR08IW.NARR-NO = 1;
+    VHSR08IW.NARR = " ";
+    VHSR08IW.DATE-NARR = VGVar.currentFormattedGregorianDate;
+    VHSR08IW.TIME-NARR = VGVar.currentFormattedTime;
+    VHSR08IW.USER-GRP = VHSR08IW-PASSVALUE.USER-GRP;
+    ENABLE-NARR = "Y";
+    DISABLE-PRV = "Y";
+    DISABLE-NXT = "Y";
+    WORKTYPE-SETFOCUS = "Y";
+end 
+
+Function VHSR08IS-CLR-FLDS () 
+    VHSR08IW.WORK-TYPE = "REPAIR";
+    VHSR08IW.DATE-IN = VGVar.currentFormattedGregorianDate;
+    VHSR08IW.REPR-AREA = " ";
+    VHSR08IW.STOCK-NO = " ";
+    VHSR08IW.SER-NO = " ";
+    VHSR08IW.CNT-CMPNTS-IN = 1;
+    VHSR08IW.NARR = " ";
+    VHSR08IW.NARR-NO = 1;
+    VHSR08IW.DATE-NARR = VGVar.currentFormattedGregorianDate;
+    VHSR08IW.TIME-NARR = VGVar.currentFormattedTime;
+    VHSR08IW.USER-GRP = VHSR08IW-PASSVALUE.USER-GRP;
+    ENABLE-NARR = "Y";
+    DISABLE-PRV = "Y";
+    DISABLE-NXT = "Y";
+    WORKTYPE-SETFOCUS = "Y";
+end 
+
+Function VHSR08IS-COMMENTS () 
+    VHSR08IW-PASSVALUE.PARENT-GUI = "VHSR08I";
+end 
+
+Function VHSR08IS-CREATE () 
+    if (VHSR08IW.JOB-NO != " ")
+        VHSR08IW.FINAL-MESSAGE = " ";
+        VHSR08IW.ERROR-MESSAGE = " ";
+        VHSR08IW.SYSTEM-DATE = VGVar.currentFormattedGregorianDate;
+        INVALID-WORK-TYPE = "N";
+        INVALID-REPR-AREA = "N";
+        INVALID-STOCK-NO = "N";
+        INVALID-BATCH-QTY = "N";
+        INVALID-DATE-IN = "N";
+        INVALID-FUTURE-DATE = "N";
+        INVALID-OLD-DATE = "N";
+        VHSR08IW.ERROR-COUNT = 0;
+        VHSR08IW.TEMP-SUM = 0;
+        set VHSR01A_CRIT empty;
+        set VHSR01D_CRIT empty;
+        if (VHSR08IW.WORK-TYPE == " ")
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR08IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Work Type.";
+            INVALID-WORK-TYPE = "Y";
+        else
+            if (VHSR08IW.WORK-TYPE in VHSRWT_DATA.WORK-TYPE)
+
+            else
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR08IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Work Type.";
+                INVALID-WORK-TYPE = "Y";
+            end
+        end
+        if (VHSR08IW.DATE-IN == " ")
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR08IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Date.";
+            INVALID-DATE-IN = "Y";
+        else
+            if (VHSR08IW.DATE-IN != " ")
+                AFCXVLD_CRIT.FORM-DATE = VHSR08IW.DATE-IN;
+                MRSCommonCode.AFCXVLD-VALIDATE();
+                if (AFCXVLDW.INCORRECT-DATE == "Y")
+                    ERROR-COUNT = ERROR-COUNT + 1;
+                    VHSR08IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Date.";
+                    VHSR08IW.INVALID-DATE-IN = "Y";
+                else
+                    if (AFCXVLDW.SQL-ERROR == "Y")
+                        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                        return;
+                    else
+                        if (AFCXVLDW.NO-ERROR == "Y")
+                            XDATECON-W2.WS-GREG-IN-FLAG = "R";
+                            XDATECON-W2.WS-RPT-GREG-IN = VGVar.currentFormattedGregorianDate;
+                            MRSCommonCode.XDATECON-LOAD-TBL();
+                            MRSCommonCode.XDATECON-GREG2JUL();
+                            JULIAN-DATE-1 = XDATECON-W1.WS-DATES-CYDDD;
+                            XDATECON-W2.WS-GREG-IN-FLAG = "R";
+                            XDATECON-W2.WS-RPT-GREG-IN = VHSR08IW.DATE-IN;
+                            MRSCommonCode.XDATECON-LOAD-TBL();
+                            MRSCommonCode.XDATECON-GREG2JUL();
+                            JULIAN-DATE-2 = XDATECON-W1.WS-DATES-CYDDD;
+                            VHSR08IS-DATE-CHK();
+                        end
+                    end
+                end
+            end
+        end
+        if (VHSR08IW.REPR-AREA == " ")
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR08IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Repr Area.";
+            INVALID-REPR-AREA = "Y";
+        else
+            if (VHSR08IW.REPR-AREA in VHSRRA_DATA.REPR-AREA)
+
+            else
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR08IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Repr Area.";
+                INVALID-REPR-AREA = "Y";
+            end
+        end
+        if (VHSR08IW.STOCK-NO == " ")
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR08IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Stock No required.";
+            INVALID-STOCK-NO = "Y";
+        else
+     
+            VHSRVS_DATA.STOCK-NO = VHSR08IW.STOCK-NO;
+            try
+                call "VHSRVS"(XDCONTROL, VHSRVS_DATA);
+            
+            end
+            if (VHSRVS_DATA.RECORD-FOUND == "Y")
+
+            else
+                if (VHSRVS_DATA.RECORD-FOUND == "N")
+                    VHSR08IW.STOCKNO-COUNT = 0;
+                    ERROR-COUNT = ERROR-COUNT + 1;
+                    VHSR08IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Invalid Stock No.";
+                    INVALID-STOCK-NO = "Y";
+                else
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                    return;
+                end
+            end
+        end
+        if (INVALID-STOCK-NO == "N")
+            if (VHSR08IW.CNT-CMPNTS-IN < 1)
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR08IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Batch qty must be > 0.";
+                INVALID-BATCH-QTY = "Y";
+            else
+                if (VHSR08IW.STOCK-NO != " ")
+    
+                    VHSR01D_CRIT.STOCK-NO = VHSR08IW.STOCK-NO;
+                    try
+                        call "VHSR01D"(XDCONTROL, VHSR01D_CRIT);
+                    
+                    end
+                    if (VHSR01D_CRIT.ROW-COUNT >= 1)
+                        VHSR01A_CRIT.RET-IND = "BOTH";
+                    else
+                        VHSR01A_CRIT.RET-IND = " ";
+                    end
+      
+                    VHSR01A_CRIT.STOCK-NO = VHSR08IW.STOCK-NO;
+                    try
+                        call "VHSR01A"(XDCONTROL, VHSR01A_CRIT, VHSR01A_DATA);
+                    
+                    end
+                    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                        if (VHSR01A_DATA.CNT-THRESHOLD > 0)
+                            VHSR08IW.TEMP-SUM = VHSR01A_DATA.SUM-CNT-CMPNTS-IN + VHSR08IW.CNT-CMPNTS-IN;
+                            if (VHSR08IW.TEMP-SUM > VHSR01A_DATA.CNT-THRESHOLD)
+                                INVALID-BATCH-QTY = "Y";
+                            end
+                        else
+                            INVALID-BATCH-QTY = "N";
+                        end
+                    end
+                end
+            end
+        end
+        if (ERROR-COUNT > 0)
+    
+            VHSR08IS-MOVE-MSG();
+        else
+    
+            VHSR08IS-DB-STORE();
+        end
+    end
+end 
+
+Function VHSR08IS-DATE-CHK () 
+    if (JULIAN-DATE-1-CCYY == JULIAN-DATE-2-CCYY)
+        if (JULIAN-DATE-2-DDD > JULIAN-DATE-1-DDD)
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR08IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Future Date not allowed.";
+            INVALID-FUTURE-DATE = "Y";
+        else
+            JULIAN-DAYS-DIFF = JULIAN-DATE-1 - JULIAN-DATE-2;
+            if (JULIAN-DAYS-DIFF > 548) 
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR08IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Date too old (548 days).";
+                INVALID-OLD-DATE = "Y";
+            end
+        end
+    else
+        if (JULIAN-DATE-1-CCYY > JULIAN-DATE-2-CCYY)
+            JULIAN-DATE-YR-DIFF = JULIAN-DATE-1-CCYY - JULIAN-DATE-2-CCYY;
+        else
+            JULIAN-DATE-YR-DIFF = JULIAN-DATE-2-CCYY - JULIAN-DATE-1-CCYY;
+        end
+        if (JULIAN-DATE-YR-DIFF > 1)
+            ERROR-COUNT = ERROR-COUNT + 1;
+            VHSR08IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Date too old (548 days).";
+            INVALID-OLD-DATE = "Y";
+        else
+      
+            if (JULIAN-DATE-1-CCYY > JULIAN-DATE-2-CCYY)
+                JULIAN-DATE-QUOT = JULIAN-DATE-2-CCYY / 4;
+                JULIAN-DATE-REM = JULIAN-DATE-2-CCYY - (JULIAN-DATE-QUOT * 4);
+                if (JULIAN-DATE-REM > 0)
+                    JULIAN-DATE-1-DDD = JULIAN-DATE-1-DDD + 365;
+                else
+                    JULIAN-DATE-1-DDD = JULIAN-DATE-1-DDD + 366;
+                end
+                JULIAN-DAYS-DIFF = JULIAN-DATE-1-DDD - JULIAN-DATE-2-DDD;
+                if (JULIAN-DAYS-DIFF > 548) 
+                    ERROR-COUNT = ERROR-COUNT + 1;
+                    VHSR08IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Date too old (548 days).";
+                    INVALID-OLD-DATE = "Y";
+                end
+            else
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR08IW.ERROR-MESSAGE-OCCR[ERROR-COUNT] = "Future Date not allowed.";
+                INVALID-FUTURE-DATE = "Y";
+            end
+        end
+    end
+end 
+
+Function VHSR08IS-DB-STORE () 
+    VHSR08IW.FINAL-MESSAGE = " ";
+    VHSR08C_DATA.JOB-NO = VHSR08IW.JOB-NO;
+    VHSR08C_DATA.SUB-JOB-DOC-NO = VHSR08IW.SUB-JOB-DOC-NO;
+    VHSR08C_DATA.WORK-TYPE = VHSR08IW.WORK-TYPE;
+    VHSR08C_DATA.DATE-IN = VHSR08IW.DATE-IN;
+    VHSR08C_DATA.REPR-AREA = VHSR08IW.REPR-AREA;
+    VHSR08C_DATA.CNT-CMPNTS-IN = VHSR08IW.CNT-CMPNTS-IN;
+    VHSR08C_DATA.STOCK-NO = VHSR08IW.STOCK-NO;
+    VHSR08C_DATA.SER-NO = VHSR08IW.SER-NO;
+    VHSR08C_DATA.USER-GRP = VHSR08IW-PASSVALUE.USER-GRP;
+    VHSR08C_DATA.TERM-LAST-UPD = VHSR08IW-PASSVALUE.TERM-LAST-UPD;
+    VHSR08C_DATA.NARR = VHSR08IW.NARR;
+    try
+        call "VHSR08C"(XDCONTROL, VHSR08C_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHSR08IW.FINAL-MESSAGE-1 = "Doc No. ";
+        VHSR08IW.FINAL-MESSAGE-2 = VHSR08IW.SUB-JOB-DOC-NO;
+        VHSR08IW.FINAL-MESSAGE-3 = " for Job No. ";
+        VHSR08IW.FINAL-MESSAGE-4 = VHSR08IW.JOB-NO;
+        VHSR08IW.FINAL-MESSAGE-5 = " has been created.";
+        if (INVALID-BATCH-QTY == "Y")
+            VHSR08IW.FINAL-MESSAGE-6 = "  Warning :- Stock no. exceeds limit.";
+        else
+            VHSR08IW.FINAL-MESSAGE-6 = " ";
+        end
+        if (VHSR08IW-PASSVALUE.PARENT-GUI == "VHSR01I")
+
+        else
+            VHSR08IS-MOVE-JOBS();
+        end
+        VHSR08IS-CLR-AFTDB(); 
+                                   
+    else
+        VHSR08IW.FINAL-MESSAGE = "Database error. No doc created.";
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+    end
+end 
+
+Function VHSR08IS-INIT () 
+    ENABLE-JOBDETAILS = "Y";
+    DISABLE-PRV = "Y";
+    DISABLE-NXT = "Y";
+    ENABLE-NARR = "Y";
+    set VHSR08IW empty;
+    set VHSR08A_DATA empty;
+    VHSR08IW.PREV-ACTIONS-COUNT = 0;
+    VHSR08IW.DATE-IN = VGVar.currentFormattedGregorianDate;
+    VHSR08IW.TIME-NARR = " ";
+    VHSR08IW.FINAL-MESSAGE = " ";
+    VHSR08IW-PASSVALUE.JOB-INDICATOR = "JOB";
+    VHSR08IW.SUB-JOB-STAT = "OPN";
+
+  
+    try
+        call "VHSRWT"(XDCONTROL, VHSRWT_DATA);
+    
+    end
+    if (XDCONTROL.UROWCNT > 0)
+        VHSR08IW.WORKTYPE-COUNT = XDCONTROL.UROWCNT;
+    else
+        VHSR08IW.WORKTYPE-COUNT = 0;
+    end
+    LOAD-WORKTYPE = "Y";
+    VHSR08IW.WORK-TYPE = "REPAIR";
+
+  
+    try
+        call "VHSRRA"(XDCONTROL, VHSRRA_DATA);
+    
+    end
+    if (XDCONTROL.UROWCNT > 0)
+        VHSR08IW.REPRAREA-COUNT = XDCONTROL.UROWCNT;
+    else
+        VHSR08IW.REPRAREA-COUNT = 0;
+    end
+    LOAD-REPRAREA = "Y";
+    if (VHSR08IW-PASSVALUE.PARENT-GUI == "VHSR01I")
+        VHSR08IW.JOB-NO = VHSR08IW-PASSVALUE.JOB-NO;
+        DISABLE-JOBNO = "Y";
+        ENABLE-CREATE = "Y";
+        EXECUTE-RET-JOB = "Y";
+    else
+        set VHSR01IW-JOB empty;
+        VHSR08IW-X.JOB-DATA-COUNT = 0;
+        ENABLE-JOBNO = "Y";
+        DISABLE-CREATE = "Y";
+    end
+    DISABLE-COMMENTS = "Y";
+    LOAD-PREV-ACTIONS = "Y";
+    JOBNO-SETFOCUS = "Y";
+end 
+
+Function VHSR08IS-MOVE-JOBS ()
+   
+    JOB-DATA-COUNT = JOB-DATA-COUNT + 1;
+    VHSR01IW-JOB.JOB-NO[JOB-DATA-COUNT] = VHSR08C_DATA.JOB-NO;
+    VHSR01IW-JOB.SUB-JOB-DOC-NO[JOB-DATA-COUNT] = VHSR08C_DATA.SUB-JOB-DOC-NO;
+end 
+
+Function VHSR08IS-MOVE-MSG () 
+    VHSR08IW.ERROR-LOOP-INDEX = 1;
+    VHSR08IW.FINAL-INDEX = 0;
+    VHSR08IW.FINAL-ERROR-MSG = " ";
+    VHSR08IW.TEMP-ERROR-MSG = " ";
+    if (ERROR-COUNT > 0)
+        while (((ERROR-LOOP-INDEX <= 8) &&
+         (ERROR-MESSAGE-OCCR[ERROR-LOOP-INDEX] != " ")))
+            ERROR-COUNT = 1;
+            TEMP-ERROR-MSG = ERROR-MESSAGE-OCCR[ERROR-LOOP-INDEX];
+            while ((ERROR-COUNT <= 30))
+                if (TEMP-MSG[ERROR-COUNT] != ".")
+                    FINAL-INDEX = FINAL-INDEX + 1;
+                    FINAL-MSG[FINAL-INDEX] = TEMP-MSG[ERROR-COUNT];
+                else
+                    if (TEMP-MSG[ERROR-COUNT] == ".")
+                        FINAL-INDEX = FINAL-INDEX + 1;
+                        FINAL-MSG[FINAL-INDEX] = ",";
+                        FINAL-INDEX = FINAL-INDEX + 1;
+                        FINAL-MSG[FINAL-INDEX] = " ";
+                        ERROR-COUNT = 30;
+                    end
+                end
+                ERROR-COUNT = ERROR-COUNT + 1;
+            end
+            ERROR-LOOP-INDEX = ERROR-LOOP-INDEX + 1;
+        end
+        FINAL-INDEX = FINAL-INDEX - 1;
+        FINAL-MSG[FINAL-INDEX] = " ";
+        VHSR08IW.FINAL-MESSAGE = FINAL-ERROR-MSG;
+        EXECUTE-SETFOCUS = "Y";
+    end
+end 
+
+Function VHSR08IS-MOVE-SUB () 
+    VHSR08IW.SUB-JOB-STAT = VHSR08B_DATA.SUB-JOB-STAT;
+    VHSR08IW.WORK-TYPE = VHSR08B_DATA.WORK-TYPE;
+    VHSR08IW.REPR-AREA = VHSR08B_DATA.REPR-AREA;
+    XXDATEW.DATE-YYYY-MM-DD = VHSR08B_DATA.DATE-IN;
+    XXDATEW.VAGen_FUNCTION = "MDY";
+    MRSCommonCode.XXDATES-CONVERT();
+    VHSR08IW.DATE-IN = XXDATEW.DATE-MM-DD-YYYY;
+    VHSR08IW.STOCK-NO = VHSR08B_DATA.STOCK-NO;
+    VHSR08IW.SER-NO = VHSR08B_DATA.SER-NO;
+    VHSR08IW.CNT-CMPNTS-IN = VHSR08B_DATA.CNT-CMPNTS-IN;
+    VHSR08A_DATA.NARR[SELECTION-INDEX] = VHSR08B_DATA.NARR[1];
+    LOAD-PREV-ACTIONS = "Y";
+end 
+
+Function VHSR08IS-PRV-NXT () 
+    DISABLE-NARR = "Y";
+    if (BUTTON-CLICK == "PRV")
+        VHSR08IW.NARR-INDEX = VHSR08IW.NARR-INDEX - 1;
+        ENABLE-NXT = "Y";
+        if (VHSR08IW.NARR-INDEX <= 1)
+            VHSR08IW.NARR-INDEX = 1;
+            DISABLE-PRV = "Y";
+            NXT-SETFOCUS = "Y";
+        else
+            ENABLE-PRV = "Y";
+            PRV-SETFOCUS = "Y";
+        end
+    else
+        if (BUTTON-CLICK == "NXT")
+            VHSR08IW.NARR-INDEX = VHSR08IW.NARR-INDEX + 1;
+            ENABLE-PRV = "Y";
+            if (VHSR08IW.NARR-INDEX >= VHSR08IW.NARR-COUNT)
+                VHSR08IW.NARR-INDEX = VHSR08IW.NARR-COUNT;
+                DISABLE-NXT = "Y";
+                PRV-SETFOCUS = "Y";
+            else
+                ENABLE-NXT = "Y";
+                NXT-SETFOCUS = "Y";
+            end
+        else
+            if (BUTTON-CLICK == " ")
+                VHSR08IW.NARR-INDEX = 1;
+                DISABLE-PRV = "Y";
+                if (VHSR08IW.NARR-INDEX == VHSR08IW.NARR-COUNT)
+                    DISABLE-NXT = "Y";
+                else
+                    ENABLE-NXT = "Y";
+                end
+            end
+        end
+    end
+    VHSR08IW.NARR = VHSR08B_DATA.NARR[NARR-INDEX];
+    VHSR08IW.NARR-NO = VHSR08B_DATA.NARR-NO[NARR-INDEX];
+    VHSR08IW.DATE-NARR = VHSR08B_DATA.DATE-NARR[NARR-INDEX];
+    VHSR08IW.TIME-NARR = VHSR08B_DATA.TIME-NARR[NARR-INDEX];
+    VHSR08IW.TIME-NARR-FILLER-1 = ":";
+    VHSR08IW.TIME-NARR-FILLER-2 = ":";
+    VHSR08IW.USER-GRP = VHSR08B_DATA.USER-GRP[NARR-INDEX];
+end 
+
+Function VHSR08IS-RET-JOB () 
+    VHSR08IW.PREV-ACTIONS-COUNT = 0;
+    VHSR08IW.FINAL-MESSAGE = " ";
+    if (VHSR08IW.JOB-NO != " ")
+        VHSR08A_CRIT.JOB-NO = VHSR08IW.JOB-NO;
+        try
+            call "VHSR08A"(XDCONTROL, VHSR08A_CRIT, VHSR08A_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            if (VHSR08A_DATA.RECORD-FOUND == "Y")
+                if (VHSR08A_DATA.JOB-STAT == "CLO")
+                    VHSR08IW.FINAL-MESSAGE = "Job Closed.";
+                    VHSR08IW.WORK-TYPE = " ";
+                    DISABLE-CREATE = "Y";
+                    LOAD-PREV-ACTIONS = "Y";
+                    JOBNO-SETFOCUS = "Y";
+                else
+                    if (VHSR08A_DATA.JOB-STAT == "DEF")
+                        VHSR08IW.FINAL-MESSAGE = "Job Deferred cannot spilt.";
+                        VHSR08IW.WORK-TYPE = " ";
+                        LOAD-PREV-ACTIONS = "Y";
+                        DISABLE-CREATE = "Y";
+                        JOBNO-SETFOCUS = "Y";
+                    else
+                        VHSR08IW.PREV-ACTIONS-COUNT = XDCONTROL.UROWCNT;
+                        VHSR08IW.SUB-JOB-DOC-NO = XDCONTROL.UROWCNT + 1;
+                        VHSR08IS-CLR-FLDS();
+                        VHSR08IW.REPR-AREA = VHSR08A_DATA.REPR-AREA[UROWCNT];
+                        ENABLE-CREATE = "Y";
+                        LOAD-PREV-ACTIONS = "Y";
+                    end
+                end
+            end
+        else
+            if (XDCONTROL.URC == 100 && VHSR08A_DATA.RECORD-FOUND == "Y")
+                VHSR08IW.PREV-ACTIONS-COUNT = 0;
+                VHSR08IW.SUB-JOB-DOC-NO = 1;
+                VHSR08IS-CLR-FLDS();
+                ENABLE-CREATE = "Y";
+                LOAD-PREV-ACTIONS = "Y";
+            else
+                if (XDCONTROL.URC == 100 && VHSR08A_DATA.RECORD-FOUND == "N")
+                    VHSR08IW.FINAL-MESSAGE = "Entered Job No. does not exist.";
+                    DISABLE-CREATE = "Y";
+                    JOBNO-SETFOCUS = "Y";
+                end
+            end
+        end
+    else
+  
+  
+
+    end
+end 
+
+Function VHSR08IS-RET-NARR () 
+    VHSR08IW.NARR-COUNT = 0;
+    VHSR08IW.BUTTON-CLICK = " ";
+    VHSR08IW.FINAL-MESSAGE = " ";
+    if (VHSR08IW.SELECTION-INDEX > 0)
+        VHSR08IW.SUB-JOB-DOC-NO = VHSR08A_DATA.SUB-JOB-DOC-NO[SELECTION-INDEX];
+        VHSR08B_CRIT.JOB-NO = VHSR08IW.JOB-NO;
+        VHSR08B_CRIT.SUB-JOB-DOC-NO = VHSR08IW.SUB-JOB-DOC-NO;
+        try
+            call "VHSR08B"(XDCONTROL, VHSR08B_CRIT, VHSR08B_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHSR08IW.NARR-COUNT = XDCONTROL.UROWCNT;
+            VHSR08IS-MOVE-SUB(); 
+            EXECUTE-PRV-NXT = "Y";
+        else
+            if (XDCONTROL.URC == 100)
+                VHSR08IW.NARR-COUNT = 0;
+                NARR-INDEX = 0;
+                VHSR08IW.NARR = " ";
+                VHSR08IW.NARR-NO = 0;
+                VHSR08IW.DATE-NARR = " ";
+                VHSR08IW.TIME-NARR = " ";
+                VHSR08IW.USER-GRP = " ";
+                DISABLE-PRV = "Y";
+                DISABLE-NXT = "Y";
+            end
+        end
+        DISABLE-JOBDETAILS = "Y";
+        ENABLE-COMMENTS = "Y";
+        DISABLE-CREATE = "Y";
+        COMMENTS-SETFOCUS = "Y";
+    end
+end 
+
+Function VHSR08IS-RETURN () 
+    if (VHSR01IW-JOB.JOB-NO[1] == " " &&
+     VHSR01IW-JOB.SUB-JOB-DOC-NO[1] == 0)
+        VHSR08IW-TRIGGER.VAGen_CLOSE = "Y";
+    else
+        VHSR08IW-TRIGGER.OPEN-GUI = "Y";
+    end
+end 
+
+Function VHSR08IS-SETFOCUS () 
+    if (INVALID-WORK-TYPE == "Y")
+        WORKTYPE-SETFOCUS = "Y";
+    else
+        if (INVALID-DATE-IN == "Y")
+            DATEIN-SETFOCUS = "Y";
+        else
+            if (INVALID-REPR-AREA == "Y")
+                REPRAREA-SETFOCUS = "Y";
+            else
+                if (INVALID-STOCK-NO == "Y")
+                    STOCKNO-SETFOCUS = "Y";
+                else
+                    if (INVALID-BATCH-QTY == "Y")
+                        BATCHQTY-SETFOCUS = "Y";
+                    end
+                end
+            end
+        end
+    end
+end 
+
+Function VHSR09IS-ADDREPR () 
+    VHSR09IW.LOOP-INDEX = VHSR09IW.NEXT-ROW-COUNT;
+    VHSR09IW.ERROR-MESSAGE = " ";
+    VHSR09IW.FINAL-MESSAGE = " ";
+    VHSR09IW.ERROR-COUNT = 0;
+    VHSR09IW.SET-ROW-IND = "N";
+    VHSR09IW.SET-INDEX = 0;
+    VHSR09IW.COUNT-BLANK-ROW = 0;
+    VHSR09IS-GET-INPUT();
+    if (LOOP-INDEX > 0)
+        while ((LOOP-INDEX <= 100 && COUNT-BLANK-ROW <= 2 &&
+         ERROR-COUNT <= 6))
+            VHSR09IW.SET-INDEX = VHSR09IW.SET-INDEX + 1;
+            if (VHSR09A_DATA_01.STOCK-NO[LOOP-INDEX] == " " &&
+             VHSR09A_DATA_01.SER-NO[LOOP-INDEX] == " " &&
+             VHSR09A_DATA_01.CMPNT-CD[LOOP-INDEX] == " " &&
+             VHSR09A_DATA_01.CMPNT-FAULT-CD[LOOP-INDEX] == " ")
+                COUNT-BLANK-ROW = COUNT-BLANK-ROW + 1;
+            end
+            if ((VHSR09IW.KIT-NO == " " &&
+             VHSR09A_DATA_01.STOCK-NO[LOOP-INDEX] == " " &&
+             VHSR09A_DATA_01.SER-NO[LOOP-INDEX] == " " &&
+             VHSR09A_DATA_01.CMPNT-CD[LOOP-INDEX] == " " &&
+             VHSR09A_DATA_01.CMPNT-FAULT-CD[LOOP-INDEX] == " " &&
+             VHSR09IW.SET-INDEX == 1))
+                ERROR-COUNT = ERROR-COUNT + 1;
+                VHSR09IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+                VHSR09IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+                VHSR09IW.ERROR-MSG-3[ERROR-COUNT] = " - Data required.";
+                LOOP-INDEX = 101;
+            else
+                if (COUNT-BLANK-ROW <= 2 &&
+                 (VHSR09A_DATA_01.STOCK-NO[LOOP-INDEX] != " " ||
+                 VHSR09A_DATA_01.SER-NO[LOOP-INDEX] != " " ||
+                 VHSR09A_DATA_01.CMPNT-CD[LOOP-INDEX] != " " ||
+                 VHSR09A_DATA_01.CMPNT-FAULT-CD[LOOP-INDEX] != " "))
+                    if (VHSR09A_DATA_01.STOCK-NO[LOOP-INDEX] == " ")
+                        ERROR-COUNT = ERROR-COUNT + 1;
+                        VHSR09IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+                        VHSR09IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+                        VHSR09IW.ERROR-MSG-3[ERROR-COUNT] = " - Stock No required.";
+                    else
+  
+                        VHSR09A_DATA_02.STOCK-NO-X = VHSR09A_DATA_01.STOCK-NO[LOOP-INDEX];
+  
+                        if (VHSR09A_DATA_02.STOCK-NO-X not numeric)
+                            ERROR-COUNT = ERROR-COUNT + 1;
+                            VHSR09IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+                            VHSR09IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+                            VHSR09IW.ERROR-MSG-3[ERROR-COUNT] = " - Stock No not numeric.";
+                        end
+                    end
+                    if (ERROR-COUNT == 6)
+                        LOOP-INDEX = 101;
+                    end
+                    if (ERROR-COUNT < 6)
+                        if (VHSR09A_DATA_01.CMPNT-CD[LOOP-INDEX] != " ")
+              
+                            VHSR09F_CRIT.CMPNT-CD = VHSR09A_DATA_01.CMPNT-CD[LOOP-INDEX];
+                            try
+                                call "VHSR09F"(XDCONTROL, VHSR09F_CRIT, VHSR09F_DATA);
+                            
+                            end
+                            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+                            else
+                                ERROR-COUNT = ERROR-COUNT + 1;
+                                VHSR09IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+                                VHSR09IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+                                VHSR09IW.ERROR-MSG-3[ERROR-COUNT] = " - Invalid Part Cd.";
+                            end
+                        end
+                    end
+                    if (ERROR-COUNT == 6)
+                        LOOP-INDEX = 101;
+                    end
+                    if (ERROR-COUNT < 6)
+                        if (VHSR09A_DATA_01.CMPNT-FAULT-CD[LOOP-INDEX] != " ")
+                
+                            VHSR09G_CRIT.CMPNT-FAULT-CD = VHSR09A_DATA_01.CMPNT-FAULT-CD[LOOP-INDEX];
+                            try
+                                call "VHSR09G"(XDCONTROL, VHSR09G_CRIT, VHSR09G_DATA);
+                            
+                            end
+                            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+                            else
+                                ERROR-COUNT = ERROR-COUNT + 1;
+                                VHSR09IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+                                VHSR09IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+                                VHSR09IW.ERROR-MSG-3[ERROR-COUNT] = " - Invalid Fault Cd.";
+                            end
+                        end
+                    end
+                    if (ERROR-COUNT == 6)
+                        LOOP-INDEX = 101;
+                    end
+                    if (ERROR-COUNT < 6)
+          
+                        if (VHSR09A_DATA_01.CNT-CMPNTS-REPR[LOOP-INDEX] <= 0)
+                            ERROR-COUNT = ERROR-COUNT + 1;
+                            VHSR09IW.ERROR-MSG-1[ERROR-COUNT] = "Line: ";
+                            VHSR09IW.ERROR-MSG-2[ERROR-COUNT] = SET-INDEX;
+                            VHSR09IW.ERROR-MSG-3[ERROR-COUNT] = " - Quantity must be > 0.";
+                            
+           
+           
+           
+           
+           
+           
+           
+           
+           
+                        end
+                    end
+                    if (ERROR-COUNT == 6)
+                        LOOP-INDEX = 101;
+                    end
+                end
+            end
+            LOOP-INDEX = LOOP-INDEX + 1;
+        end
+    end
+    if (ERROR-COUNT > 0)
+        VHSR09IS-MOVE-MSG();
+    else
+        VHSR09IS-DB-STORE(); 
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            GO-LABOR = "Y";
+        end
+    end
+end 
+
+Function VHSR09IS-AFT-CHKST () 
+    DISABLE-ADDREPR = "Y";
+    DISABLE-KITNO = "Y";
+    if (VHSR09IW-PASSVALUE.JOB-NO == " ")
+        DISABLE-LABORDET = "Y";
+        FIRST-TIME-IN-GUI = "Y";
+    else
+        ENABLE-LABORDET = "Y";
+        FIRST-TIME-IN-GUI = "N";
+    end
+    VHSR09IW.PREV-ROW-COUNT = 0;
+    LOAD-PREV-DATA = "Y";
+    VHSR09IW.NEXT-ROW-COUNT = 101;
+    LOAD-NEXT-DATA = "Y";
+    JOBNO-SETFOCUS = "Y";
+    DISABLE-LIST = "Y";
+    ENABLE-LIST = "Y";
+end 
+
+Function VHSR09IS-AFT-SR03I ()
+   
+    VHSR09B_CRIT.JOB-NO = VHSR09IW-PASSVALUE.JOB-NO;
+    VHSR09B_CRIT.SUB-JOB-DOC-NO = VHSR09IW-PASSVALUE.SUB-JOB-DOC-NO;
+    VHSR09IW.FINAL-MESSAGE = "  ";
+    VHSR09IW.KIT-NO = " ";
+    try
+        call "VHSR09B"(XDCONTROL, VHSR09B_CRIT, VHSR09B_DATA);
+    
+    end
+    if (VHSR09B_DATA.DOC-COUNT == 1)
+        if (VHSR09B_DATA.SUB-JOB-STAT == "CLO")
+            VHSR09IW.TEMP-FINAL-MSG-1 = "Sub Job ";
+            VHSR09IW.TEMP-FINAL-MSG-2 = VHSR09B_CRIT.SUB-JOB-DOC-NO;
+            VHSR09IW.TEMP-FINAL-MSG-3 = " of Job ";
+            VHSR09IW.TEMP-FINAL-MSG-4 = VHSR09B_CRIT.JOB-NO;
+            VHSR09IW.TEMP-FINAL-MSG-5 = " is closed.";
+            VHSR09IW.FINAL-MESSAGE = VHSR09IW.TEMP-FINAL-MSG;
+            DISABLE-ADDREPR = "Y";
+            DISABLE-KITNO = "Y";
+            DISABLE-LABORDET = "Y";
+            VHSR09IW.JOB-NO = " ";
+            VHSR09IW.SUB-JOB-DOC-NO = 1;
+  
+            VHSR09IW.PREV-ROW-COUNT = 0;
+            LOAD-PREV-DATA = "Y";
+            VHSR09IW.NEXT-ROW-COUNT = 101;
+            LOAD-NEXT-DATA = "Y";
+            JOBNO-SETFOCUS = "Y";
+            ENABLE-LIST = "Y";
+        else
+            if (VHSR09B_DATA.SUB-JOB-STAT == "OTV" ||
+             VHSR09B_DATA.SUB-JOB-STAT == "REP")
+                if (VHSR09IW.JOB-NO == " ")
+                    DISABLE-ADDREPR = "Y";
+                    DISABLE-KITNO = "Y";
+                    ENABLE-LABORDET = "Y";
+                    VHSR09IW.JOB-NO = " ";
+                    VHSR09IW.SUB-JOB-DOC-NO = 1;
+                    VHSR09IW.PREV-ROW-COUNT = 0;
+                    LOAD-PREV-DATA = "Y";
+                    VHSR09IW.NEXT-ROW-COUNT = 101;
+                    LOAD-NEXT-DATA = "Y";
+                    JOBNO-SETFOCUS = "Y";
+                else
+                    VHSR09A_CRIT.JOB-NO = VHSR09IW.JOB-NO;
+                    VHSR09A_CRIT.SUB-JOB-DOC-NO = VHSR09IW.SUB-JOB-DOC-NO;
+                    try
+                        call "VHSR09A"(XDCONTROL, VHSR09A_CRIT, VHSR09A_DATA_01, VHSR09A_DATA_02);
+                    
+                    end
+                    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                        VHSR09IW.PREV-ROW-COUNT = XDCONTROL.UROWCNT;
+                        LOAD-PREV-DATA = "Y";
+                        VHSR09IW.NEXT-ROW-COUNT = XDCONTROL.UROWCNT + 1;
+                        LOAD-NEXT-DATA = "Y";
+                        DETAILS1-SETFOCUS = "Y";
+                    else
+                        if (XDCONTROL.URC == 100)
+                            VHSR09IW.PREV-ROW-COUNT = 0;
+                            LOAD-PREV-DATA = "Y";
+                            VHSR09IW.NEXT-ROW-COUNT = 1;
+                            LOAD-NEXT-DATA = "Y";
+                            DETAILS1-SETFOCUS = "Y";
+                        else
+                            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                            return;
+                        end
+                    end
+                    ENABLE-ADDREPR = "Y";
+                    ENABLE-KITNO = "Y";
+                    ENABLE-LABORDET = "Y";
+                end
+            end
+        end
+    else
+        JOBNO-SETFOCUS = "Y";
+    end
+end 
+
+Function VHSR09IS-CLEAR () 
+    set VHSR09IW empty;
+    set VHSR09IW-INPUT empty;
+    VHSR09IW-INPUT.CNT-CMPNTS-REPR-1 = 1;
+    VHSR09IW-INPUT.CNT-CMPNTS-REPR-2 = 1;
+    VHSR09IW-INPUT.CNT-CMPNTS-REPR-3 = 1;
+    VHSR09IW-INPUT.CNT-CMPNTS-REPR-4 = 1;
+    VHSR09IW-INPUT.CNT-CMPNTS-REPR-5 = 1;
+    VHSR09IW-INPUT.CNT-CMPNTS-REPR-6 = 1;
+    set VHSR09A_DATA_01 empty;
+    set VHSR09A_DATA_02 empty;
+    ENABLE-LIST = "Y";
+    VHSR09IW-PASSVALUE.JOB-NO = " ";
+    VHSR09IW-PASSVALUE.SUB-JOB-DOC-NO = 1;
+    VHSR09IW.SUB-JOB-DOC-NO = 1;
+    VHSR09IS-AFT-CHKST();
+end 
+
+Function VHSR09IS-CLEAR-X () 
+    VHSR09IW-TRIGGER.TEMP-FINAL-MESSAGE = " ";
+    VHSR09IW-TRIGGER.TEMP-FINAL-MESSAGE = VHSR09IW.FINAL-MESSAGE;
+    set VHSR09IW-INPUT empty;
+    VHSR09IW-INPUT.CNT-CMPNTS-REPR-1 = 1;
+    VHSR09IW-INPUT.CNT-CMPNTS-REPR-2 = 1;
+    VHSR09IW-INPUT.CNT-CMPNTS-REPR-3 = 1;
+    VHSR09IW-INPUT.CNT-CMPNTS-REPR-4 = 1;
+    VHSR09IW-INPUT.CNT-CMPNTS-REPR-5 = 1;
+    VHSR09IW-INPUT.CNT-CMPNTS-REPR-6 = 1;
+    VHSR09IW.FINAL-MESSAGE = VHSR09IW-TRIGGER.TEMP-FINAL-MESSAGE;
+    ENABLE-ADDREPR = "Y";
+    ENABLE-KITNO = "Y";
+end 
+
+Function VHSR09IS-CLR-AFTDB () 
+    VHSR09IW-TRIGGER.TEMP-FINAL-MESSAGE = " ";
+    VHSR09IW-TRIGGER.TEMP-FINAL-MESSAGE = VHSR09IW.FINAL-MESSAGE;
+    set VHSR09IW empty;
+    set VHSR09IW-INPUT empty;
+    VHSR09IW.SUB-JOB-DOC-NO = 1;
+    VHSR09IW.FINAL-MESSAGE = VHSR09IW-TRIGGER.TEMP-FINAL-MESSAGE;
+    DISABLE-ADDREPR = "Y";
+    DISABLE-KITNO = "Y";
+    VHSR09IW.PREV-ROW-COUNT = 0;
+    LOAD-PREV-DATA = "Y";
+    VHSR09IW.NEXT-ROW-COUNT = 101;
+    LOAD-NEXT-DATA = "Y";
+    FIRST-TIME-IN-GUI = "N";
+    JOBNO-SETFOCUS = "Y";
+    ENABLE-LIST = "Y";
+end 
+
+Function VHSR09IS-DB-STORE () 
+    set VHSR09D_DATA_01 empty;
+    set VHSR09D_DATA_02 empty;
+    VHSR09IW.LOOP-INDEX = 0;
+    VHSR09IW.ERROR-ROW-COUNT = 0;
+    VHSR09IW.KIT-MOVED = "N";
+    VHSR09IW.DETAILS-MOVED = "N";
+
+  
+  
+    if (VHSR09IW.KIT-NO != " ")
+        VHSR09E_CRIT.KIT-NO = VHSR09IW.KIT-NO;
+        try
+            call "VHSR09E"(XDCONTROL, VHSR09E_CRIT, VHSR09E_DATA);
+        
+        end
+        if (XDCONTROL.UROWCNT > 0)
+            while ((LOOP-INDEX < XDCONTROL.UROWCNT))
+                VHSR09IW.LOOP-INDEX = VHSR09IW.LOOP-INDEX + 1;
+                VHSR09D_DATA_01.CMPNT-CD[LOOP-INDEX] = VHSR09E_DATA.PART-NO[LOOP-INDEX];
+                VHSR09D_DATA_01.SER-NO[LOOP-INDEX] = VHSR09E_DATA.SER-DESC[LOOP-INDEX];
+                VHSR09D_DATA_01.STOCK-NO[LOOP-INDEX] = VHSR09E_DATA.PART-STOCK-NO[LOOP-INDEX];
+                VHSR09D_DATA_01.CMPNT-FAULT-CD[LOOP-INDEX] = VHSR09E_DATA.PART-FAULT-CD[LOOP-INDEX];
+                VHSR09D_DATA_01.CNT-CMPNTS-REPR[LOOP-INDEX] = VHSR09E_DATA.CNT-PARTS[LOOP-INDEX];
+            end
+            VHSR09IW.KIT-MOVED = "Y";
+        else
+            set VHSR09E_DATA empty;
+        end
+    end
+    if (VHSR09IW.NEXT-ROW-COUNT > 0)
+        while ((VHSR09IW.NEXT-ROW-COUNT < 100) &&
+         VHSR09IW.ERROR-ROW-COUNT <= 2)
+            if (VHSR09A_DATA_01.STOCK-NO[NEXT-ROW-COUNT] != " ")
+                VHSR09IW.LOOP-INDEX = VHSR09IW.LOOP-INDEX + 1;
+                VHSR09D_DATA_01.STOCK-NO[LOOP-INDEX] = VHSR09A_DATA_01.STOCK-NO[NEXT-ROW-COUNT];
+                VHSR09D_DATA_01.SER-NO[LOOP-INDEX] = VHSR09A_DATA_01.SER-NO[NEXT-ROW-COUNT];
+                VHSR09D_DATA_01.CMPNT-CD[LOOP-INDEX] = VHSR09A_DATA_01.CMPNT-CD[NEXT-ROW-COUNT];
+                VHSR09D_DATA_01.CMPNT-FAULT-CD[LOOP-INDEX] = VHSR09A_DATA_01.CMPNT-FAULT-CD[NEXT-ROW-COUNT];
+                VHSR09D_DATA_01.CNT-CMPNTS-REPR[LOOP-INDEX] = VHSR09A_DATA_01.CNT-CMPNTS-REPR[NEXT-ROW-COUNT];
+                VHSR09IW.DETAILS-MOVED = "Y";
+            else
+                VHSR09IW.ERROR-ROW-COUNT = VHSR09IW.ERROR-ROW-COUNT + 1;
+            end
+            NEXT-ROW-COUNT = NEXT-ROW-COUNT + 1;
+        end
+    end
+    VHSR09D_DATA_02.JOB-NO = VHSR09IW.JOB-NO;
+    VHSR09D_DATA_02.SUB-JOB-DOC-NO = VHSR09IW.SUB-JOB-DOC-NO;
+    VHSR09D_DATA_02.TERM-LAST-UPD = VHSR09IW-PASSVALUE.TERM-LAST-UPD;
+    if (VHSR09IW.LOOP-INDEX >= 1)
+        try
+            call "VHSR09D"(XDCONTROL, VHSR09D_DATA_01, VHSR09D_DATA_02);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHSR09IW-PASSVALUE.JOB-NO = VHSR09IW.JOB-NO;
+            VHSR09IW-PASSVALUE.SUB-JOB-DOC-NO = VHSR09IW.SUB-JOB-DOC-NO;
+            if (VHSR09IW.DETAILS-MOVED == "Y" && VHSR09IW.KIT-MOVED == "N")
+                VHSR09IS-RET-DATA();
+                VHSR09IW.FINAL-MESSAGE = "Repair Details added.";
+            else
+                if (VHSR09IW.DETAILS-MOVED == "N" && VHSR09IW.KIT-MOVED == "Y")
+                    VHSR09IW.FINAL-MESSAGE-1 = "Repair Details built from kit: ";
+                    VHSR09IW.FINAL-MESSAGE-2 = VHSR09C_DATA.KIT-DESC;
+                    VHSR09IW.FINAL-MESSAGE-3 = ".";
+                else
+                    if (VHSR09IW.DETAILS-MOVED == "Y" && VHSR09IW.KIT-MOVED == "Y")
+                        VHSR09IW.FINAL-MESSAGE-1 = "Repair Details built from kit: ";
+                        VHSR09IW.FINAL-MESSAGE-2 = VHSR09C_DATA.KIT-DESC;
+                        VHSR09IW.FINAL-MESSAGE-3 = " , ";
+                        VHSR09IW.FINAL-MESSAGE-4 = "Repair Details added.";
+                    end
+                end
+            end
+            VHSR09IS-CLEAR-X(); 
+                                   
+            ENABLE-LABORDET = "Y";
+        else
+            VHSR09IW.FINAL-MESSAGE = "Database access error. Records not added successfully.";
+            DISABLE-ADDREPR = "Y";
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHSR09IS-GET-INPUT () 
+    move NEXT-ROW-COUNT to X withV60Compat;
+    VHSR09A_DATA_01.STOCK-NO[X] = VHSR09IW-INPUT.STOCK-NO-1;
+    VHSR09A_DATA_01.CMPNT-CD[X] = VHSR09IW-INPUT.CMPNT-CD-1;
+    VHSR09A_DATA_01.CMPNT-FAULT-CD[X] = VHSR09IW-INPUT.CMPNT-FAULT-CD-1;
+    VHSR09A_DATA_01.CNT-CMPNTS-REPR[X] = VHSR09IW-INPUT.CNT-CMPNTS-REPR-1;
+    VHSR09A_DATA_01.JOB-REPR-DOC-NO[X] = VHSR09IW-INPUT.JOB-REPR-DOC-NO-1;
+    VHSR09A_DATA_01.SER-NO[X] = VHSR09IW-INPUT.SER-NO-1;
+    X = X + 1;
+    VHSR09A_DATA_01.STOCK-NO[X] = VHSR09IW-INPUT.STOCK-NO-2;
+    VHSR09A_DATA_01.CMPNT-CD[X] = VHSR09IW-INPUT.CMPNT-CD-2;
+    VHSR09A_DATA_01.CMPNT-FAULT-CD[X] = VHSR09IW-INPUT.CMPNT-FAULT-CD-2;
+    VHSR09A_DATA_01.CNT-CMPNTS-REPR[X] = VHSR09IW-INPUT.CNT-CMPNTS-REPR-2;
+    VHSR09A_DATA_01.JOB-REPR-DOC-NO[X] = VHSR09IW-INPUT.JOB-REPR-DOC-NO-2;
+    VHSR09A_DATA_01.SER-NO[X] = VHSR09IW-INPUT.SER-NO-2;
+    X = X + 1;
+    VHSR09A_DATA_01.STOCK-NO[X] = VHSR09IW-INPUT.STOCK-NO-3;
+    VHSR09A_DATA_01.CMPNT-CD[X] = VHSR09IW-INPUT.CMPNT-CD-3;
+    VHSR09A_DATA_01.CMPNT-FAULT-CD[X] = VHSR09IW-INPUT.CMPNT-FAULT-CD-3;
+    VHSR09A_DATA_01.CNT-CMPNTS-REPR[X] = VHSR09IW-INPUT.CNT-CMPNTS-REPR-3;
+    VHSR09A_DATA_01.JOB-REPR-DOC-NO[X] = VHSR09IW-INPUT.JOB-REPR-DOC-NO-3;
+    VHSR09A_DATA_01.SER-NO[X] = VHSR09IW-INPUT.SER-NO-3;
+    X = X + 1;
+    VHSR09A_DATA_01.STOCK-NO[X] = VHSR09IW-INPUT.STOCK-NO-4;
+    VHSR09A_DATA_01.CMPNT-CD[X] = VHSR09IW-INPUT.CMPNT-CD-4;
+    VHSR09A_DATA_01.CMPNT-FAULT-CD[X] = VHSR09IW-INPUT.CMPNT-FAULT-CD-4;
+    VHSR09A_DATA_01.CNT-CMPNTS-REPR[X] = VHSR09IW-INPUT.CNT-CMPNTS-REPR-4;
+    VHSR09A_DATA_01.JOB-REPR-DOC-NO[X] = VHSR09IW-INPUT.JOB-REPR-DOC-NO-4;
+    VHSR09A_DATA_01.SER-NO[X] = VHSR09IW-INPUT.SER-NO-4;
+    X = X + 1;
+    VHSR09A_DATA_01.STOCK-NO[X] = VHSR09IW-INPUT.STOCK-NO-5;
+    VHSR09A_DATA_01.CMPNT-CD[X] = VHSR09IW-INPUT.CMPNT-CD-5;
+    VHSR09A_DATA_01.CMPNT-FAULT-CD[X] = VHSR09IW-INPUT.CMPNT-FAULT-CD-5;
+    VHSR09A_DATA_01.CNT-CMPNTS-REPR[X] = VHSR09IW-INPUT.CNT-CMPNTS-REPR-5;
+    VHSR09A_DATA_01.JOB-REPR-DOC-NO[X] = VHSR09IW-INPUT.JOB-REPR-DOC-NO-5;
+    VHSR09A_DATA_01.SER-NO[X] = VHSR09IW-INPUT.SER-NO-5;
+    X = X + 1;
+    VHSR09A_DATA_01.STOCK-NO[X] = VHSR09IW-INPUT.STOCK-NO-6;
+    VHSR09A_DATA_01.CMPNT-CD[X] = VHSR09IW-INPUT.CMPNT-CD-6;
+    VHSR09A_DATA_01.CMPNT-FAULT-CD[X] = VHSR09IW-INPUT.CMPNT-FAULT-CD-6;
+    VHSR09A_DATA_01.CNT-CMPNTS-REPR[X] = VHSR09IW-INPUT.CNT-CMPNTS-REPR-6;
+    VHSR09A_DATA_01.JOB-REPR-DOC-NO[X] = VHSR09IW-INPUT.JOB-REPR-DOC-NO-6;
+    VHSR09A_DATA_01.SER-NO[X] = VHSR09IW-INPUT.SER-NO-6;
+end 
+
+Function VHSR09IS-INIT () 
+    set VHSR09IW empty;
+    VHSR09IW.SUB-JOB-DOC-NO = 1;
+    VHSR09IS-AFT-CHKST();
+end 
+
+Function VHSR09IS-KIT () 
+    VHSR09IW.FINAL-MESSAGE = " ";
+    if (VHSR09IW.KIT-NO != " ")
+        VHSR09C_CRIT.KIT-NO = VHSR09IW.KIT-NO;
+        try
+            call "VHSR09C"(XDCONTROL, VHSR09C_CRIT, VHSR09C_DATA);
+        
+        end
+        if (VHSR09C_DATA.KIT-FOUND == "Y" && VHSR09C_DATA.KIT-DETL-FOUND == "Y")
+            ENABLE-ADDREPR = "Y";
+            DETAILS1-SETFOCUS = "Y";
+        else
+            if (VHSR09C_DATA.KIT-FOUND == "N" && VHSR09C_DATA.KIT-DETL-FOUND == "N"
+            )
+                VHSR09IW.FINAL-MESSAGE = "Kit not defined.";
+                DISABLE-ADDREPR = "Y";
+                VHSR09IW-TRIGGER.KITNO-SETFOCUS = "Y";
+            else
+                if (VHSR09C_DATA.KIT-FOUND == "Y" && VHSR09C_DATA.KIT-DETL-FOUND ==
+                 "N")
+                    VHSR09IW.FINAL-MESSAGE = "Kit has no details.";
+                    DISABLE-ADDREPR = "Y";
+                    VHSR09IW-TRIGGER.KITNO-SETFOCUS = "Y";
+                else
+                    VHSR09IW.FINAL-MESSAGE = "Database access error";
+                    DISABLE-ADDREPR = "Y";
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end
+            end
+        end
+    else
+        ENABLE-ADDREPR = "Y";
+        DETAILS1-SETFOCUS = "Y";
+    end
+end 
+
+Function VHSR09IS-LABOR-DET () 
+    if (VHSR09IW.JOB-NO == " " && VHSR09IW-PASSVALUE.JOB-NO == " ")
+     
+        VHSR09IW-PASSVALUE.PARENT-GUI = "VHMSRI";
+    else
+        VHSR09IW-PASSVALUE.PARENT-GUI = "VHSR09I";
+        if (VHSR09IW.JOB-NO == " " && VHSR09IW-PASSVALUE.JOB-NO != " ")
+
+        else
+            if ((VHSR09IW.JOB-NO != " " && VHSR09IW-PASSVALUE.JOB-NO != " ") ||
+             VHSR09IW.JOB-NO != " " && VHSR09IW-PASSVALUE.JOB-NO == " ")
+                VHSR09IW-PASSVALUE.JOB-NO = VHSR09IW.JOB-NO;
+                VHSR09IW-PASSVALUE.SUB-JOB-DOC-NO = VHSR09IW.SUB-JOB-DOC-NO;
+            end
+        end
+    end
+end 
+
+Function VHSR09IS-MOVE-MSG () 
+    VHSR09IW.ERROR-LOOP-INDEX = 1;
+    VHSR09IW.FINAL-INDEX = 0;
+    VHSR09IW.FINAL-ERROR-MSG = " ";
+    VHSR09IW.TEMP-ERROR-MSG = " ";
+    while (((ERROR-LOOP-INDEX <= 6) &&
+     (ERROR-MESSAGE-OCCR[ERROR-LOOP-INDEX] != " ")))
+        ERROR-INDEX = 1;
+        TEMP-ERROR-MSG = ERROR-MESSAGE-OCCR[ERROR-LOOP-INDEX];
+        while ((ERROR-INDEX <= 53))
+            if (TEMP-MSG[ERROR-INDEX] != ".")
+                FINAL-INDEX = FINAL-INDEX + 1;
+                FINAL-MSG[FINAL-INDEX] = TEMP-MSG[ERROR-INDEX];
+            else
+                if (TEMP-MSG[ERROR-INDEX] == ".")
+                    FINAL-INDEX = FINAL-INDEX + 1;
+                    FINAL-MSG[FINAL-INDEX] = ",";
+                    FINAL-INDEX = FINAL-INDEX + 1;
+                    FINAL-MSG[FINAL-INDEX] = " ";
+                    ERROR-INDEX = 53;
+                end
+            end
+            ERROR-INDEX = ERROR-INDEX + 1;
+        end
+        ERROR-LOOP-INDEX = ERROR-LOOP-INDEX + 1;
+    end
+    FINAL-INDEX = FINAL-INDEX - 1;
+    FINAL-MSG[FINAL-INDEX] = " ";
+    VHSR09IW.FINAL-MESSAGE = FINAL-ERROR-MSG;
+    DETAILS1-SETFOCUS = "Y";
+end 
+
+Function VHSR09IS-NO-REPAIR () 
+    VHSR09IW.KIT-NO = "777777777";
+end 
+
+Function VHSR09IS-RET-DATA () 
+    set VHSR09A_DATA_01 empty;
+    set VHSR09A_DATA_02 empty;
+    VHSR09IW.FINAL-MESSAGE = " ";
+    VHSR09IW.PREV-ROW-COUNT = 0;
+    VHSR09IW.NEXT-ROW-COUNT = 0;
+    if (VHSR09IW.JOB-NO == " " &&
+     VHSR09IW.SUB-JOB-DOC-NO == 0)
+        VHSR09IW.FINAL-MESSAGE = "Job & Doc No required.";
+        JOBNO-SETFOCUS = "Y";
+        ENABLE-LIST = "Y";
+    else
+        if (VHSR09IW.JOB-NO == " " &&
+         VHSR09IW.SUB-JOB-DOC-NO > 0)
+            VHSR09IW.FINAL-MESSAGE = "Job No required.";
+            JOBNO-SETFOCUS = "Y";
+            ENABLE-LIST = "Y";
+        else
+            if (VHSR09IW.JOB-NO != " " &&
+             VHSR09IW.SUB-JOB-DOC-NO == 0)
+                VHSR09IW.FINAL-MESSAGE = "Doc No required.";
+                DOCNO-SETFOCUS = "Y";
+                ENABLE-LIST = "Y";
+            else
+        
+                VHSR09B_CRIT.JOB-NO = VHSR09IW.JOB-NO;
+                VHSR09B_CRIT.SUB-JOB-DOC-NO = VHSR09IW.SUB-JOB-DOC-NO;
+                try
+                    call "VHSR09B"(XDCONTROL, VHSR09B_CRIT, VHSR09B_DATA);
+                
+                end
+                if (VHSR09B_DATA.DOC-COUNT == 1)
+                    if (VHSR09B_DATA.SUB-JOB-STAT == "CLO")
+                        VHSR09IW.TEMP-FINAL-MSG-1 = "Sub Job ";
+                        VHSR09IW.TEMP-FINAL-MSG-2 = VHSR09B_CRIT.SUB-JOB-DOC-NO;
+                        VHSR09IW.TEMP-FINAL-MSG-3 = " of Job ";
+                        VHSR09IW.TEMP-FINAL-MSG-4 = VHSR09B_CRIT.JOB-NO;
+                        VHSR09IW.TEMP-FINAL-MSG-5 = " is closed.";
+                        VHSR09IW.FINAL-MESSAGE = VHSR09IW.TEMP-FINAL-MSG;
+                        DISABLE-ADDREPR = "Y";
+                        DISABLE-KITNO = "Y";
+                        DISABLE-LABORDET = "Y";
+                        VHSR09IW.PREV-ROW-COUNT = 0;
+                        LOAD-PREV-DATA = "Y";
+                        VHSR09IW.NEXT-ROW-COUNT = 101;
+                        LOAD-NEXT-DATA = "Y";
+                        JOBNO-SETFOCUS = "Y";
+                        ENABLE-LIST = "Y";
+                    else
+                        if (VHSR09B_DATA.SUB-JOB-STAT == "OTV" ||
+                         VHSR09B_DATA.SUB-JOB-STAT == "REP" ||
+                         VHSR09B_DATA.SUB-JOB-STAT == "DEF" ||
+                         VHSR09B_DATA.SUB-JOB-STAT == "NWP")
+                            ENABLE-ADDREPR = "Y";
+                            ENABLE-KITNO = "Y";
+                            DISABLE-LIST = "Y";
+                            
+  
+  
+  
+  
+                            ENABLE-LABORDET = "Y";
+                            
+  
+                            VHSR09A_CRIT.JOB-NO = VHSR09IW.JOB-NO;
+                            VHSR09A_CRIT.SUB-JOB-DOC-NO = VHSR09IW.SUB-JOB-DOC-NO;
+                            try
+                                call "VHSR09A"(XDCONTROL, VHSR09A_CRIT, VHSR09A_DATA_01, VHSR09A_DATA_02);
+                            
+                            end
+                            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                                VHSR09IW.PREV-ROW-COUNT = XDCONTROL.UROWCNT;
+                                LOAD-PREV-DATA = "Y";
+                                VHSR09IW.NEXT-ROW-COUNT = XDCONTROL.UROWCNT + 1;
+                                LOAD-NEXT-DATA = "Y";
+                                DETAILS1-SETFOCUS = "Y";
+                                DISABLE-LIST = "Y";
+                            else
+                                if (XDCONTROL.URC == 100)
+                                    VHSR09IW.PREV-ROW-COUNT = 0;
+                                    LOAD-PREV-DATA = "Y";
+                                    VHSR09IW.NEXT-ROW-COUNT = 1;
+                                    LOAD-NEXT-DATA = "Y";
+                                    DETAILS1-SETFOCUS = "Y";
+                                    DISABLE-LIST = "Y";
+                                else
+                                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                                    return;
+                                end
+                            end
+                        else
+                            VHSR09IW.FINAL-MESSAGE = "Sub Job NOT OUT THE DOOR. ";
+                            VHSR09IW.PREV-ROW-COUNT = 0;
+                            LOAD-PREV-DATA = "Y";
+                            VHSR09IW.NEXT-ROW-COUNT = 101;
+                            LOAD-NEXT-DATA = "Y";
+                            DISABLE-ADDREPR = "Y";
+                            DISABLE-KITNO = "Y";
+                            DISABLE-LABORDET = "Y";
+                            JOBNO-SETFOCUS = "Y";
+                            ENABLE-LIST = "Y";
+                        end
+                    end
+                else
+                    VHSR09IW.FINAL-MESSAGE = "Sub Job does not exist.";
+                    DISABLE-ADDREPR = "Y";
+                    DISABLE-KITNO = "Y";
+                    DISABLE-LABORDET = "Y";
+                    VHSR09IW.PREV-ROW-COUNT = 0;
+                    LOAD-PREV-DATA = "Y";
+                    VHSR09IW.NEXT-ROW-COUNT = 101;
+                    LOAD-NEXT-DATA = "Y";
+                    JOBNO-SETFOCUS = "Y";
+                    ENABLE-LIST = "Y";
+                end
+            end
+        end
+    end
+end 
+
+Function VHSR09IS-STK-DESC () 
+    if (VHSR09IW-TRIGGER.LFOCUS-1 == "1")
+        VHSR09H_CRIT.STOCK-NO = VHSR09IW-INPUT.STOCK-NO-1;
+    else
+        if (VHSR09IW-TRIGGER.LFOCUS-1 == "2")
+            VHSR09H_CRIT.STOCK-NO = VHSR09IW-INPUT.STOCK-NO-2;
+        else
+            if (VHSR09IW-TRIGGER.LFOCUS-1 == "3")
+                VHSR09H_CRIT.STOCK-NO = VHSR09IW-INPUT.STOCK-NO-3;
+            else
+                if (VHSR09IW-TRIGGER.LFOCUS-1 == "4")
+                    VHSR09H_CRIT.STOCK-NO = VHSR09IW-INPUT.STOCK-NO-4;
+                else
+                    if (VHSR09IW-TRIGGER.LFOCUS-1 == "5")
+                        VHSR09H_CRIT.STOCK-NO = VHSR09IW-INPUT.STOCK-NO-5;
+                    else
+                        if (VHSR09IW-TRIGGER.LFOCUS-1 == "6")
+                            VHSR09H_CRIT.STOCK-NO = VHSR09IW-INPUT.STOCK-NO-6;
+                        end
+                    end
+                end
+            end
+        end
+    end
+    set VHSR09H_DATA empty;
+    try
+        call "VHSR09H"(XDCONTROL, VHSR09H_CRIT, VHSR09H_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+    else
+        if (XDCONTROL.URC == 100)
+     
+     
+            VHSR09H_DATA.STOCK-SHORT-DESC = "    ";
+        end
+    end
+    if (VHSR09IW-TRIGGER.LFOCUS-1 == "1")
+        VHSR09IW-SERNO-W.SER-NO-1 = VHSR09H_DATA.STOCK-SHORT-DESC;
+    else
+        if (VHSR09IW-TRIGGER.LFOCUS-1 == "2")
+            VHSR09IW-SERNO-W.SER-NO-2 = VHSR09H_DATA.STOCK-SHORT-DESC;
+        else
+            if (VHSR09IW-TRIGGER.LFOCUS-1 == "3")
+                VHSR09IW-SERNO-W.SER-NO-3 = VHSR09H_DATA.STOCK-SHORT-DESC;
+            else
+                if (VHSR09IW-TRIGGER.LFOCUS-1 == "4")
+                    VHSR09IW-SERNO-W.SER-NO-4 = VHSR09H_DATA.STOCK-SHORT-DESC;
+                else
+                    if (VHSR09IW-TRIGGER.LFOCUS-1 == "5")
+                        VHSR09IW-SERNO-W.SER-NO-5 = VHSR09H_DATA.STOCK-SHORT-DESC;
+                    else
+                        if (VHSR09IW-TRIGGER.LFOCUS-1 == "6")
+                            VHSR09IW-SERNO-W.SER-NO-6 = VHSR09H_DATA.STOCK-SHORT-DESC;
+                        else
+
+                        end
+                    end
+                end
+            end
+        end
+    end
+end 
+
+Function VHSR10IS-MOVE-SUB () 
+    VHSR10IW.TEMP-SUB-JOB-COUNT = 1;
+    move " " to VHSR10IW.SUB-JOB-DETAILS[1] for all;
+    VHSR10IW.CNT-CMPNTS-IN[1] = 0;
+    VHSR10IW.CNT-CMPNTS-IN[2] = 0;
+    VHSR10IW.CNT-CMPNTS-OUT[1] = 0;
+    VHSR10IW.CNT-CMPNTS-OUT[2] = 0;
+    VHSR10IW.CNT-CMPNTS-SCRAPPD[1] = 0;
+    VHSR10IW.CNT-CMPNTS-SCRAPPD[2] = 0;
+    VHSR10IW.SUB-JOB-DETAILS[TEMP-SUB-JOB-COUNT] = VHSR11A_DATA.DATA_ROW[SUB-JOB-INDEX];
+    VHSR10IW.FILLER-1[TEMP-SUB-JOB-COUNT] = "-";
+    VHSR10IW.FILLER-2[TEMP-SUB-JOB-COUNT] = "-";
+    if (VHSR10IW.SUB-JOB-STAT == "CLO")
+        VHSR10IW_TITLE.TITLE-1 = " VHSR10I - Secondary Repair - History Job";
+    else
+        VHSR10IW_TITLE.TITLE-1 = " VHSR10I - Secondary Repair - Status Job";
+    end
+    VHSR10IW_TITLE.TITLE-2 = "     V1.OCT.20.00.02";
+    LOAD-SUB-JOB-DATA = "Y";
+end 
+
+Function VHSR10IS-PRV-NXT () 
+    if (VHSR10IW.SUB-JOB-COUNT > 0)
+        if (VHSR10IW.BUTTON-CLICK == "PRV")
+            SUB-JOB-INDEX = SUB-JOB-INDEX - 1;
+            if (SUB-JOB-INDEX == 1)
+                DISABLE-PRV = "Y";
+                if (SUB-JOB-INDEX == VHSR10IW.SUB-JOB-COUNT)
+                    DISABLE-NXT = "Y";
+                else
+                    ENABLE-NXT = "Y";
+                    NXT-SETFOCUS = "Y";
+                end
+            else
+                ENABLE-PRV = "Y";
+                ENABLE-NXT = "Y";
+                PRV-SETFOCUS = "Y";
+            end
+        else
+            if (VHSR10IW.BUTTON-CLICK == "NXT")
+                SUB-JOB-INDEX = SUB-JOB-INDEX + 1;
+                ENABLE-PRV = "Y";
+                if (SUB-JOB-INDEX == VHSR10IW.SUB-JOB-COUNT)
+                    DISABLE-NXT = "Y";
+                    PRV-SETFOCUS = "Y";
+                else
+                    ENABLE-NXT = "Y";
+                    NXT-SETFOCUS = "Y";
+                end
+            else
+                if (VHSR10IW.BUTTON-CLICK == " ")
+                    VHSR10IW.SUB-JOB-INDEX = 1; 
+                    if (SUB-JOB-INDEX == VHSR10IW.SUB-JOB-COUNT)
+                        DISABLE-PRV = "Y";
+                        DISABLE-NXT = "Y";
+                    else
+                        DISABLE-PRV = "Y";
+                        ENABLE-NXT = "Y";
+                        NXT-SETFOCUS = "Y";
+                    end
+                end
+            end
+        end
+        VHSR10IS-MOVE-SUB();
+
+    
+        VHSRJNX_DATA.JOB-NO = VHSR10IW.JOB-NO;
+        VHSRJNX_DATA.SUB-JOB-DOC-NO = VHSR10IW.SUB-JOB-DOC-NO[1];
+        try
+            call "VHSRJNX"(XDCONTROL, VHSRJNX_DATA);
+        
+        end
+        if ((XDCONTROL.UROWCNT > 0) &&
+         (XDCONTROL.URC == 0 || XDCONTROL.URC == 4))
+            VHSR10IW.JOB-NARR-COUNT = XDCONTROL.UROWCNT;
+            LOAD-JOB-NARR = "Y";
+        else
+            if (XDCONTROL.URC == 100)
+                VHSR10IW.JOB-NARR-COUNT = 0;
+                LOAD-JOB-NARR = "Y";
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                return;
+            end
+        end
+
+    
+        VHSRJRN_DATA.JOB-NO = VHSR10IW.JOB-NO;
+        VHSRJRN_DATA.SUB-JOB-DOC-NO = VHSR10IW.SUB-JOB-DOC-NO[1];
+        try
+            call "VHSRJRN"(XDCONTROL, VHSRJRN_DATA);
+        
+        end
+        if ((XDCONTROL.UROWCNT > 0) &&
+         (XDCONTROL.URC == 0 || XDCONTROL.URC == 4))
+            VHSR10IW.JOB-REPR-NARR-COUNT = XDCONTROL.UROWCNT;
+            LOAD-JOB-REPR-NARR = "Y";
+        else
+            if (XDCONTROL.URC == 100)
+                VHSR10IW.JOB-REPR-NARR-COUNT = 0;
+                LOAD-JOB-REPR-NARR = "Y";
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                return;
+            end
+        end
+
+    
+        VHSR09A_CRIT.JOB-NO = VHSR10IW.JOB-NO;
+        VHSR09A_CRIT.SUB-JOB-DOC-NO = VHSR10IW.SUB-JOB-DOC-NO[1];
+        try
+            call "VHSR09A"(XDCONTROL, VHSR09A_CRIT, VHSR09A_DATA_01, VHSR09A_DATA_02);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHSR10IW.JOB-REPR-COUNT = XDCONTROL.UROWCNT;
+            LOAD-JOB-REPR = "Y";
+        else
+            if (XDCONTROL.URC == 100)
+                VHSR10IW.JOB-REPR-COUNT = 0;
+                LOAD-JOB-REPR = "Y";
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                return;
+            end
+        end
+
+    
+        VHSR10A_CRIT.JOB-NO = VHSR10IW.JOB-NO;
+        VHSR10A_CRIT.SUB-JOB-DOC-NO = VHSR10IW.SUB-JOB-DOC-NO[1];
+        try
+            call "VHSR10A"(XDCONTROL, VHSR10A_CRIT, VHSR10A_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHSR10IW.JOB-LABOR-COUNT = XDCONTROL.UROWCNT;
+            LOAD-JOB-LABOR = "Y";
+        else
+            if (XDCONTROL.URC == 100)
+                VHSR10IW.JOB-LABOR-COUNT = 0;
+                LOAD-JOB-LABOR = "Y";
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                return;
+            end
+        end
+    else
+        DISABLE-PRV = "Y";
+        DISABLE-NXT = "Y";
+        set VHSRJNX_DATA empty;
+        VHSR10IW.JOB-NARR-COUNT = 0;
+        LOAD-JOB-NARR = "Y";
+        set VHSRJRN_DATA empty;
+        VHSR10IW.JOB-REPR-NARR-COUNT = 0;
+        LOAD-JOB-REPR-NARR = "Y";
+        set VHSR09A_DATA_01 empty;
+        set VHSR09A_DATA_02 empty;
+        VHSR10IW.JOB-REPR-COUNT = 0;
+        LOAD-JOB-REPR = "Y";
+        set VHSR10A_DATA empty;
+        VHSR10IW.JOB-LABOR-COUNT = 0;
+        LOAD-JOB-LABOR = "Y";
+    end
+end 
+
+Function VHSR10IS-RET-SUB () 
+    set VHSR10IW empty;
+    VHSR10IW.JOB-NO = VHSR11A_CRIT.JOB-NO;
+
+  
+    try
+        call "VHSR11A"(XDCONTROL, VHSR11A_CRIT, VHSR11A_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHSR10IW.SUB-JOB-COUNT = XDCONTROL.UROWCNT;
+        VHSR10IS-PRV-NXT();
+    else
+        set VHSR11A_DATA empty;
+        VHSR10IW.SUB-JOB-COUNT = 0;
+        VHSR10IS-PRV-NXT();
+    end
+end 
+
+Function VHSR11IS-CLEAR () 
+    set VHSR11IW empty;
+    set VHSR11A_DATA empty;
+    DISABLE-PRV = "Y";
+    DISABLE-NXT = "Y";
+    DISABLE-PRINT = "Y";
+    CLEAR-NARR = "Y";
+    LOAD-DATA = "Y";
+    JOBNO-SETFOCUS = "Y";
+end 
+
+Function VHSR11IS-INIT () 
+    set VHSR11IW empty;
+    set VHSR11A_DATA empty;
+    DISABLE-PRV = "Y";
+    DISABLE-NXT = "Y";
+    DISABLE-PRINT = "Y";
+    CLEAR-NARR = "Y";
+    LOAD-DATA = "Y";
+    JOBNO-SETFOCUS = "Y";
+end 
+
+Function VHSR11IS-LIST () 
+    VHSR11IW.FINAL-MESSAGE = " ";
+    VHSR11IW.BUTTON-CLICK = " ";
+    VHSR11IW.ROW-COUNT = 0;
+    VHSR11IW.TEMP-COUNT = 0;
+    VHSR11IW.NARR-ROW-COUNT = 0;
+    if (VHSR11IW.JOB-NO == " ")
+        VHSR11IW.FINAL-MESSAGE = "Invalid Job No.";
+        JOBNO-SETFOCUS = "Y";
+    else
+        VHSR11A_CRIT.JOB-NO = VHSR11IW.JOB-NO;
+        try
+            call "VHSR11A"(XDCONTROL, VHSR11A_CRIT, VHSR11A_DATA);
+        
+        end
+        if ((XDCONTROL.URC == 0 || XDCONTROL.URC == 4) &&
+         VHSR11A_DATA.RECORD-FOUND == "Y" &&
+         VHSR11A_DATA.JOB-STAT != "CLO")
+            VHSR11IW.ROW-COUNT = XDCONTROL.UROWCNT;
+            ENABLE-PRINT = "Y";
+        else
+            if ((XDCONTROL.URC == 0 || XDCONTROL.URC == 4) &&
+             VHSR11A_DATA.RECORD-FOUND == "Y" &&
+             VHSR11A_DATA.JOB-STAT == "CLO")
+                VHSR11IW.FINAL-MESSAGE = "Closed Jobs are not listed.";
+                DISABLE-PRINT = "Y";
+                JOBNO-SETFOCUS = "Y";
+            else
+                if (XDCONTROL.URC == 100 && VHSR11A_DATA.RECORD-FOUND == "N")
+                    VHSR11IW.FINAL-MESSAGE = "Entered Job No. does not exist.";
+                    DISABLE-PRINT = "Y";
+                    JOBNO-SETFOCUS = "Y";
+                end
+            end
+            LOAD-DATA = "Y";
+        end
+        EXECUTE-PRVNXT = "Y";
+    end
+end 
+
+Function VHSR11IS-PRINT () 
+    VHSR11IW.FINAL-MESSAGE = " ";
+    VHSR11IW.BUTTON-CLICK = " ";
+    VHSR11IW.ROW-COUNT = 0;
+    VHSR11IW.TEMP-COUNT = 0;
+    VHSR11IW.NARR-ROW-COUNT = 0;
+    if (VHSR11IW.JOB-NO == " ")
+        VHSR11IW.FINAL-MESSAGE = "Invalid Job No.";
+        JOBNO-SETFOCUS = "Y";
+    else
+        VHSR11A_CRIT.JOB-NO = VHSR11IW.JOB-NO;
+        try
+            call "VHSR11A"(XDCONTROL, VHSR11A_CRIT, VHSR11A_DATA);
+        
+        end
+        if ((XDCONTROL.URC == 0 || XDCONTROL.URC == 4) &&
+         VHSR11A_DATA.RECORD-FOUND == "Y" &&
+         VHSR11A_DATA.JOB-STAT != "CLO")
+            VHSR11IW-TRIGGER.OPEN-SR19 = "Y";
+            
+
+    
+        else
+            if ((XDCONTROL.URC == 0 || XDCONTROL.URC == 4) &&
+             VHSR11A_DATA.RECORD-FOUND == "Y" &&
+             VHSR11A_DATA.JOB-STAT == "CLO")
+                VHSR11IW.FINAL-MESSAGE = "Closed Jobs are not listed.";
+                DISABLE-PRINT = "Y";
+                JOBNO-SETFOCUS = "Y";
+            else
+                if (XDCONTROL.URC == 100 && VHSR11A_DATA.RECORD-FOUND == "N")
+                    VHSR11IW.FINAL-MESSAGE = "Entered Job No. does not exist.";
+                    DISABLE-PRINT = "Y";
+                    JOBNO-SETFOCUS = "Y";
+                end
+            end
+            LOAD-DATA = "Y";
+        end
+    end
+end 
+
+Function VHSR11IS-PRV-NXT () 
+    if (VHSR11IW.ROW-COUNT > 0)
+        if (VHSR11IW.BUTTON-CLICK == "PRV")
+            SUB-JOB-INDEX = SUB-JOB-INDEX - 1;
+            if (SUB-JOB-INDEX == 1)
+                DISABLE-PRV = "Y";
+                if (SUB-JOB-INDEX == VHSR11IW.ROW-COUNT)
+                    DISABLE-NXT = "Y";
+                else
+                    ENABLE-NXT = "Y";
+                    NXT-SETFOCUS = "Y";
+                end
+            else
+                ENABLE-PRV = "Y";
+                ENABLE-NXT = "Y";
+                PRV-SETFOCUS = "Y";
+            end
+        else
+            if (VHSR11IW.BUTTON-CLICK == "NXT")
+                SUB-JOB-INDEX = SUB-JOB-INDEX + 1;
+                ENABLE-PRV = "Y";
+                if (SUB-JOB-INDEX == VHSR11IW.ROW-COUNT)
+                    DISABLE-NXT = "Y";
+                    PRV-SETFOCUS = "Y";
+                else
+                    ENABLE-NXT = "Y";
+                    NXT-SETFOCUS = "Y";
+                end
+            else
+                if (VHSR11IW.BUTTON-CLICK == " ")
+                    VHSR11IW.SUB-JOB-INDEX = 1; 
+                    if (SUB-JOB-INDEX == VHSR11IW.ROW-COUNT)
+                        DISABLE-PRV = "Y";
+                        DISABLE-NXT = "Y";
+                    else
+                        DISABLE-PRV = "Y";
+                        ENABLE-NXT = "Y";
+                        NXT-SETFOCUS = "Y";
+                    end
+                end
+            end
+        end
+        move " " to VHSR11IW.DATA_ROW[1] for all;
+        VHSR11IW.TEMP-COUNT = 1;
+        VHSR11IW.SUB-JOB-DOC-NO[1] = VHSR11A_DATA.SUB-JOB-DOC-NO[SUB-JOB-INDEX];
+        VHSR11IW.SUB-JOB-STAT[1] = VHSR11A_DATA.SUB-JOB-STAT[SUB-JOB-INDEX];
+        VHSR11IW.WORK-TYPE[1] = VHSR11A_DATA.WORK-TYPE[SUB-JOB-INDEX];
+        VHSR11IW.DIAG-WORK-TYPE[1] = VHSR11A_DATA.DIAG-WORK-TYPE[SUB-JOB-INDEX];
+        VHSR11IW.REPR-AREA[1] = VHSR11A_DATA.REPR-AREA[SUB-JOB-INDEX];
+        VHSR11IW.DATE-IN[1] = VHSR11A_DATA.DATE-IN[SUB-JOB-INDEX];
+        VHSR11IW.DATE-OUT[1] = VHSR11A_DATA.DATE-OUT[SUB-JOB-INDEX];
+        VHSR11IW.DATE-TO-VENDOR[1] = VHSR11A_DATA.DATE-TO-VENDOR[SUB-JOB-INDEX];
+        VHSR11IW.CNT-CMPNTS-IN[1] = VHSR11A_DATA.CNT-CMPNTS-IN[SUB-JOB-INDEX];
+        VHSR11IW.STOCK-NO[1] = VHSR11A_DATA.STOCK-NO[SUB-JOB-INDEX];
+        VHSR11IW.FILLER-1[1] = "-";
+        VHSR11IW.FILLER-2[1] = "-";
+        VHSR11IW.SER-NO[1] = VHSR11A_DATA.SER-NO[SUB-JOB-INDEX];
+        VHSR11IW.CMPNT-FAULT-CD[1] = VHSR11A_DATA.CMPNT-FAULT-CD[SUB-JOB-INDEX];
+        VHSR11IW.CNT-CMPNTS-OUT[1] = VHSR11A_DATA.CNT-CMPNTS-OUT[SUB-JOB-INDEX];
+        VHSR11IW.CNT-CMPNTS-SCRAPPD[1] = VHSR11A_DATA.CNT-CMPNTS-SCRAPPD[SUB-JOB-INDEX];
+        VHSR11IW.QA-INSPECT-ID[1] = VHSR11A_DATA.QA-INSPECT-ID[SUB-JOB-INDEX];
+        VHSR11IW.VENDOR-ID[1] = VHSR11A_DATA.VENDOR-ID[SUB-JOB-INDEX];
+        VHSR11IW.LONG-TERM-STOR-IND[1] = VHSR11A_DATA.LONG-TERM-STOR-IND[SUB-JOB-INDEX];
+        VHSR11IW.WAR-TIME-CTL-CD[1] = VHSR11A_DATA.WAR-TIME-CTL-CD[SUB-JOB-INDEX];
+        LOAD-DATA = "Y"; 
+        VHSRJNX_DATA.JOB-NO = VHSR11IW.JOB-NO;
+        VHSRJNX_DATA.SUB-JOB-DOC-NO = VHSR11IW.SUB-JOB-DOC-NO[1];
+        try
+            call "VHSRJNX"(XDCONTROL, VHSRJNX_DATA);
+        
+        end
+        if (XDCONTROL.UROWCNT > 0)
+            VHSR11IW.NARR-ROW-COUNT = XDCONTROL.UROWCNT;
+        else
+
+        end
+    else
+        DISABLE-PRV = "Y";
+        DISABLE-NXT = "Y";
+        set VHSRJNX_DATA empty;
+    end
+end 
+
+
+
+Function VHSR15IS-CLEAR () 
+    set VHSR15IW empty;
+    VHSR15IW.DOC-NO = 01;
+    VHSR15IW.DOC-NO-X = "01";
+end 
+
+
+
+Function VHSR15IS-CLEAR-X () 
+    VHSR15IW.JOB-NO = " ";
+    VHSR15IW.DOC-NO = 01;
+    VHSR15IW.DOC-NO-X = "01";
+end 
+
+Function VHSR15IS-CLEAR-Y () 
+    VHSR15IW.JOB-NO = " ";
+    VHSR15IW.DOC-NO = 01;
+    VHSR15IW.DOC-NO-X = "01";
+end 
+
+Function VHSR15IS-HARD-COPY () 
+    if (PRT-IDX > 0)
+        ENABLE-HARD = "Y";
+        VHSR15IW-PASSVALUE.VTAM-NAME = VHSR15C_DATA.VTAM-NAME[PRT-IDX];
+    else
+        DISABLE-HARD = "Y";
+    end
+end 
+
+
+
+Function VHSR15IS-INIT ()
+  
+  
+  
+  
+  
+  
+  
+   
+    VHSR15IS-CLEAR();
+    VHSR15C_CRIT.USER-GROUP = VHSR01_DATA.USER-GROUP;
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHSR15I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHSR15C";
+
+    
+    try
+        call "VHSR15C"(XDCONTROL, VHSR15C_CRIT, VHSR15C_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHSR15IW-TRIGGER.SELECT-IDX = "1";
+            if (VHSR15C_DATA.DEFAULT-PRT-IDX == 0)
+                VHSR15IW-TRIGGER.DESELECT = "Y";
+            end
+            
+
+  
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+end 
+
+Function VHSR15IS-MESSAGE () 
+    if (VHSR15IW-TRIGGER.SUBMIT == "Y")
+        VHSR15IW-TRIGGER.SUBMIT = " ";
+        VHSR15IW.FINAL-MESSAGE = "REPRINT FORM JOB HAS BEEN SUBMITTED, PLEASE PICK UP THE FORM FROM PRTR";
+    end
+end 
+
+Function VHSR15IS-SUBMIT ()
+  
+  
+  
+  
+  
+  
+  
+   
+    set VHSR15B_CRIT empty;
+    VHSR15B_CRIT.JOB-NO = VHSR15IW.JOB-NO;
+    VHSR15B_CRIT.DOC-NO = VHSR15IW.DOC-NO;
+    VHSR15B_CRIT.REPT-TYPE = VHSR15IW-PASSVALUE.VTAM-NAME;
+
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHSR15I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHSR15B";
+
+    
+    try
+        call "VHSR15B"(XDCONTROL, VHSR15B_CRIT, VHSR15B_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHSR15IW-TRIGGER.SUBMIT = "Y";
+        else
+            VHSR15IW-TRIGGER.SUBMIT = "Y";
+  
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+    if (VHSR15C_DATA.DEFAULT-PRT-IDX == 0)
+        VHSR15IW-TRIGGER.DESELECT = "Y";
+    end
+end 
+
+Function VHSR15IS-VALIDATE () 
+    VHSR15IW.FINAL-MESSAGE = " ";
+    if (VHSR15IW.JOB-NO == " ")
+        VHSR15IW.FINAL-MESSAGE = "Enter a valid Job No.";
+        VHSR15IW-TRIGGER.JOB-ERROR = "Y";
+    else
+  
+        VHSR15A_CRIT.JOB-NO = VHSR15IW.JOB-NO;
+        VHSR15A_CRIT.DOC-NO = VHSR15IW.DOC-NO;
+        XXEXT_CALL_Level77Items.UEXTNAM = "VHSR15I";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "VHSR15A";
+        try
+            call "VHSR15A"(XDCONTROL, VHSR15A_CRIT, VHSR15A_DATA);
+        
+        end
+        MRSCommonCode.XXA0IS-CHECK_EXT();
+        if (XXEXT_CALL_Level77Items.URC == 0)
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                if (VHSR15A_DATA.RECORD-EXIST == "Y")
+                    if (VHSR15A_DATA.SUB-JOB-STAT != "CLO")
+                        VHSR15IS-SUBMIT();
+                    else
+                        VHSR15IW.FINAL-MESSAGE = "Job is Closed.";
+                        VHSR15IW-TRIGGER.JOB-ERROR = "Y";
+                    end
+                end
+            else
+                if (XDCONTROL.URC == 100)
+                    VHSR15IW.FINAL-MESSAGE = "Job does not exist.";
+                    VHSR15IW-TRIGGER.JOB-ERROR = "Y";
+                else
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end
+            end
+        end
+  
+  
+  
+  
+    end
+end

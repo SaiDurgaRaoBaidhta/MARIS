@@ -1,0 +1,656 @@
+
+
+package MRSVehicleCarBright;
+ 
+
+Function VHCBP1I-REV-DATE2 ()
+  
+  
+  
+  
+  
+  
+  
+   
+    set VHIE01B_DATA empty;
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHIE01B";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHIE01I";
+    set VHIE01B_DATA empty;
+
+    
+    try
+        call "MRSVehicleIncdEvent.VHIE01B"(XDCONTROL, VHIE01B_CRIT, VHIE01B_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+  
+        
+        
+  
+            if (XDCONTROL.URC == 100)
+
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end 
+
+  
+    end
+
+  
+    if (VHIE01B_DATA.CURRENT-TIME >= VHIE01B_DATA.TIME-REV-START)
+        VHCBP1I-DATE.REV-DATE = VHIE01B_DATA.CURRENT-DATE;
+    else
+        VHCBP1I-DATE.REV-DATE = VHIE01B_DATA.YESTERDAY;
+    end
+
+  
+    XXDATEW.VAGen_FUNCTION = "MDY";
+    XXDATEW.DATE-YYYY-MM-DD = VHCBP1I-DATE.REV-DATE;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHCBP1I-DATE.REV-DATE-MMDDYYYY = XXDATEW.DATE-MM-DD-YYYY;
+    VHCBP1IW.TIME-HOLD = VHIE01B_DATA.CURRENT-TIME;
+    VHCBP1I-DATE.VAGen_TIME = VHIE01B_DATA.CURRENT-TIME;
+    VHCBP1IW.TIME-CAR-BRIT = VHIE01B_DATA.CURRENT-TIME;
+end 
+
+Function VHCBP1IS-ADD () 
+    set VHCBP1A_DATA empty;
+    ERR-IND = 0;
+    ERROR-CAR = " ";
+    VHCBP1IW.SYSTEM-DATE = VGVar.currentFormattedGregorianDate;
+    INNER-LOOP-INDEX = 1;
+    OUTER-LOOP-INDEX = 1;
+    VHCBP1IW.DUP-CAR-ERROR = "N";
+    YARD-ERROR = "N";
+    SCR-DATE-ERROR = "N";
+    TIME-ERROR = "N";
+    CAR-ERROR = "N";
+    CAR-ERROR-MESSAGE = " ";
+    FINAL-ERROR-MSG = " ";
+    move " " to ERROR-MESSAGE[1] for all;
+    if (VHCBP1IW.BRIT-LOC == " ")
+        ERR-IND = ERR-IND + 1;
+        YARD-ERROR = "Y";
+        ERROR-MESSAGE[ERR-IND] = "Yard cannot be blank.";
+    else
+        if (VHCBP1IW.BRIT-LOC != "CY" &&
+         VHCBP1IW.BRIT-LOC != "DY" &&
+         VHCBP1IW.BRIT-LOC != "HY" &&
+         VHCBP1IW.BRIT-LOC != "RY" &&
+         VHCBP1IW.BRIT-LOC != "ALL")
+            ERR-IND = ERR-IND + 1;
+            YARD-ERROR = "Y";
+            ERROR-MESSAGE[ERR-IND] = "Invalid Yard.";
+            return;
+        end
+    end
+    if (VHCBP1IW.DATE-CAR-BRIT == " ")
+        ERR-IND = ERR-IND + 1;
+        SCR-DATE-ERROR = "Y";
+        ERROR-MESSAGE[ERR-IND] = "Date cannot be blank.";
+    end
+    if ((VHCBP1IW.DATE-CAR-BRIT-YEAR > VHCBP1IW.SYSTEM-DATE-YEAR) ||
+     (VHCBP1IW.DATE-CAR-BRIT-YEAR == VHCBP1IW.SYSTEM-DATE-YEAR &&
+     VHCBP1IW.DATE-CAR-BRIT-MON > VHCBP1IW.SYSTEM-DATE-MON) ||
+     (VHCBP1IW.DATE-CAR-BRIT-YEAR == VHCBP1IW.SYSTEM-DATE-YEAR &&
+     VHCBP1IW.DATE-CAR-BRIT-MON == VHCBP1IW.SYSTEM-DATE-MON &&
+     VHCBP1IW.DATE-CAR-BRIT-DAY > VHCBP1IW.SYSTEM-DATE-DAY))
+        ERR-IND = ERR-IND + 1;
+        SCR-DATE-ERROR = "Y";
+        ERROR-MESSAGE[ERR-IND] = "Date cannot be greater than today's date.";
+    end
+
+  
+    set VHCBP1B_DATA empty;
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHCBP1IW.DATE-CAR-BRIT;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHCBP1B_CRIT.VAGen_DATE = XXDATEW.DATE-YYYY-MM-DD;
+    VHCBP1B_DATA.DATE-IS-VALID = "Y";
+    
+  
+  
+    if (VHCBP1B_DATA.DATE-IS-VALID == "N")
+        ERR-IND = ERR-IND + 1;
+        SCR-DATE-ERROR = "Y";
+        ERROR-MESSAGE[ERR-IND] = "Date cannot be older than 30 days.";
+    end
+    if (VHCBP1IW.SCR-TIME-CAR-BRIT == " ")
+        ERR-IND = ERR-IND + 1;
+        TIME-ERROR = "Y";
+        ERROR-MESSAGE[ERR-IND] = "Time cannot be blank.";
+    else
+        if (VHCBP1IW.SCR-TIME-CAR-BRIT == "0000" ||
+         VHCBP1IW.SCR-TIME-CAR-BRIT > "2400")
+            ERR-IND = ERR-IND + 1;
+            TIME-ERROR = "Y";
+            ERROR-MESSAGE[ERR-IND] = "Invalid Time.";
+        end
+    end
+    if (CAR-NO-ARRAY[1] == " ")
+        ERR-IND = ERR-IND + 1;
+        CAR-ERROR = "Y";
+        ERROR-MESSAGE[ERR-IND] = "First car no field cannot be blank.";
+        
+  
+    end
+
+  
+    if (CAR-ERROR == "N")
+        while ((OUTER-LOOP-INDEX <= 20) && VHCBP1IW.DUP-CAR-ERROR == "N")
+            INNER-LOOP-INDEX = 1;
+            while ((INNER-LOOP-INDEX <= 20) && VHCBP1IW.DUP-CAR-ERROR == "N")
+                if (CAR-NO-ARRAY[INNER-LOOP-INDEX] != " ")
+                    if (CAR-NO-ARRAY[INNER-LOOP-INDEX] ==
+                     CAR-NO-ARRAY[OUTER-LOOP-INDEX] && INNER-LOOP-INDEX != OUTER-LOOP-INDEX)
+                        VHCBP1IW.DUP-CAR-ERROR = "Y";
+                        
+  
+                    end
+                end
+                INNER-LOOP-INDEX = INNER-LOOP-INDEX + 1;
+            end
+            OUTER-LOOP-INDEX = OUTER-LOOP-INDEX + 1;
+        end
+        if (DUP-CAR-ERROR == "Y")
+            ERR-IND = ERR-IND + 1;
+            DUP-CAR-ERROR = "Y";
+            ERROR-MESSAGE[ERR-IND] = "Duplicate car nos entered.";
+        end
+    end
+    VHCBP1IW.ERROR-LOOP-INDEX = 1;
+    VHCBP1IW.FINAL-INDEX = 0;
+    VHCBP1IW-TRIGGER.FINAL-ERROR-MSG = " ";
+    VHCBP1IW.TEMP-ERROR-MSG = " ";
+    if (ERR-IND > 0)
+        VHCBP1IS-MOVE-MSG();
+    else
+        OUTER-LOOP-INDEX = 1;
+        while ((OUTER-LOOP-INDEX <= 20 && CAR-ERROR-MESSAGE == " "))
+            if (CAR-NO-ARRAY[OUTER-LOOP-INDEX] != " ")
+                if (CAR-NO-ARRAY[OUTER-LOOP-INDEX] not numeric)
+                    VHCBP1IW.ERROR-CAR = "Y";
+                    CAR-ERR-1 = "         Car No ";
+                    CAR-ERR-2 = CAR-NO-ARRAY[OUTER-LOOP-INDEX];
+                    CAR-ERR-3 = " not numeric";
+                    
+  
+                else
+          
+                    VHCBR2C_CRIT.CAR-NO = CAR-NO-ARRAY[OUTER-LOOP-INDEX];
+                    try
+                        call "VHCBR2C"(XDCONTROL, VHCBR2C_CRIT, VHCBR2C_DATA);
+                    
+                    end
+                    if (XDCONTROL.UROWCNT == 1)
+
+                    else
+                        if (XDCONTROL.URC == 100)
+                            VHCBP1IW.ERROR-CAR = "Y";
+                            CAR-ERR-1 = "         Car No ";
+                            CAR-ERR-2 = CAR-NO-ARRAY[OUTER-LOOP-INDEX];
+                            CAR-ERR-3 = " does not exist in Vehicle database.";
+                            
+  
+                        else
+                            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                            return;
+                        end
+                    end
+                end
+            end
+            OUTER-LOOP-INDEX = OUTER-LOOP-INDEX + 1;
+        end
+        move CAR-ERROR-MESSAGE to FINAL-ERROR-MSG withV60Compat;
+    end
+
+  
+    if (FINAL-ERROR-MSG == " ")
+        VHCBP1IS-MOVE-VAL();
+        try
+            call "VHCBP1A"(XDCONTROL, VHCBP1A_DATA);
+        
+        end
+        if (VHCBP1A_DATA.RECORD-FOUND == "N")
+            FINAL-ERROR-MSG = "Car Thorough Cleaing records added successfully";
+        else
+            if (VHCBP1A_DATA.RECORD-FOUND == "Y")
+                FINAL-ERROR-MSG = "Duplicate car Cleaning  records cannot be added.";
+                VHCBP1IS-MSG-X();
+                return;
+            else
+                FINAL-ERROR-MSG = "Error - Car Thorough Clean records not added.";
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end
+    end
+    if (ERROR-CAR == " ")
+        VHCBP1IW-TRIGGER.ADD-SW = "Y";
+    end
+end 
+
+Function VHCBP1IS-AFT-ADD () 
+    if (ERR-IND == 0)
+        set VHCBP1IW empty;
+        set VHCB1W-MSG empty;
+        VHCBP1IW.BRIT-LOC = "HY";
+        VHCBP1IW.DATE-CAR-BRIT = " ";
+        DATE-SETFOCUS = "Y";
+    else
+
+    end
+end 
+
+Function VHCBP1IS-DUP-ERR () 
+    if (OUTER-LOOP-INDEX == 1)
+        VHCB1W-MSG.CAR-1-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 2)
+        VHCB1W-MSG.CAR-2-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 3)
+        VHCB1W-MSG.CAR-3-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 4)
+        VHCB1W-MSG.CAR-4-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 5)
+        VHCB1W-MSG.CAR-5-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 6)
+        VHCB1W-MSG.CAR-6-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 7)
+        VHCB1W-MSG.CAR-7-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 8)
+        VHCB1W-MSG.CAR-8-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 9)
+        VHCB1W-MSG.CAR-9-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 10)
+        VHCB1W-MSG.CAR-10-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 11)
+        VHCB1W-MSG.CAR-11-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 12)
+        VHCB1W-MSG.CAR-12-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 13)
+        VHCB1W-MSG.CAR-13-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 14)
+        VHCB1W-MSG.CAR-14-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 15)
+        VHCB1W-MSG.CAR-15-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 16)
+        VHCB1W-MSG.CAR-16-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 17)
+        VHCB1W-MSG.CAR-17-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 18)
+        VHCB1W-MSG.CAR-18-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 19)
+        VHCB1W-MSG.CAR-19-MSG = "Err";
+    end
+    if (OUTER-LOOP-INDEX == 20)
+        VHCB1W-MSG.CAR-20-MSG = "Err";
+    end
+end 
+
+Function VHCBP1IS-INIT () 
+    set VHCBP1IW empty;
+    set VHCB1W-MSG empty;
+    FINAL-ERROR-MSG = " ";
+    VHCBP1IW.BRIT-LOC = "HY";
+    VHCBP1IW.DATE-CAR-BRIT = " ";
+end 
+
+Function VHCBP1IS-MESSAGE () 
+    if (OUTER-LOOP-INDEX == 1)
+        VHCB1W-MSG.CAR-1-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 2)
+        VHCB1W-MSG.CAR-2-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 3)
+        VHCB1W-MSG.CAR-3-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 4)
+        VHCB1W-MSG.CAR-4-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 5)
+        VHCB1W-MSG.CAR-5-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 6)
+        VHCB1W-MSG.CAR-6-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 7)
+        VHCB1W-MSG.CAR-7-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 8)
+        VHCB1W-MSG.CAR-8-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 9)
+        VHCB1W-MSG.CAR-9-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 10)
+        VHCB1W-MSG.CAR-10-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 11)
+        VHCB1W-MSG.CAR-11-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 12)
+        VHCB1W-MSG.CAR-12-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 13)
+        VHCB1W-MSG.CAR-13-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 14)
+        VHCB1W-MSG.CAR-14-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 15)
+        VHCB1W-MSG.CAR-15-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 16)
+        VHCB1W-MSG.CAR-16-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 17)
+        VHCB1W-MSG.CAR-17-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 18)
+        VHCB1W-MSG.CAR-18-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 19)
+        VHCB1W-MSG.CAR-19-MSG = "ERR";
+    end
+    if (OUTER-LOOP-INDEX == 20)
+        VHCB1W-MSG.CAR-20-MSG = "ERR";
+    end
+end 
+
+Function VHCBP1IS-MOVE-MSG () 
+    while (((ERROR-LOOP-INDEX <= 4) &&
+     (ERROR-MESSAGE[ERROR-LOOP-INDEX] != " ")))
+        ERR-IND = 1;
+        TEMP-ERROR-MSG = ERROR-MESSAGE[ERROR-LOOP-INDEX];
+        while ((ERR-IND <= 50))
+            if (TEMP-MSG[ERR-IND] != ".")
+                FINAL-INDEX = FINAL-INDEX + 1;
+                FINAL-MSG[FINAL-INDEX] = TEMP-MSG[ERR-IND];
+            else
+                if (TEMP-MSG[ERR-IND] == ".")
+                    FINAL-INDEX = FINAL-INDEX + 1;
+                    FINAL-MSG[FINAL-INDEX] = ",";
+                    FINAL-INDEX = FINAL-INDEX + 1;
+                    FINAL-MSG[FINAL-INDEX] = " ";
+                    ERR-IND = 50;
+                end
+            end
+            ERR-IND = ERR-IND + 1;
+        end
+        ERROR-LOOP-INDEX = ERROR-LOOP-INDEX + 1;
+    end
+    FINAL-INDEX = FINAL-INDEX - 1;
+    FINAL-MSG[FINAL-INDEX] = " ";
+    LOAD-ERR-MSG = "Y";
+end 
+
+Function VHCBP1IS-MOVE-VAL () 
+    VHCBP1A_DATA.BRIT-LOC = VHCBP1IW.BRIT-LOC;
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHCBP1IW.DATE-CAR-BRIT;
+  
+    VHCBP1A_DATA.DATE-CAR-BRIT = XXDATEW.DATE-YYYY-MM-DD;
+
+  
+    VHCBP1A_DATA.TIME-CAR-HHMM = VHCBP1IW.TIME-CAR-BRIT-HH-MM;
+    VHCBP1A_DATA.TIME-CAR-BRIT-FILLER2 = ".00";
+    if (VHCBP1A_DATA.SEPERATOR != ".")
+        VHCBP1A_DATA.SEPERATOR = ".";
+    end
+    VHCBP1A_DATA.TERM-LAST-UPD = VHCBP1IW-PASSVALUE.TERM-LAST-UPD;
+    OUTER-LOOP-INDEX = 1;
+    INNER-LOOP-INDEX = 0;
+    while ((OUTER-LOOP-INDEX <= 20))
+        if (CAR-NO-ARRAY[OUTER-LOOP-INDEX] != " ")
+            INNER-LOOP-INDEX = INNER-LOOP-INDEX + 1;
+            VHCBP1A_DATA.CAR-NO[INNER-LOOP-INDEX] = CAR-NO-ARRAY[OUTER-LOOP-INDEX];
+        end
+        OUTER-LOOP-INDEX = OUTER-LOOP-INDEX + 1;
+    end
+
+  
+    VHCBP1A_DATA.NUM-OF-CARS = INNER-LOOP-INDEX;
+end 
+
+Function VHCBP1IS-MSG-X () 
+    VHCB1W-MSG.CAR-20-MSG = " ";
+end 
+
+Function VHCBP1IS-SETFOCUS () 
+    if (YARD-ERROR == "Y")
+        YARD-SETFOCUS = "Y";
+    else
+        if (SCR-DATE-ERROR == "Y")
+            DATE-SETFOCUS = "Y";
+        else
+            if (TIME-ERROR == "Y")
+                TIME-SETFOCUS = "Y";
+            else
+                if (CAR-ERROR == "Y")
+                    CAR-SETFOCUS = "Y";
+                else
+                    if (DUP-CAR-ERROR == "Y")
+                        CAR-SETFOCUS = "Y";
+                    end
+                end
+            end
+        end
+    end
+end 
+
+Function VHCBR01IS-PRINT () 
+    FINAL-MESSAGE = " ";
+    if (VHCBR1IW.HOME-YRD == " " ||
+     (VHCBR1IW.HOME-YRD != "CY" &&
+     VHCBR1IW.HOME-YRD != "DY" &&
+     VHCBR1IW.HOME-YRD != "HY" &&
+     VHCBR1IW.HOME-YRD != "RY" &&
+     VHCBR1IW.HOME-YRD != "ALL"))
+        FINAL-MESSAGE = "Please enter a valid home yard.";
+        HOMEYRD-SETFOCUS = "Y";
+        return;
+    end
+    RUN-VHCBR02 = "Y";
+end 
+
+Function VHCBR1IS-CLEAR () 
+    set VHCBR1IW empty;
+    VHCBR1IW.OPTION-INDEX = 1;
+    LOAD-DATA = "Y";
+end 
+
+Function VHCBR1IS-LIST () 
+    FINAL-MESSAGE = " ";
+    if (VHCBR1IW.HOME-YRD == " " ||
+     (VHCBR1IW.HOME-YRD != "CY" &&
+     VHCBR1IW.HOME-YRD != "DY" &&
+     VHCBR1IW.HOME-YRD != "HY" &&
+     VHCBR1IW.HOME-YRD != "RY" &&
+     VHCBR1IW.HOME-YRD != "ALL"))
+        FINAL-MESSAGE = "Please enter a valid home yard.";
+        HOMEYRD-SETFOCUS = "Y";
+        return;
+    end
+    try
+        call "VHCBR1X"(XDCONTROL, VHCBR1X_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0)
+        VHCBR1A_CRIT.DATE-CRIT = VHCBR1X_DATA.DATE-CAR-BRIT;
+        VHCBR1A_CRIT.HOME-YRD = VHCBR1IW.HOME-YRD;
+        VHCBR1A_CRIT.OVER-DUE-DATE = VHCBR1X_DATA.OVER-DUE-DATE;
+        VHCBR1A_CRIT.OPTION-INDEX = VHCBR1IW.OPTION-INDEX;
+
+   
+        try
+            call "VHCBR1A"(XDCONTROL, VHCBR1A_CRIT, VHCBR1A_DATA);
+        
+        end
+        if (XDCONTROL.UROWCNT > 0)
+            VHCBR1IW.ROW-COUNT = XDCONTROL.UROWCNT;
+            LOAD-DATA = "Y";
+        else
+            if (XDCONTROL.URC == 100)
+                VHCBR1IW.ROW-COUNT = 0;
+                FINAL-MESSAGE = "No records found.";
+                LOAD-DATA = "Y";
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end
+    else
+        FINAL-MESSAGE = "Date car brit is not retrieved. Please check Mrs_Sys_Parm table.";
+    end
+    CLEAR-SETFOCUS = "Y";
+end 
+
+
+
+Function VHCBR2IS-SUBMIT ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    if (VHCBR02W-PASSVALUE.BRIGHTEN-SW == "1")
+
+  
+        set VHCBR02_CRIT empty;
+        VHCBR02_CRIT.REPT-TYPE = VHDVS4IW-PASSVALUE.VTAM-NAME;
+        VHCBR02_CRIT.DATE-REPT-FROM = VHDVS4IW-PASSVALUE.REPORT-DATE;
+        VHCBR02_CRIT.HOME-YRD = VHCBR02W-PASSVALUE.HOME-YRD;
+
+
+    
+        XXEXT_CALL_Level77Items.UEXTNAM = "VHCBR2I";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "VHCBR02";
+
+    
+        try
+            call "VHCBR02"(XDCONTROL, VHCBR02_CRIT, VHCBR02_DATA);
+        
+        end
+        
+
+    
+        MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+        if (XXEXT_CALL_Level77Items.URC == 0)
+
+      
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4 || XDCONTROL.URC == 100)
+
+        
+                VHDVS4IW-TRIGGER.SUBMIT = "Y";
+            else
+
+        
+
+
+        
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end 
+        end
+    end
+  
+    if (VHCBR02W-PASSVALUE.BRIGHTEN-SW == "2")
+        set VHCBR02_CRIT empty;
+        VHCBR02_CRIT.REPT-TYPE = VHDVS4IW-PASSVALUE.VTAM-NAME;
+        VHCBR02_CRIT.DATE-REPT-FROM = VHDVS4IW-PASSVALUE.REPORT-DATE;
+        VHCBR02_CRIT.HOME-YRD = VHCBR02W-PASSVALUE.HOME-YRD;
+        if (VHCBR02W-PASSVALUE.BRIGHTEN-SW == "1")
+            VHCBR02_CRIT.BRIGHTEN-SW = "Y";
+        else
+            VHCBR02_CRIT.BRIGHTEN-SW = "N";
+        end
+
+
+    
+        XXEXT_CALL_Level77Items.UEXTNAM = "VHCBR2I";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "VHCBR02";
+
+    
+        try
+            call "VHCBR02"(XDCONTROL, VHCBR02_CRIT, VHCBR02_DATA);
+        
+        end
+        
+
+    
+        MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+        if (XXEXT_CALL_Level77Items.URC == 0)
+
+      
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4 || XDCONTROL.URC == 100)
+
+        
+                VHDVS4IW-TRIGGER.SUBMIT = "Y";
+            else
+
+        
+
+
+        
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end 
+        end
+    end
+end

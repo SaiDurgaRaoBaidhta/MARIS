@@ -1,0 +1,1314 @@
+
+
+package MRSVehiclePrevMaint;
+
+
+Function VHHPD1IS-GET-DATA ()
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHHPD1I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHHPDA1";
+
+  
+
+
+  
+    try
+        call "VHHPDA1"(XDCONTROL, VHHPDA1_CRIT, VHHPDA1_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            
+
+        else
+
+        
+        
+            VHHPR1I-TRIGGERS.BAD-YARD = "Y";
+            
+
+  
+  
+  
+  
+        end 
+    end
+
+  
+    set VHHPD1IW-MTBI empty;
+    CNT = 1;
+    while (CNT <= XDCONTROL.UROWCNT)
+        VHHPD1IW-MTBI.MTBI-TOTAL-HRS = VHHPD1IW-MTBI.MTBI-TOTAL-HRS + VHHPDA1_DATA.MTBI_HRS[CNT];
+        VHHPD1IW-MTBI.MTBI-TOTAL-INCDS = VHHPD1IW-MTBI.MTBI-TOTAL-INCDS + VHHPDA1_DATA.MTBI_INCDS[CNT];
+        VHHPD1IW-MTBI.CAR-COUNT = VHHPD1IW-MTBI.CAR-COUNT + 1;
+
+  
+        if (VHHPDA1_DATA.WHERE-IS-CAR[CNT] == "CON")
+            VHHPDA1_DATA.CURR-LOC[CNT] = VHHPDA1_DATA.CON-NO[CNT];
+        end
+
+  
+  
+  
+  
+        if (VHHPR1IW.HOME-YRD != "ALL")
+            if (VHHPDA1_DATA.CURR-LOC[CNT] == VHHPR1IW.HOME-YRD)
+                VHHPDA1_DATA.CURR-LOC[CNT] = "   ";
+            end
+        end
+  
+
+  
+        CNT = CNT + 1;
+    end
+
+  
+    VHHPD1IW-MTBI.MTBI-AVG = VHHPD1IW-MTBI.MTBI-TOTAL-HRS / VHHPD1IW-MTBI.MTBI-TOTAL-INCDS;
+end 
+
+Function VHHPD1IS-HOME-YARD () 
+    if (VHHPR1IW.HOME-YRD == "ALL")
+        VHHPDA1_CRIT.HOME-YRD-LOW = "CY";
+        VHHPDA1_CRIT.HOME-YRD-HIGH = "RY";
+    else
+        VHHPDA1_CRIT.HOME-YRD-LOW = VHHPR1IW.HOME-YRD;
+        VHHPDA1_CRIT.HOME-YRD-HIGH = VHHPR1IW.HOME-YRD;
+    end
+    if (VHHPR1IW.HOME-YRD == "CY")
+        VHHPR1IW.HOME-YARD-ALPHA = "Concord";
+    end
+    if (VHHPR1IW.HOME-YRD == "DY")
+        VHHPR1IW.HOME-YARD-ALPHA = "Daly City";
+    end
+    if (VHHPR1IW.HOME-YRD == "HY")
+        VHHPR1IW.HOME-YARD-ALPHA = "Hayward";
+    end
+    if (VHHPR1IW.HOME-YRD == "RY")
+        VHHPR1IW.HOME-YARD-ALPHA = "Richmond";
+    end
+    if (VHHPR1IW.HOME-YRD == "ALL")
+        VHHPR1IW.HOME-YARD-ALPHA = "All Yards";
+    end
+end 
+
+Function VHHPD2IS-GET-DATA ()
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+
+
+   
+    try
+        call "VHHPD2A"(XDCONTROL, VHHPD2A_CRIT, VHHPD2A_DATA);
+    
+    end
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            
+
+        else
+
+        
+        
+            VHHPR1I-TRIGGERS.BAD-YARD = "Y";
+            
+
+  
+  
+  
+  
+        end 
+    end
+
+  
+    set VHHPD2IW-MTBI empty;
+    CNT = 1;
+    while (CNT <= XDCONTROL.UROWCNT)
+        if (VHHPD2A_DATA.HRS-TO-NEXT-PM[CNT] > 0 && VHHPD2A_DATA.HRS-TO-NEXT-PM[CNT] < 50)
+            VHHPD2IW-PASSVALUE.NEXT-PM-COLOR = "GREEN";
+        else
+            if (VHHPD2A_DATA.HRS-TO-NEXT-PM[CNT] <= 0)
+                VHHPD2IW-PASSVALUE.NEXT-PM-COLOR = "RED";
+                
+  
+  
+            end
+        end
+        VHHPD2IW-MTBI.CAR-COUNT = VHHPD2IW-MTBI.CAR-COUNT + 1;
+
+  
+        if (VHHPD2A_DATA.WHERE-IS-CAR[CNT] == "CON")
+            VHHPD2A_DATA.CURR-LOC[CNT] = VHHPD2A_DATA.CON-NO[CNT];
+        end
+
+  
+  
+  
+  
+  
+  
+  
+   
+   
+  
+
+  
+        CNT = CNT + 1;
+    end
+end 
+
+Function VHHPD2IS-HOME-YARD () 
+    if (VHHPD2IW.CURR-LOC == "ALL")
+        VHHPD2A_CRIT.CURR-LOC-LOW = "CY";
+        VHHPD2A_CRIT.CURR-LOC-HIGH = "RY";
+    else
+        VHHPD2A_CRIT.CURR-LOC-LOW = VHHPD2IW.CURR-LOC;
+        VHHPD2A_CRIT.CURR-LOC-HIGH = VHHPD2IW.CURR-LOC;
+    end
+    if (VHHPD2IW.CURR-LOC == "CY")
+        VHHPD2IW.CURR-LOC-ALPHA = "Concord";
+    end
+    if (VHHPD2IW.CURR-LOC == "DY")
+        VHHPD2IW.CURR-LOC-ALPHA = "Daly City";
+    end
+    if (VHHPD2IW.CURR-LOC == "HY")
+        VHHPD2IW.CURR-LOC-ALPHA = "Hayward";
+    end
+    if (VHHPD2IW.CURR-LOC == "RY")
+        VHHPD2IW.CURR-LOC-ALPHA = "Richmond";
+    end
+    if (VHHPD2IW.CURR-LOC == "ALL")
+        VHHPD2IW.CURR-LOC-ALPHA = "All Yards";
+    end
+    VHHPD2A_CRIT.DATE-FROM = VHHPD2IW.LOW-DATE;
+    VHHPD2A_CRIT.DATE-TO = VHHPD2IW.REV-DATE;
+end 
+
+Function VHHPM1I-REV-DATE ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+  
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHHPM1I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHHPMA3";
+
+    
+    try
+        call "VHHPMA3"(XDCONTROL, VHHPMA3_CRIT, VHHPMA3_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+  
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+
+  
+    if (VHHPMA3_DATA.CURRENT-TIME >= VHHPMA3_DATA.TIME-REV-START)
+        VHHPM1IW.REV-DATE-DB2 = VHHPMA3_DATA.CURRENT-DATE;
+    else
+        VHHPM1IW.REV-DATE-DB2 = VHHPMA3_DATA.YESTERDAY;
+    end
+
+
+  
+  
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHHPD1I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHHPMA2";
+
+  
+    try
+        call "VHHPMA2"(XDCONTROL, VHHPMA2_DATA);
+    
+    end
+    
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHHPM1IW.DATE-LOW-DB2 = VHHPMA2_DATA.FROM-DATE;
+             
+        else
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+
+  
+  
+  
+  
+  
+
+  
+    XXDATEW.VAGen_FUNCTION = "MDY";
+    XXDATEW.DATE-YYYY-MM-DD = VHHPM1IW.DATE-LOW-DB2;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHHPM1IW.DATE-LOW = XXDATEW.DATE-MM-DD-YYYY;
+
+  
+    XXDATEW.VAGen_FUNCTION = "MDY";
+    XXDATEW.DATE-YYYY-MM-DD = VHHPM1IW.REV-DATE-DB2;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHHPM1IW.REV-DATE = XXDATEW.DATE-MM-DD-YYYY;
+end 
+
+Function VHHPM1IS-CLEAR ()
+   
+    set VHHPM1IW2 empty;
+    set VHHPM1W3 empty;
+    VHHPM1IW-TRIGGERS.HIDE = "Y";
+    VHHPM1IW-TRIGGERS.ENABLE-DISPLAY = "Y";
+end 
+
+Function VHHPM1IS-DISPLAY () 
+    if (VHHPM1IW2.HOME-YRD != "   " || VHHPM1IW2.CURR-LOC != "   ")
+        if (VHHPM1IW.RPT == "1")
+            VHHPM1IW-TRIGGERS.RUN-VHHPR1I = "Y";
+        end
+        if (VHHPM1IW.RPT == "2")
+            VHHPM1IW-TRIGGERS.RUN-VHHPM2I = "Y";
+        end
+        if (VHHPM1IW.RPT == "3")
+            VHHPM1IW-TRIGGERS.RUN-VHPMR1I = "Y";
+        end
+        if (VHHPM1IW.RPT == "4")
+            VHHPM1IW-TRIGGERS.RUN-VHHPD1I = "Y";
+        end
+        if (VHHPM1IW.RPT == "5")
+            VHHPM1IW-TRIGGERS.RUN-VHHPD2I = "Y";
+        end
+    else
+        VHHPM1IW-TRIGGERS.NO-HOME-YRD = "Y";
+    end
+end 
+
+Function VHHPM1IS-HARD-COPY () 
+    if (PRT-IDX > 0)
+        ENABLE-HARD = "Y";
+        VHHPM1IS-PASSVALUE.VTAM-NAME = WS70A01_DATA.VTAM-NAME[PRT-IDX];
+    else
+        DISABLE-HARD = "Y";
+    end
+end 
+
+Function VHHPM1IS-PRINTER ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "WS100I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "WS70A01";
+
+    
+    try
+        call "WS70A01"(XDCONTROL, WS70A01_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+  
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+end 
+
+
+
+Function VHHPM1IS-SUBMIT-X ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    VHHPM01_CRIT.HOME-YRD = VHHPM1IW.HOME-YRD;
+    VHHPM01_CRIT.REPT-ID = VHHPM1IW.RPT;
+    VHHPM01_CRIT.PM-TYPE = VHHPM1W3.PM-TYPE;
+    VHHPM01_CRIT.CAR-NO-FROM = VHHPM1W3.CAR-NO-FROM;
+    VHHPM01_CRIT.CAR-NO-TO = VHHPM1W3.CAR-NO-TO;
+    VHHPM01_CRIT.PM-HOURS-FROM = VHHPM1W3.PM-HOURS-FROM;
+    VHHPM01_CRIT.PM-HOURS-TO = VHHPM1W3.PM-HOURS-TO;
+    VHHPM01_CRIT.REPT-TYPE = VHHPM1IS-PASSVALUE.VTAM-NAME;
+
+    
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHHPM1I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHHPM01";
+
+    
+    try
+        call "MRSVehicleQueries.VHHPM01"(XDCONTROL, VHHPM01_CRIT, VHHPM01_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+
+      
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4 || XDCONTROL.URC == 100)
+
+        
+  
+            VHHPM1IW-TRIGGERS.CLEAR = "Y";
+        else
+
+        
+
+
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+end 
+
+Function VHHPM2IS-CALCULATE () 
+    set VHHPM2IW-MTBI empty;
+    if (VHHPR1IW.HOME-YRD == "ALL")
+        VHHPM2IW-MTBI.SHOP[1] = "Concord";
+        VHHPM2IW-MTBI.SHOP[2] = "Daly City";
+        VHHPM2IW-MTBI.SHOP[3] = "Hayward";
+        VHHPM2IW-MTBI.SHOP[4] = "Richmond";
+        VHHPM2IW-MTBI.SHOP[5] = "All Yards";
+        VHHPM2IW-MTBI.XROW = 5;
+    else
+        VHHPM2IW-MTBI.XROW = 1;
+    end
+    if (VHHPR1IW.HOME-YRD == "CY")
+        VHHPM2IW-MTBI.SHOP[1] = "Concord";
+    end
+    if (VHHPR1IW.HOME-YRD == "DY")
+        VHHPM2IW-MTBI.SHOP[1] = "Daly City";
+    end
+    if (VHHPR1IW.HOME-YRD == "HY")
+        VHHPM2IW-MTBI.SHOP[1] = "Hayward";
+    end
+    if (VHHPR1IW.HOME-YRD == "RY")
+        VHHPM2IW-MTBI.SHOP[1] = "Richmond";
+    end
+
+  
+    VHHPM2IW-MTBI.ROW = 1;
+    CNT = 1;
+    VHHPM2IW-MTBI.VAGen_HOLD = VHHPMA1_DATA.HOME-YRD[1];
+    while (CNT <= XDCONTROL.UROWCNT &&
+     (VHHPMA1_DATA.HOME-YRD[CNT] >= VHHPMA1_CRIT.HOME-YRD-LOW &&
+     VHHPMA1_DATA.HOME-YRD[CNT] <= VHHPMA1_CRIT.HOME-YRD-HIGH))
+
+  
+        if (VHHPM2IW-MTBI.VAGen_HOLD != VHHPMA1_DATA.HOME-YRD[CNT])
+            VHHPM2IS-SUM();
+            VHHPM2IW-MTBI.VAGen_HOLD = VHHPMA1_DATA.HOME-YRD[CNT]; 
+            VHHPM2IW-MTBI.ROW = VHHPM2IW-MTBI.ROW + 1;
+             
+        end
+  
+        VHHPM2IW-MTBI.MTBI-TOTAL-HRS[ROW] = VHHPM2IW-MTBI.MTBI-TOTAL-HRS[ROW] + VHHPMA1_DATA.MTBI_HRS[CNT];
+        VHHPM2IW-MTBI.MTBI-TOTAL-HRS[5] = VHHPM2IW-MTBI.MTBI-TOTAL-HRS[5] + VHHPMA1_DATA.MTBI_HRS[CNT]; 
+        VHHPM2IW-MTBI.MTBI-TOTAL-INCDS[ROW] = VHHPM2IW-MTBI.MTBI-TOTAL-INCDS[ROW] + VHHPMA1_DATA.MTBI_INCDS[CNT];
+        VHHPM2IW-MTBI.MTBI-TOTAL-INCDS[5] = VHHPM2IW-MTBI.MTBI-TOTAL-INCDS[5] + VHHPMA1_DATA.MTBI_INCDS[CNT];
+        VHHPM2IW-MTBI.CAR-COUNT[ROW] = VHHPM2IW-MTBI.CAR-COUNT[ROW] + 1;
+        VHHPM2IW-MTBI.CAR-COUNT[5] = VHHPM2IW-MTBI.CAR-COUNT[5] + 1;
+
+  
+        if (VHHPMA1_DATA.WHERE-IS-CAR[CNT] == "CON")
+            VHHPMA1_DATA.CURR-LOC[CNT] = VHHPMA1_DATA.CON-NO[CNT];
+        end
+  
+  
+  
+  
+        if (VHHPMA1_DATA.CURR-LOC[CNT] == VHHPMA1_DATA.HOME-YRD[CNT])
+            VHHPMA1_DATA.CURR-LOC[CNT] = "   ";
+        end
+      
+        CNT = CNT + 1;
+    end
+    
+  
+    VHHPM2IS-SUM();
+end 
+
+Function VHHPM2IS-GET-DATA ()
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHHPM2I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHHPMA1";
+
+  
+
+
+  
+    try
+        call "VHHPMA1"(XDCONTROL, VHHPMA1_CRIT, VHHPMA1_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHHPM2I-TRIGGERS.RUN-CALC = "Y";
+            
+            
+        else
+
+        
+        
+            VHHPM2I-TRIGGERS.BAD-YARD = "Y";
+            
+
+  
+  
+  
+  
+        end 
+    end
+end 
+
+Function VHHPM2IS-HOME-YARD () 
+    if (VHHPR1IW.HOME-YRD == "ALL")
+        VHHPMA1_CRIT.HOME-YRD-LOW = "CY";
+        VHHPMA1_CRIT.HOME-YRD-HIGH = "RY";
+    else
+        VHHPMA1_CRIT.HOME-YRD-LOW = VHHPR1IW.HOME-YRD;
+        VHHPMA1_CRIT.HOME-YRD-HIGH = VHHPR1IW.HOME-YRD;
+    end
+    if (VHHPR1IW.HOME-YRD == "CY")
+        VHHPR1IW.HOME-YARD-ALPHA = "Concord";
+    end
+    if (VHHPR1IW.HOME-YRD == "DY")
+        VHHPR1IW.HOME-YARD-ALPHA = "Daly City";
+    end
+    if (VHHPR1IW.HOME-YRD == "HY")
+        VHHPR1IW.HOME-YARD-ALPHA = "Hayward";
+    end
+    if (VHHPR1IW.HOME-YRD == "RY")
+        VHHPR1IW.HOME-YARD-ALPHA = "Richmond";
+    end
+    if (VHHPR1IW.HOME-YRD == "ALL")
+        VHHPR1IW.HOME-YARD-ALPHA = "All Yards";
+    end
+end 
+
+Function VHHPM2IS-SUM ()
+   
+    if (VHHPM2IW-MTBI.MTBI-TOTAL-INCDS[ROW] > 0) 
+        VHHPM2IW-MTBI.MTBI-AVG[ROW] = VHHPM2IW-MTBI.MTBI-TOTAL-HRS[ROW] / VHHPM2IW-MTBI.MTBI-TOTAL-INCDS[ROW];
+    else
+        VHHPM2IW-MTBI.MTBI-AVG[ROW] = 0;
+    end
+
+
+  
+    if (VHHPR1IW.HOME-YRD == "ALL" && VHHPM2IW-MTBI.ROW == 4)
+        if (VHHPM2IW-MTBI.MTBI-TOTAL-INCDS[5] > 0) 
+            VHHPM2IW-MTBI.MTBI-AVG[5] = VHHPM2IW-MTBI.MTBI-TOTAL-HRS[5] / VHHPM2IW-MTBI.MTBI-TOTAL-INCDS[5];
+        else
+            VHHPM2IW-MTBI.MTBI-TOTAL-INCDS[5] = 0;
+        end
+    end
+end 
+
+Function VHHPMIS-SELECT () 
+    if (VHHPM1IW.RPT == "3")
+        VHHPM1IW-TRIGGERS.VAGen_SHOW = "Y";
+    else
+        VHHPM1IW-TRIGGERS.HIDE = "Y";
+    end
+    if (VHHPM1IW.RPT == "5")
+        VHHPM1IW-TRIGGERS.SHOW-CURR-LOC = "Y";
+        VHHPM1IW-TRIGGERS.HIDE-HOME-YRD = "Y";
+    else
+        VHHPM1IW-TRIGGERS.HIDE-CURR-LOC = "Y";
+        VHHPM1IW-TRIGGERS.SHOW-HOME-YRD = "Y";
+    end
+
+
+  
+    if (VHHPM1IW.RPT == "1" || VHHPM1IW.RPT == "2" || VHHPM1IW.RPT == "3" || VHHPM1IW.RPT == "4" || VHHPM1IW.RPT == "5")
+        VHHPM1IW-TRIGGERS.ENABLE-DISPLAY = "Y";
+    else
+        VHHPM1IW-TRIGGERS.DISABLE-DISPLAY = "Y";
+    end
+end 
+
+Function VHHPMIS-SUBMIT () 
+    if (VHHPM1IW.RPT == "3")
+        if (VHHPM1W3.CAR-NO-FROM == "ALL" &&
+         VHHPM1W3.CAR-NO-TO == " " &&
+         VHHPM1W3.PM-HOURS-FROM == 0 &&
+         VHHPM1W3.PM-HOURS-TO == 0 &&
+         VHHPM1W3.PM-TYPE != " ")
+  
+            VHHPM1IW-TRIGGERS.SUBMITX = "Y";
+            VHHPM1IW-TRIGGERS.SUBMIT = "Y";
+        else
+            if (VHHPM1W3.CAR-NO-FROM is numeric &&
+             VHHPM1W3.CAR-NO-TO > VHHPM1W3.CAR-NO-FROM &&
+             VHHPM1W3.PM-HOURS-FROM == 0 &&
+             VHHPM1W3.PM-HOURS-TO == 0 &&
+             VHHPM1W3.PM-TYPE != " ")
+  
+                VHHPM1IW-TRIGGERS.SUBMITX = "Y";
+                VHHPM1IW-TRIGGERS.SUBMIT = "Y";
+            else
+                if (VHHPM1W3.CAR-NO-FROM == "ALL" &&
+                 VHHPM1W3.CAR-NO-TO == " " &&
+                 VHHPM1W3.PM-HOURS-FROM > 0 &&
+                 VHHPM1W3.PM-HOURS-TO > VHHPM1W3.PM-HOURS-FROM &&
+                 VHHPM1W3.PM-TYPE != " ")
+  
+                    VHHPM1IW-TRIGGERS.SUBMITX = "Y";
+                    VHHPM1IW-TRIGGERS.SUBMIT = "Y";
+                else
+                    if (VHHPM1W3.CAR-NO-FROM is numeric &&
+                     VHHPM1W3.CAR-NO-TO > VHHPM1W3.CAR-NO-FROM &&
+                     VHHPM1W3.PM-HOURS-FROM > 0 &&
+                     VHHPM1W3.PM-HOURS-TO > VHHPM1W3.PM-HOURS-FROM &&
+                     VHHPM1W3.PM-TYPE != " ")
+  
+                        VHHPM1IW-TRIGGERS.SUBMITX = "Y";
+                        VHHPM1IW-TRIGGERS.SUBMIT = "Y";
+                    else
+                        if (VHHPM1W3.CAR-NO-FROM not numeric &&
+                         VHHPM1W3.CAR-NO-TO not numeric)
+                            VHHPM1IW-TRIGGERS.NO-VALID-CRITERIA = "Y";
+                        else
+                            VHHPM1IW-TRIGGERS.NO-VALID-CRITERIA = "Y";
+                        end
+                    end
+                end
+            end
+        end
+    end
+    if (VHHPM1IW.RPT == "1" || VHHPM1IW.RPT == "2" || VHHPM1IW.RPT == "4")
+        if (VHHPM1IW.HOME-YRD != "   ")
+  
+            VHHPM1IW-TRIGGERS.SUBMITX = "Y";
+            VHHPM1IW-TRIGGERS.SUBMIT = "Y";
+        else
+            VHHPM1IW-TRIGGERS.NO-YARD = "Y";
+        end
+    end
+    if (VHHPM1IW.RPT == "5")
+        if (VHHPM1IW2.CURR-LOC != "   ")
+  
+            VHHPM1IW.HOME-YRD = VHHPM1IW2.CURR-LOC;
+            VHHPM1IW-TRIGGERS.SUBMITX = "Y";
+            VHHPM1IW-TRIGGERS.SUBMIT = "Y";
+        else
+            VHHPM1IW-TRIGGERS.NO-LOC = "Y";
+        end
+    end
+end 
+
+Function VHHPR1IS-GET-DATA ()
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHHPR1I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHHPRA1";
+
+  
+
+
+  
+    try
+        call "VHHPRA1"(XDCONTROL, VHHPRA1_CRIT, VHHPRA1_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            
+            CNT = 1;
+            while (CNT <= XDCONTROL.UROWCNT)
+    
+                if (VHHPRA1_DATA.WHERE-IS-CAR[CNT] == "CON")
+                    VHHPRA1_DATA.CURR-LOC[CNT] = VHHPRA1_DATA.CON-NO[CNT];
+                end
+  
+  
+                if (VHHPRA1_DATA.TRAIN-INCD-IND[CNT] == "Y")
+                    VHHPRA1_DATA.TRAIN-INCD-IND[CNT] = "TI";
+                else
+                    VHHPRA1_DATA.TRAIN-INCD-IND[CNT] = " ";
+                end
+  
+  
+  
+  
+                if (VHHPR1IW.HOME-YRD != "ALL")
+                    if (VHHPRA1_DATA.CURR-LOC[CNT] == VHHPR1IW.HOME-YRD)
+                        VHHPRA1_DATA.CURR-LOC[CNT] = "   ";
+                    end
+                end
+  
+                CNT = CNT + 1;
+            end
+        else
+
+        
+        
+            VHHPR1I-TRIGGERS.BAD-YARD = "Y";
+            
+
+  
+  
+  
+  
+        end 
+    end
+end 
+
+Function VHHPR1IS-HOME-YARD () 
+    if (VHHPR1IW.HOME-YRD == "ALL")
+        VHHPRA1_CRIT.HOME-YRD-LOW = "CY";
+        VHHPRA1_CRIT.HOME-YRD-HIGH = "RY";
+    else
+        VHHPRA1_CRIT.HOME-YRD-LOW = VHHPR1IW.HOME-YRD;
+        VHHPRA1_CRIT.HOME-YRD-HIGH = VHHPR1IW.HOME-YRD;
+    end
+    if (VHHPR1IW.HOME-YRD == "CY")
+        VHHPR1IW.HOME-YARD-ALPHA = "Concord";
+    end
+    if (VHHPR1IW.HOME-YRD == "DY")
+        VHHPR1IW.HOME-YARD-ALPHA = "Daly City";
+    end
+    if (VHHPR1IW.HOME-YRD == "HY")
+        VHHPR1IW.HOME-YARD-ALPHA = "Hayward";
+    end
+    if (VHHPR1IW.HOME-YRD == "RY")
+        VHHPR1IW.HOME-YARD-ALPHA = "Richmond";
+    end
+    if (VHHPR1IW.HOME-YRD == "ALL")
+        VHHPR1IW.HOME-YARD-ALPHA = "All Yards";
+    end
+end 
+
+Function VHPMR1IS-GET-DATA ()
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHPMR1I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHPMRA1";
+
+  
+
+
+  
+    try
+        call "VHPMRA1"(XDCONTROL, VHPMRA1_CRIT, VHPMRA1_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+  
+            CNT = 1;
+            while (CNT <= XDCONTROL.UROWCNT)
+
+  
+                VHPMR1W_DATA.CAR-NO[CNT] = VHPMRA1_DATA.CAR-NO[CNT];
+                VHPMR1W_DATA.VEH-STAT[CNT] = VHPMRA1_DATA.VEH-STAT[CNT];
+  
+                if (VHPMRA1_DATA.WHERE-IS-CAR[CNT] == "CON")
+                    VHPMR1W_DATA.CURR-LOC[CNT] = VHPMRA1_DATA.CON-NO[CNT];
+                else
+                    VHPMR1W_DATA.CURR-LOC[CNT] = VHPMRA1_DATA.CURR-LOC[CNT];
+                end
+                VHPMR1W_DATA.HRS-FROM-LAST-PM[CNT] = VHPMRA1_DATA.HRS-FROM-LAST-PM[CNT];
+                VHPMR1W_DATA.NEXT-SCHD-PM-NO[CNT] = VHPMRA1_DATA.NEXT-SCHD-PM-NO[CNT];
+                VHPMR1W_DATA.HOME-YRD[CNT] = VHPMRA1_DATA.HOME-YRD[CNT];
+                VHPMR1W_DATA.WHERE-IS-CAR[CNT] = VHPMRA1_DATA.WHERE-IS-CAR[CNT];
+                VHPMR1W_DATA.TRAIN-INCD-IND[CNT] = VHPMRA1_DATA.TRAIN-INCD-IND[CNT];
+                VHPMR1W_DATA.CUM-HRS[CNT] = VHPMRA1_DATA.CUM-HRS[CNT];
+                VHPMR1W_DATA.CUM-MIN[CNT] = VHPMRA1_DATA.CUM-MIN[CNT];
+                VHPMR1W_DATA.LAST-SCHD-PM-NO[CNT] = VHPMRA1_DATA.LAST-SCHD-PM-NO[CNT];
+                VHPMR1W_DATA.HRS-AT-LAST-PM[CNT] = VHPMRA1_DATA.HRS-AT-LAST-PM[CNT];
+                VHPMR1W_DATA.HRS-TO-NEXT-PM[CNT] = VHPMRA1_DATA.HRS-TO-NEXT-PM[CNT];
+                VHPMR1W_DATA.LAST-PM-LOC[CNT] = VHPMRA1_DATA.LAST-PM-LOC[CNT];
+                VHPMR1W_DATA.CURR-SCHD-PM-NO[CNT] = VHPMRA1_DATA.CURR-SCHD-PM-NO[CNT];
+                VHPMR1W_DATA.COLON[CNT] = ":";
+  
+  
+  
+  
+                if (VHPMR1IW.HOME-YRD != "ALL")
+                    if (VHPMR1W_DATA.CURR-LOC[CNT] == VHPMR1IW.HOME-YRD)
+                        VHPMR1W_DATA.CURR-LOC[CNT] = "   ";
+                    end
+                end
+  
+  
+                if (VHPMR1W_DATA.CURR-SCHD-PM-NO[CNT] != " ")
+                    VHPMR1W_DATA.NEXT-SCHD-PM-NO[CNT] = VHPMR1W_DATA.CURR-SCHD-PM-NO[CNT];
+                end
+                CNT = CNT + 1;
+            end
+            
+
+           
+        else
+
+        
+        
+            VHPMR1IW-TRIGGERS.BAD-DATA = "Y";
+            
+
+  
+  
+  
+  
+        end 
+    end
+end 
+
+Function VHPMRIS-BEGIN () 
+    VHPMRA1_CRIT.PM-TYPE = " ";
+
+  
+    if (VHPMR1IW.PM-TYPE == "   ")
+        VHPMR1IW.PM-TYPE = "ALL";
+    end
+    if (VHPMR1IW.CAR-NO-FROM == "ALL")
+        VHPMR1IW.CAR-NO-FROM = "0100";
+        VHPMRA1_CRIT.WS-CAR-FROM = "0100";
+        VHPMR1IW.CAR-NO-TO = "9999";
+        VHPMRA1_CRIT.WS-CAR-TO = "9999";
+    end
+    if (VHPMR1IW.CAR-NO-FROM == "    ")
+        VHPMR1IW.CAR-NO-FROM = "0100";
+        VHPMRA1_CRIT.WS-CAR-FROM = "0100";
+    end
+    if (VHPMR1IW.CAR-NO-TO == "    ")
+        VHPMR1IW.CAR-NO-TO = "9999";
+        VHPMRA1_CRIT.WS-CAR-TO = "9999";
+    end
+    if (VHPMR1IW.PM-HOURS-TO == 0)
+        VHPMR1IW.PM-HOURS-TO = 9999;
+    end
+
+  
+    if (VHPMR1IW.PM-TYPE == "ALL")
+        VHPMRA1_CRIT.PM-TYPE = VHPMR1IW.PM-TYPE;
+    else
+        VHPMRA1_CRIT.SCHD-PM-TYPE = VHPMR1IW.PM-TYPE;
+    end
+    if (VHPMR1IW.PM-TYPE == "ALL")
+        VHPMRA1_CRIT.WS-SCHD-PM-FROM = "1";
+        VHPMRA1_CRIT.WS-SCHD-PM-TO = "6";
+        VHPMRA1_CRIT.PM-TYPE = VHPMR1IW.PM-TYPE;
+    else
+        if (VHPMR1IW.PM-TYPE == "1 ")
+            VHPMRA1_CRIT.WS-SCHD-PM-FROM = "1";
+            VHPMRA1_CRIT.WS-SCHD-PM-TO = "1";
+        end
+        if (VHPMR1IW.PM-TYPE == "2 ")
+            VHPMRA1_CRIT.WS-SCHD-PM-FROM = "2";
+            VHPMRA1_CRIT.WS-SCHD-PM-TO = "2";
+        end
+        if (VHPMR1IW.PM-TYPE == "3 ")
+            VHPMRA1_CRIT.WS-SCHD-PM-FROM = "3";
+            VHPMRA1_CRIT.WS-SCHD-PM-TO = "3";
+        end
+        if (VHPMR1IW.PM-TYPE == "4 ")
+            VHPMRA1_CRIT.WS-SCHD-PM-FROM = "4";
+            VHPMRA1_CRIT.WS-SCHD-PM-TO = "4";
+        end
+        if (VHPMR1IW.PM-TYPE == "5 ")
+            VHPMRA1_CRIT.WS-SCHD-PM-FROM = "5";
+            VHPMRA1_CRIT.WS-SCHD-PM-TO = "5";
+        end
+        if (VHPMR1IW.PM-TYPE == "6 ")
+            VHPMRA1_CRIT.WS-SCHD-PM-FROM = "6";
+            VHPMRA1_CRIT.WS-SCHD-PM-TO = "6";
+        end
+        if (VHPMR1IW.PM-TYPE == "A ")
+            VHPMRA1_CRIT.WS-SCHD-PM-FROM = "A";
+            VHPMRA1_CRIT.WS-SCHD-PM-TO = "A";
+        end
+        if (VHPMR1IW.PM-TYPE == "B ")
+            VHPMRA1_CRIT.WS-SCHD-PM-FROM = "B";
+            VHPMRA1_CRIT.WS-SCHD-PM-TO = "B";
+        end
+        if (VHPMR1IW.PM-TYPE == "C ")
+            VHPMRA1_CRIT.WS-SCHD-PM-FROM = "C";
+            VHPMRA1_CRIT.WS-SCHD-PM-TO = "C";
+        end
+        if (VHPMR1IW.PM-TYPE == "D ")
+            VHPMRA1_CRIT.WS-SCHD-PM-FROM = "D";
+            VHPMRA1_CRIT.WS-SCHD-PM-TO = "D";
+        end
+    end
+    VHPMR1IW-HEAD.CAR-MID = "-";
+    VHPMR1IW-HEAD.CAR-LOW = VHPMRA1_CRIT.WS-CAR-FROM;
+    VHPMR1IW-HEAD.CAR-HIGH = VHPMRA1_CRIT.WS-CAR-TO;
+    if (VHPMR1IW.PM-TYPE == "ALL")
+        VHPMR1IW-HEAD.PM-RANGE = VHPMR1IW.PM-TYPE;
+    else
+        VHPMR1IW-HEAD.PM-MID = "-";
+        VHPMR1IW-HEAD.PM-LOW = VHPMRA1_CRIT.WS-SCHD-PM-FROM;
+        VHPMR1IW-HEAD.PM-HIGH = VHPMRA1_CRIT.WS-SCHD-PM-TO;
+    end
+    VHPMR1IW-HEAD.HRS-MID = "-";
+  
+  
+    if (VHPMR1IW.HOME-YRD == "ALL")
+        VHPMRA1_CRIT.HOME-YRD-LOW = "CY";
+        VHPMRA1_CRIT.HOME-YRD-HIGH = "RY";
+    else
+        VHPMRA1_CRIT.HOME-YRD-LOW = VHPMR1IW.HOME-YRD;
+        VHPMRA1_CRIT.HOME-YRD-HIGH = VHPMR1IW.HOME-YRD;
+    end
+    if (VHPMR1IW.HOME-YRD == "CY")
+        VHPMR1IW.HOME-YARD-ALPHA = "Concord";
+    end
+    if (VHPMR1IW.HOME-YRD == "DY")
+        VHPMR1IW.HOME-YARD-ALPHA = "Daly City";
+    end
+    if (VHPMR1IW.HOME-YRD == "HY")
+        VHPMR1IW.HOME-YARD-ALPHA = "Hayward";
+    end
+    if (VHPMR1IW.HOME-YRD == "RY")
+        VHPMR1IW.HOME-YARD-ALPHA = "Richmond";
+    end
+    if (VHPMR1IW.HOME-YRD == "ALL")
+        VHPMR1IW.HOME-YARD-ALPHA = "All Yards";
+    end
+end 
+
+Function VHPMS01IS-CONTINUE () 
+
+end 
+
+Function VHPMS01IS-INIT () 
+    VHPMS01IW.INCD-NO = " ";
+    VHPMS01IW.CAR-NO = " ";
+    VHPMS01IW.PM-DESCRIPTION = " ";
+    VHPMS01IW.PM-TYPE = " ";
+    VHPMS01IW-TEMP.DISP-MSG = " ";
+    VHPMS01IW.PM-OPTION = 1;
+    VHPMS01IW.BUTTON-CAPTION = "Schedule";
+end 
+
+Function VHPMS01IS-OPT ()
+  
+  
+   
+    if (VHPMS01IW.PM-OPTION == 1) 
+        DISABLE-INCDNO = "Y";
+        VHPMS01IW.BUTTON-CAPTION = "Schedule";
+    else
+        ENABLE-INCDNO = "Y"; 
+        VHPMS01IW.BUTTON-CAPTION = "Reschedule";
+    end
+end 
+
+Function VHPMS01IS-PM () 
+    if (VHPMS01IW.PM-TYPE == "01")
+        VHPMS01IW.PM-TYPE = "1";
+    end
+    if (VHPMS01IW.PM-TYPE == "02")
+        VHPMS01IW.PM-TYPE = "2";
+    end
+    if (VHPMS01IW.PM-TYPE == "03")
+        VHPMS01IW.PM-TYPE = "3";
+    end
+    if (VHPMS01IW.PM-TYPE == "04")
+        VHPMS01IW.PM-TYPE = "4";
+    end
+    if (VHPMS01IW.PM-TYPE == "05")
+        VHPMS01IW.PM-TYPE = "5";
+    end
+    if (VHPMS01IW.PM-TYPE == "06")
+        VHPMS01IW.PM-TYPE = "6";
+    end
+    VHPMS01IW.TEMP-PM-TYPE = VHPMS01IW.PM-TYPE;
+    VHPMSA2_DATA.CAR-NO = VHPMS01IW.CAR-NO;
+    try
+        call "VHPMSA2"(XDCONTROL, VHPMSA2_DATA);
+    
+    end
+    VHPMSA1_CRIT.CAR-TYPE = VHPMSA2_DATA.CAR-TYPE;
+    VHPMSA1_CRIT.PM-TYPE = VHPMS01IW.PM-TYPE;
+    if (VHPMS01IW.PM-TYPE == "A" ||
+     VHPMS01IW.PM-TYPE == "B" ||
+     VHPMS01IW.PM-TYPE == "C" ||
+     VHPMS01IW.PM-TYPE == "D")
+        VHPMSA1_CRIT.PM-METHOD = "800";
+    else
+        if (VHPMS01IW.PM-TYPE == "1" ||
+         VHPMS01IW.PM-TYPE == "2" ||
+         VHPMS01IW.PM-TYPE == "3" ||
+         VHPMS01IW.PM-TYPE == "4" ||
+         VHPMS01IW.PM-TYPE == "5" ||
+         VHPMS01IW.PM-TYPE == "6")
+            VHPMSA1_CRIT.PM-METHOD = "600";
+        end
+    end
+    VHPMSA1_CRIT.HOME-YRD = VHPMSA2_DATA.HOME-YRD;
+    try
+        call "VHPMSA1"(XDCONTROL, VHPMSA1_CRIT, VHPMSA1_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHPMS01IW.PM-DESCRIPTION = VHPMSA1_DATA.CI-DESC;
+    else
+        VHPMS01IW.PM-DESCRIPTION = " ";
+    end
+end 
+
+Function VHPMS01IS-REV-DATE ()
+  
+  
+  
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHHPMS01I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHHPMA3";
+
+    
+    try
+        call "VHHPMA3"(XDCONTROL, VHHPMA3_CRIT, VHHPMA3_DATA);
+    
+    end
+    
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+  
+
+        else
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+
+  
+    if (VHHPMA3_DATA.CURRENT-TIME >= VHHPMA3_DATA.TIME-REV-START)
+        VHPMS_DATA.DATE-INCD-OCCR-REV = VHHPMA3_DATA.CURRENT-DATE;
+    else
+        VHPMS_DATA.DATE-INCD-OCCR-REV = VHHPMA3_DATA.YESTERDAY;
+    end
+end 
+
+Function VHPMS01IS-SAVE () 
+    VHPMS01IW.ERROR-IND = "N";
+    INVALID-CARNO = "N";
+    INVALID-PMTYPE = "N";
+    DISP-ERR-MSG = " ";
+    RESCH-MESSAGE = " ";
+    if (VHPMS01IW.CAR-NO == " ")
+        VHPMS01IW.ERROR-IND = "Y";
+        INVALID-CARNO = "Y";
+        DISP-ERR-MSG = "Invalid Car No";
+    else
+        if (VHPMS01IW.CAR-NO not numeric)
+            VHPMS01IW.ERROR-IND = "Y";
+            INVALID-CARNO = "Y";
+            DISP-ERR-MSG = "Invalid Car No";
+        else
+            if (VHPMS01IW.PM-TYPE == " ")
+                VHPMS01IW.ERROR-IND = "Y";
+                INVALID-PMTYPE = "Y";
+                DISP-ERR-MSG = "Invalid PM Type";
+            else
+  
+  
+  
+  
+  
+                if (VHPMS01IW.PM-TYPE != "1" && VHPMS01IW.PM-TYPE != "2" &&
+                 VHPMS01IW.PM-TYPE != "3" && VHPMS01IW.PM-TYPE != "4" &&
+                 VHPMS01IW.PM-TYPE != "5" && VHPMS01IW.PM-TYPE != "6" &&
+                 VHPMS01IW.PM-TYPE != "A" && VHPMS01IW.PM-TYPE != "B" &&
+                 VHPMS01IW.PM-TYPE != "C" && VHPMS01IW.PM-TYPE != "D")
+                    VHPMS01IW.ERROR-IND = "Y";
+                    INVALID-PMTYPE = "Y";
+                    DISP-ERR-MSG = "Invalid PM Type";
+                end
+            end
+        end
+  
+    end
+    if (VHPMS01IW.ERROR-IND == "N")
+        VHPMS01IW.TEMP-PM-TYPE = VHPMS01IW.PM-TYPE;
+        VHPMSA3_DATA.CAR-NO = VHPMS01IW.CAR-NO;
+        VHPMSA3_DATA.PM-DESCRIPTION = VHPMS01IW.PM-DESCRIPTION;
+        try
+            call "VHPMSA3"(XDCONTROL, VHPMSA3_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            if (VHPMSA3_DATA.CAR-TYPE-1 != "A" &&
+             VHPMSA3_DATA.CAR-TYPE-1 != "B" &&
+             VHPMSA3_DATA.CAR-TYPE-1 != "C" && 
+             VHPMSA3_DATA.CAR-TYPE-1 != "D" &&
+             VHPMSA3_DATA.CAR-TYPE-1 != "E" && 
+             VHPMSA3_DATA.CAR-TYPE-1 != "L" &&
+             VHPMSA3_DATA.CAR-TYPE-1 != "M" && VHPMSA3_DATA.CAR-TYPE-1 != "K")
+                ERROR-IND = "Y";
+                INVALID-CARNO = "Y";
+                DISP-ERR-MSG = "Invalid Car No";
+            else
+                if (VHPMSA3_DATA.VEH-STAT == "PM")
+                    ERROR-IND = "Y";
+                    INVALID-CARNO = "Y";
+                    DISP-ERR-MSG = "Car already in PM - cannot schedule yet";
+                else
+  
+                    if (VHPMS01IW.PM-OPTION == 1 && VHPMSA3_DATA.CURR-SCHD-PM-NO != " ")
+                        ERROR-IND = "Y";
+                        RESCH-MESSAGE-1 = "Car already Scheduled with a PM type ";
+                        RESCH-MESSAGE-2 = VHPMSA3_DATA.CURR-SCHD-PM-NO;
+                        RESCH-MESSAGE-3 = " .Please reschedule PM for the car.";
+                        RESCH-MSG = "Y";
+                        return;
+                    else
+                        if (VHPMS01IW.PM-OPTION == 2 && VHPMSA3_DATA.CURR-SCHD-PM-NO == " "
+                        )
+                            ERROR-IND = "Y";
+                            SCH-MSG = "Y";
+                            return;
+                        else
+                            if (VHPMSA3_DATA.NEXT-SCHD-PM-NO != VHPMS01IW.TEMP-PM-TYPE-NUM
+                            )
+                                if (VHPMSA3_DATA.NEXT-SCHD-PM-NO == "1 " ||
+                                 VHPMSA3_DATA.NEXT-SCHD-PM-NO == "2 " ||
+                                 VHPMSA3_DATA.NEXT-SCHD-PM-NO == "3 " ||
+                                 VHPMSA3_DATA.NEXT-SCHD-PM-NO == "4 " ||
+                                 VHPMSA3_DATA.NEXT-SCHD-PM-NO == "5 " ||
+                                 VHPMSA3_DATA.NEXT-SCHD-PM-NO == "6 ")
+                                    ERROR-IND = "Y";
+                                    INVALID-PMTYPE = "Y";
+                                    DISP-ERR-MSG = "PM type not equal next scheduled PM please enter 1 - 6";
+                                else
+                                    ERROR-IND = "Y";
+                                    INVALID-PMTYPE = "Y";
+                                    DISP-ERR-MSG = "PM type not equal next scheduled PM please enter A - D";
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    else
+  
+        if (VHPMSA3_DATA.CAR-TYPE == " ")
+            ERROR-IND = "Y";
+            INVALID-CARNO = "Y";
+            DISP-ERR-MSG = "Invalid Car No";
+        else
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+    if (VHPMSA3_DATA.ERROR-INDX == "Y")
+        ERROR-IND = "Y";
+        DISP-ERR-MSG = "INAVLID PM TYPE";
+    end
+    if (VHPMS01IW.ERROR-IND == "Y")
+        ERR-MSG = "Y";
+    else
+        if (VHPMS01IW.PM-OPTION == 1)
+            VHPMS_DATA.DATE-INCD-OCCR = VGVar.currentFormattedGregorianDate;
+            VHPMS_DATA.TIME-INCD-OCCR = VGVar.currentFormattedTime;
+            VHXREVA_CRIT.SEL-IDX = 1;
+            VHXREVA_CRIT.SYSTEM-DATE = VHPMS_DATA.DATE-INCD-OCCR;
+            VHXREVA_CRIT.SYSTEM-TIME = VHPMS_DATA.TIME-INCD-OCCR;
+            call "VHXREVA"(XDCONTROL, VHXREVA_CRIT, VHXREVA_DATA);
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                VHPMS_DATA.DATE-INCD-OCCR-REV = VHXREVA_DATA.REVENUE-DATE;
+            else
+
+            end
+            VHPMS_CRIT.PM-OPTION = "SCHEDULE";
+            VHPMS01IW-TEMP.DISP-MSG-1 = "PM Scheduled - Incident";
+            VHPMS01IW-TEMP.DISP-MSG-2 = " ";
+            VHPMS01IW-TEMP.DISP-MSG-3 = "generated";
+        else
+            VHPMS_CRIT.PM-OPTION = "RESCHEDULE";
+            VHPMS01IW-TEMP.DISP-MSG-1 = "PM has been Rescheduled - Incident";
+            VHPMS01IW-TEMP.DISP-MSG-2 = " ";
+            VHPMS01IW-TEMP.DISP-MSG-3 = "updated";
+        end
+        VHPMS_CRIT.CAR-NO = VHPMS01IW.CAR-NO;
+        VHPMS_CRIT.PM-TYPE = VHPMS01IW.TEMP-PM-TYPE-NUM;
+        VHPMS_DATA.TERM-LAST-UPD = VHPMS01IW.TERM-LAST-UPD;
+        VHPMS_DATA.USER-GRP = VHPMS01IW.USER-GRP;
+        VHPMS_DATA.NEXT-SCHD-PM-NO = VHPMS01IW.PM-TYPE;
+        VHPMS_DATA.PM-DESCRIPTION = VHPMS01IW.PM-DESCRIPTION;
+        try
+            call "VHPMS"(XDCONTROL, VHPMS_CRIT, VHPMS_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHPMS01IW-TEMP.DISP-MSG-2 = VHPMS_DATA.INCD-NO;
+            SUCCESS-MSG = "Y";
+        else
+            if (VHPMS_DATA.NO-REC-FOUND == "Y")
+                DISP-ERR-MSG = " ";
+                VHPMS01IW-TRIGGER.NO-REC-FOUND = "Y";
+            else
+                DISP-ERR-MSG = " ";
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end
+    end
+end 
+
+Function VHPMS01IS-SETFOCUS () 
+    if (INVALID-CARNO == "Y")
+        CARNO-SETFOCUS = "Y";
+    else
+        if (INVALID-PMTYPE == "Y")
+            PMTYPE-SETFOCUS = "Y";
+        end
+    end
+end

@@ -1,0 +1,21 @@
+# Every push and pull request runs all tests; a failing test blocks the merge.
+name: tests
+on: [push, pull_request]
+jobs:
+  middleware:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "21", cache: maven }
+      - run: mvn -q -f maris-middleware/pom.xml test
+  ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: npm, cache-dependency-path: maris-ui/package-lock.json }
+      - run: npm ci
+        working-directory: maris-ui
+      - run: npx tsc --noEmit -p . && npx eslint src && npx vitest run && npm run build
+        working-directory: maris-ui

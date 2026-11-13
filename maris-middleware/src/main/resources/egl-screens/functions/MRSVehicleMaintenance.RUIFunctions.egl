@@ -1,0 +1,4635 @@
+
+
+package MRSVehicleMaintenance;
+
+
+Function VHIM11IS-BAT () 
+    if (VHVM11IW-SELECT.EVENT-TYPE == "BAT")
+        if ((VHVM11H_DATA.CAR-TYPE == "C1" || VHVM11H_DATA.CAR-TYPE == "C2") &&
+         VHVM11H_DATA.BATTERY-REPL-SW == " ")
+            VHVM11IW-TRIGGERS.PROMP-BAT = "Y";
+        else
+            VHVM11IW-TRIGGERS.CONT-UPD = "Y";
+        end
+    else
+        VHVM11IW-TRIGGERS.CONT-UPD = "Y";
+    end
+end 
+
+Function VHIM11IS-BAT-C () 
+    if (VHVM11IW-SELECT.EVENT-TYPE == "BAT")
+        if ((VHVM11H_DATA.CAR-TYPE == "C1" || VHVM11H_DATA.CAR-TYPE == "C2") &&
+         VHVM11H_DATA.BATTERY-REPL-SW == " ")
+            VHVM11IW-TRIGGERS.PROMP-BAT-C = "Y";
+        else
+            VHVM11IW-TRIGGERS.CONT-CLO = "Y";
+        end
+    else
+        VHVM11IW-TRIGGERS.CONT-CLO = "Y";
+    end
+end 
+
+Function VHNAR02IS-RETNARR () 
+    VHNARX_DATA.CRIT-INCD-NO = VHNAR02IW-PASSVAL.INCD-NO;
+    try
+        call "VHNARX"(XDCONTROL, VHNARX_DATA);
+    
+    end
+    if (XDCONTROL.UROWCNT > 0)
+        VHNAR02IW.NARR-ROW-COUNT = XDCONTROL.UROWCNT;
+        LOAD-DATA = "Y";
+    else
+
+    end
+end 
+
+Function VHNARIS-ADDNARR ()
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    if (VHNARIW-PASSVALUE.CURRENT-NARR != " ")
+        VHNAR01IW.FINAL-ERROR-MESSAGE = " ";
+        VHNAR01IW.CI-NARR-PART = " ";
+        VHNAR01IW.TEMP-NARR = " ";
+  
+  
+  
+        if (VHNARIW-PASSVALUE.REPR-DOC-NO != 0)
+            VHXNR3A_DATA.INCD-NO = VHNARIW-PASSVALUE.INCD-NO;
+            VHXNR3A_DATA.NARR-NO = VHNARIW-PASSVALUE.MAX-ROWS + 1;
+            VHXNR3A_DATA.NARR = VHNARIW-PASSVALUE.CURRENT-NARR;
+            VHXNR3A_DATA.USER-GRP = VHNARIW-PASSVALUE.STORE-USER-GRP;
+            VHXNR3A_DATA.REPR-DOC-NO = VHNARIW-PASSVALUE.REPR-DOC-NO;
+            VHXNR3A_DATA.TERM-NARR = VHNARIW-PASSVALUE.TERM-LAST-UPD;
+            XXEXT_CALL_Level77Items.UEXTNAM = "VHNAR1I";
+            XXEXT_CALL_Level77Items.UAPPLNAM = "VHXNR3A";
+            try
+                call "VHXNR3A"(XDCONTROL, VHXNR3A_DATA);
+            
+            end
+            MRSCommonCode.XXA0IS-CHECK_EXT();
+            if (XXEXT_CALL_Level77Items.URC == 0)
+                if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                    VHNARIW-PASSVALUE.MAX-ROWS = VHXNR3A_DATA.NARR-NO;
+                    VHNARIW-PASSVALUE.CURRENT-NARR = " ";
+                    VHNARS-RETR-REPAIR();
+                    ADDNARR-SETFOCUS = "Y";
+                else
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end
+            end
+        end
+
+  
+  
+  
+        if (VHNARIW-PASSVALUE.INCD-NO != " " && VHNARIW-PASSVALUE.REPR-DOC-NO == 0)
+            VHXNR2A_DATA.INCD-NO = VHNARIW-PASSVALUE.INCD-NO;
+            VHXNR2A_DATA.NARR-NO = VHNARIW-PASSVALUE.MAX-ROWS + 1;
+            VHXNR2A_DATA.NARR = VHNARIW-PASSVALUE.CURRENT-NARR;
+            VHXNR2A_DATA.USER-GRP = VHNARIW-PASSVALUE.STORE-USER-GRP;
+            VHXNR2A_DATA.TERM-NARR = VHNARIW-PASSVALUE.TERM-LAST-UPD;
+            XXEXT_CALL_Level77Items.UEXTNAM = "VHNAR1I";
+            XXEXT_CALL_Level77Items.UAPPLNAM = "VHXNR2A";
+            try
+                call "VHXNR2A"(XDCONTROL, VHXNR2A_DATA);
+            
+            end
+            MRSCommonCode.XXA0IS-CHECK_EXT();
+            if (XXEXT_CALL_Level77Items.URC == 0)
+                if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                    VHNARIW-PASSVALUE.MAX-ROWS = VHXNR2A_DATA.NARR-NO;
+                    VHNARIW-PASSVALUE.CURRENT-NARR = " ";
+                    VHNARIS-RETR-INCD();
+                    ADDNARR-SETFOCUS = "Y";
+                else
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end
+            end
+        end
+        VHNARIW-PASSVALUE.REFRESH-GUI = "Y";
+    else
+        VHNAR01IW.FINAL-ERROR-MESSAGE = "Invalid Narrative.";
+        VHNARIW-TRIGGER.ADDNARR-SETFOCUS = "Y";
+    end
+end 
+
+Function VHNARIS-CHK-NARR () 
+    if (VHNARIW-PASSVALUE.NARR-1 == "CI / ACTION")
+        VHNAR01IW.CI-NARR-PART = VHNARIW-PASSVALUE.NARR-CI;
+        VHNARIW-PASSVALUE.NARR = VHNARIW-PASSVALUE.NARR-REM;
+    else
+        VHNAR01IW.CI-NARR-PART = " ";
+    end
+end 
+
+Function VHNARIS-GET-NARR ()
+  
+  
+   
+    VHNAR01IW.TEMP-NARR = " ";
+    VHNAR01IW.FINAL-ERROR-MESSAGE = " ";
+    VHXNR1A_CRIT.CURRENT-ROW = VHNARIW-PASSVALUE.CURRENT-ROW;
+    VHXNR1A_CRIT.MAX-ROWS = VHNARIW-PASSVALUE.MAX-ROWS;
+    VHXNR1A_CRIT.INCD-NO = VHNARIW-PASSVALUE.INCD-NO;
+    VHXNR5A_CRIT.CURRENT-ROW = VHNARIW-PASSVALUE.CURRENT-ROW;
+    VHXNR5A_CRIT.INCD-NO = VHNARIW-PASSVALUE.INCD-NO;
+    VHXNR5A_CRIT.REPR-DOC-NO = VHNARIW-PASSVALUE.REPR-DOC-NO;
+    VHXNR5A_CRIT.MAX-ROWS = VHNARIW-PASSVALUE.MAX-ROWS;
+
+
+  
+  
+  
+    if (VHNARIW-PASSVALUE.REPR-DOC-NO != 0)
+        if (VHXNR1A_CRIT.VAGen_FUNCTION == "UPNARR")
+            VHXNR5A_CRIT.CURRENT-ROW = VHXNR5A_CRIT.CURRENT-ROW - 1;
+            if (VHXNR5A_CRIT.CURRENT-ROW <= 1)
+                VHXNR5A_CRIT.CURRENT-ROW = 1;
+            end
+        end
+    end
+
+  
+    if (VHNARIW-PASSVALUE.INCD-NO != " " &&
+     VHNARIW-PASSVALUE.REPR-DOC-NO == 0)
+        if (VHXNR1A_CRIT.VAGen_FUNCTION == "UPNARR")
+            VHXNR1A_CRIT.CURRENT-ROW = VHXNR1A_CRIT.CURRENT-ROW - 1;
+            if (VHXNR1A_CRIT.CURRENT-ROW <= 1)
+                VHXNR1A_CRIT.CURRENT-ROW = 1;
+            end
+        end
+    end
+    if (VHNARIW-PASSVALUE.REPR-DOC-NO != 0)
+        if (VHXNR1A_CRIT.VAGen_FUNCTION == "DOWNNARR")
+            VHXNR5A_CRIT.CURRENT-ROW = VHXNR5A_CRIT.CURRENT-ROW + 1;
+            if (VHXNR5A_CRIT.CURRENT-ROW >= VHXNR5A_CRIT.MAX-ROWS)
+                VHXNR5A_CRIT.CURRENT-ROW = VHXNR5A_CRIT.MAX-ROWS;
+            end
+        end
+    end
+    if (VHNARIW-PASSVALUE.INCD-NO != " " && VHNARIW-PASSVALUE.REPR-DOC-NO == 0)
+        if (VHXNR1A_CRIT.VAGen_FUNCTION == "DOWNNARR")
+            VHXNR1A_CRIT.CURRENT-ROW = VHXNR1A_CRIT.CURRENT-ROW + 1;
+            if (VHXNR1A_CRIT.CURRENT-ROW >= VHXNR1A_CRIT.MAX-ROWS)
+                VHXNR1A_CRIT.CURRENT-ROW = VHXNR1A_CRIT.MAX-ROWS;
+            end
+        end
+    end
+    VHXNR1A_CRIT.NARR-NO = VHXNR1A_CRIT.CURRENT-ROW;
+    VHXNR5A_CRIT.NARR-NO = VHXNR5A_CRIT.CURRENT-ROW;
+
+  
+
+  
+    if (VHNARIW-PASSVALUE.REPR-DOC-NO != 0)
+        XXEXT_CALL_Level77Items.UEXTNAM = "VHNAR1I";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "VHXNR5A";
+        try
+            call "VHXNR5A"(XDCONTROL, VHXNR5A_CRIT, VHXNR5A_DATA);
+        
+        end
+        VHNARIW-PASSVALUE.USER-GRP = VHXNR5A_DATA.USER-GRP;
+        VHNARIW-PASSVALUE.TIME-NARR = VHXNR5A_DATA.TIME-NARR;
+        TIME-NARR-FILLER-1 = ":";
+        TIME-NARR-FILLER-2 = ":";
+        VHNARIW-PASSVALUE.DATE-NARR = VHXNR5A_DATA.DATE-NARR;
+        VHNARIW-PASSVALUE.NARR = VHXNR5A_DATA.NARR;
+        VHNARIW-PASSVALUE.CURRENT-ROW = VHXNR5A_DATA.NARR-NO;
+    else
+
+  
+        if (VHNARIW-PASSVALUE.INCD-NO != " " &&
+         VHNARIW-PASSVALUE.REPR-DOC-NO == 0)
+            XXEXT_CALL_Level77Items.UEXTNAM = "VHNAR1I";
+            XXEXT_CALL_Level77Items.UAPPLNAM = "VHXNR1A";
+            try
+                call "VHXNR1A"(XDCONTROL, VHXNR1A_CRIT, VHXNR1A_DATA);
+            
+            end
+            VHNARIW-PASSVALUE.USER-GRP = VHXNR1A_DATA.USER-GRP;
+            VHNARIW-PASSVALUE.TIME-NARR = VHXNR1A_DATA.TIME-NARR;
+            TIME-NARR-FILLER-1 = ":";
+            TIME-NARR-FILLER-2 = ":";
+            VHNARIW-PASSVALUE.DATE-NARR = VHXNR1A_DATA.DATE-NARR;
+            VHNARIW-PASSVALUE.NARR = VHXNR1A_DATA.NARR;
+            VHNARIW-PASSVALUE.CURRENT-ROW = VHXNR1A_DATA.NARR-NO;
+        else
+
+        end
+    end
+     
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+
+  
+  
+  
+    if (VHNARIW-PASSVALUE.REPR-DOC-NO != 0)
+        if (VHNARIW-PASSVALUE.MAX-ROWS == 1)
+            VHNARIW-TRIGGER.DISABLE-UP = "Y";
+            VHNARIW-TRIGGER.DISABLE-DOWN = "Y";
+        end
+        if (VHNARIW-PASSVALUE.CURRENT-ROW > 1 &&
+         VHNARIW-PASSVALUE.CURRENT-ROW < VHNARIW-PASSVALUE.MAX-ROWS)
+            VHNARIW-TRIGGER.ENABLE-UP = "Y";
+            VHNARIW-TRIGGER.ENABLE-DOWN = "Y";
+            PRV-SETFOCUS = "Y";
+        end
+        if (VHNARIW-PASSVALUE.CURRENT-ROW > 1 &&
+         VHNARIW-PASSVALUE.CURRENT-ROW == VHNARIW-PASSVALUE.MAX-ROWS)
+            VHNARIW-TRIGGER.ENABLE-UP = "Y";
+            VHNARIW-TRIGGER.DISABLE-DOWN = "Y";
+            PRV-SETFOCUS = "Y";
+        end
+        if (VHNARIW-PASSVALUE.CURRENT-ROW == 1 &&
+         VHNARIW-PASSVALUE.CURRENT-ROW < VHNARIW-PASSVALUE.MAX-ROWS)
+            VHNARIW-TRIGGER.DISABLE-UP = "Y";
+            VHNARIW-TRIGGER.ENABLE-DOWN = "Y";
+            NXT-SETFOCUS = "Y";
+        end
+    end
+    if (VHNARIW-PASSVALUE.INCD-NO != " " &&
+     VHNARIW-PASSVALUE.REPR-DOC-NO == 0)
+        if (VHNARIW-PASSVALUE.MAX-ROWS == 1)
+            VHNARIW-TRIGGER.DISABLE-UP = "Y";
+            VHNARIW-TRIGGER.DISABLE-DOWN = "Y";
+        end
+        if (VHNARIW-PASSVALUE.CURRENT-ROW > 1 &&
+         VHNARIW-PASSVALUE.CURRENT-ROW < VHNARIW-PASSVALUE.MAX-ROWS)
+            VHNARIW-TRIGGER.ENABLE-UP = "Y";
+            VHNARIW-TRIGGER.ENABLE-DOWN = "Y";
+            PRV-SETFOCUS = "Y";
+        end
+        if (VHNARIW-PASSVALUE.CURRENT-ROW > 1 &&
+         VHNARIW-PASSVALUE.CURRENT-ROW == VHNARIW-PASSVALUE.MAX-ROWS)
+            VHNARIW-TRIGGER.ENABLE-UP = "Y";
+            VHNARIW-TRIGGER.DISABLE-DOWN = "Y";
+            PRV-SETFOCUS = "Y";
+        end
+        if (VHNARIW-PASSVALUE.CURRENT-ROW == 1 &&
+         VHNARIW-PASSVALUE.CURRENT-ROW < VHNARIW-PASSVALUE.MAX-ROWS)
+            VHNARIW-TRIGGER.DISABLE-UP = "Y";
+            VHNARIW-TRIGGER.ENABLE-DOWN = "Y";
+            NXT-SETFOCUS = "Y";
+        end
+    end
+    VHNARIS-CHK-NARR();
+end 
+
+Function VHNARIS-INIT () 
+    TIME-NARR-FILLER-1 = ":";
+    TIME-NARR-FILLER-2 = ":";
+    if (VHNARIW-PASSVALUE.CURRENT-ROW == 1)
+        DISABLE-UP = "Y";
+    else
+        ENABLE-UP = "Y";
+        NXT-SETFOCUS = "Y";
+    end
+    if (VHNARIW-PASSVALUE.CURRENT-ROW < VHNARIW-PASSVALUE.MAX-ROWS)
+        ENABLE-DOWN = "Y";
+        NXT-SETFOCUS = "Y";
+    else
+        DISABLE-DOWN = "Y";
+        PRV-SETFOCUS = "Y";
+    end
+    VHNARIS-CHK-NARR();
+end 
+
+Function VHNARIS-RETR-INCD ()
+  
+  
+  
+  
+  
+  
+  
+   
+    VHXNR6A_CRIT.INCD-NO = VHNARIW-PASSVALUE.INCD-NO;
+    VHXNR6A_CRIT.NARR-NO = 0;
+    VHXNR6A_CRIT.VAGen_FUNCTION = "NARR";
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHNAR1I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHXNR6A";
+    try
+        call "VHXNR6A"(XDCONTROL, VHXNR6A_CRIT, VHXNR6A_DATA);
+    
+    end
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+    if (XXEXT_CALL_Level77Items.URC == 0)
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHNARIW-PASSVALUE.USER-GRP = VHXNR6A_DATA.USER-GRP;
+            VHNARIW-PASSVALUE.DATE-NARR = VHXNR6A_DATA.DATE-NARR;
+            VHNARIW-PASSVALUE.TIME-NARR = VHXNR6A_DATA.TIME-NARR;
+            VHNARIW-PASSVALUE.TIME-NARR-FILLER-1 = ":";
+            VHNARIW-PASSVALUE.TIME-NARR-FILLER-2 = ":";
+            VHNARIW-PASSVALUE.NARR = VHXNR6A_DATA.NARR;
+            VHNARIW-PASSVALUE.NARR-NO = VHXNR6A_DATA.MAX-ROWS;
+            VHNARIW-PASSVALUE.CURRENT-ROW = VHXNR6A_DATA.MAX-ROWS;
+            VHNARIW-TRIGGER.ENABLE-UP = "Y";
+            VHNARIW-TRIGGER.DISABLE-DOWN = "Y";
+            FINAL-ERROR-MESSAGE = "Incd Narrative added successfully.";
+        else
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHNARIS-RETURN () 
+    set VHNAR01IW empty;
+end 
+
+Function VHNARIS-UPDNARR ()
+  
+  
+  
+  
+  
+  
+  
+   
+    if (VHNAR01IW.UPD-NARR != " ")
+        VHNAR01IW.UPD-NARR-NO = VHNARIW-PASSVALUE.CURRENT-ROW;
+        if (VHNAR01IW.CI-NARR-PART-1 == "CI / ACTION")
+            VHNAR01IW.TEMP-NARR-1 = VHNAR01IW.CI-NARR-PART-1;
+            VHNAR01IW.TEMP-NARR-2 = VHNAR01IW.CI-NARR-PART-2;
+            VHNAR01IW.TEMP-NARR-3 = VHNAR01IW.UPD-NARR;
+        else
+            VHNAR01IW.TEMP-NARR = VHNAR01IW.UPD-NARR;
+        end
+
+  
+  
+  
+        if (VHNARIW-PASSVALUE.REPR-DOC-NO != 0)
+            VHXNR8A_CRIT.INCD-NO = VHNARIW-PASSVALUE.INCD-NO;
+            VHXNR8A_CRIT.NARR-NO = VHNAR01IW.UPD-NARR-NO;
+            VHXNR8A_CRIT.REPR-DOC-NO = VHNARIW-PASSVALUE.REPR-DOC-NO;
+            VHXNR8A_DATA.NARR = VHNAR01IW.TEMP-NARR;
+            VHXNR8A_DATA.USER-GRP = VHNARIW-PASSVALUE.STORE-USER-GRP;
+            VHXNR8A_DATA.TERM-NARR = VHNARIW-PASSVALUE.TERM-LAST-UPD;
+
+      
+            XXEXT_CALL_Level77Items.UEXTNAM = "VHNAR1I";
+            XXEXT_CALL_Level77Items.UAPPLNAM = "VHXNR8A";
+            try
+                call "VHXNR8A"(XDCONTROL, VHXNR8A_CRIT, VHXNR8A_DATA);
+            
+            end
+            MRSCommonCode.XXA0IS-CHECK_EXT();
+            if (XXEXT_CALL_Level77Items.URC == 0)
+                if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                    FINAL-ERROR-MESSAGE = "Repr Narrative updated successfully.";
+                    ADDNARR-SETFOCUS = "Y";
+                else
+                    FINAL-ERROR-MESSAGE = "Repr Narrative update unsuccessful.";
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end
+            end
+        end
+
+  
+  
+  
+        if (VHNARIW-PASSVALUE.INCD-NO != " " && VHNARIW-PASSVALUE.REPR-DOC-NO == 0)
+            VHXNR7A_CRIT.INCD-NO = VHNARIW-PASSVALUE.INCD-NO;
+            VHXNR7A_CRIT.NARR-NO = VHNAR01IW.UPD-NARR-NO;
+            VHXNR7A_DATA.NARR = VHNAR01IW.TEMP-NARR;
+            VHXNR7A_DATA.USER-GRP = VHNARIW-PASSVALUE.STORE-USER-GRP;
+            VHXNR7A_DATA.TERM-NARR = VHNARIW-PASSVALUE.TERM-LAST-UPD;
+            XXEXT_CALL_Level77Items.UEXTNAM = "VHNAR1I";
+            XXEXT_CALL_Level77Items.UAPPLNAM = "VHXNR7A";
+            try
+                call "VHXNR7A"(XDCONTROL, VHXNR7A_CRIT, VHXNR7A_DATA);
+            
+            end
+            MRSCommonCode.XXA0IS-CHECK_EXT();
+            if (XXEXT_CALL_Level77Items.URC == 0)
+                if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                    FINAL-ERROR-MESSAGE = "Incd Narrative updated successfully.";
+                    ADDNARR-SETFOCUS = "Y";
+                else
+                    FINAL-ERROR-MESSAGE = "Incd Narrative update unsuccessful.";
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end
+            end
+        end
+    else
+        VHNAR01IW.FINAL-ERROR-MESSAGE = "Invalid Narrative.";
+        VHNARIW-TRIGGER.UPDNARR-SETFOCUS = "Y";
+    end
+end 
+
+Function VHNARS-RETR-REPAIR ()
+  
+  
+  
+  
+  
+  
+  
+   
+    VHXNR4A_CRIT.INCD-NO = VHNARIW-PASSVALUE.INCD-NO;
+    VHXNR4A_CRIT.REPR-DOC-NO = VHNARIW-PASSVALUE.REPR-DOC-NO;
+    VHXNR4A_CRIT.NARR-NO = 0;
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHNAR1I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHXNR4A";
+    try
+        call "VHXNR4A"(XDCONTROL, VHXNR4A_CRIT, VHXNR4A_DATA);
+    
+    end
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+    if (XXEXT_CALL_Level77Items.URC == 0)
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHNARIW-PASSVALUE.USER-GRP = VHXNR4A_DATA.USER-GRP;
+            VHNARIW-PASSVALUE.DATE-NARR = VHXNR4A_DATA.DATE-NARR;
+            VHNARIW-PASSVALUE.TIME-NARR = VHXNR4A_DATA.TIME-NARR;
+            VHNARIW-PASSVALUE.TIME-NARR-FILLER-1 = ":";
+            VHNARIW-PASSVALUE.TIME-NARR-FILLER-2 = ":";
+            VHNARIW-PASSVALUE.NARR = VHXNR4A_DATA.NARR;
+            VHNARIW-PASSVALUE.NARR-NO = VHXNR4A_DATA.NARR-NO;
+            VHNARIW-PASSVALUE.CURRENT-ROW = VHXNR4A_DATA.NARR-NO;
+            VHNARIW-TRIGGER.ENABLE-UP = "Y";
+            VHNARIW-TRIGGER.DISABLE-DOWN = "Y";
+            FINAL-ERROR-MESSAGE = "Repr Narrative added successfully.";
+        else
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHVM02I-ADD-CAR ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM01I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM1A3";
+
+  
+    try
+        call "VHVM1A3"(XDCONTROL, VHVM1A3_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHVM02IW-TRIGGERS.GOOD = "Y";
+            
+
+     
+        else
+           
+        
+            VHVM02IW-TRIGGERS.BAD = "Y";
+            
+
+  
+  
+  
+  
+        end 
+    end
+end 
+
+Function VHVM02I-REV-DATE ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+
+  
+  
+  
+  
+
+  
+  
+
+    
+  
+
+    
+  
+
+    
+  
+  
+  
+
+  
+  
+
+        
+        
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+   
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHXREVC_DATA.REVENUE-DATE;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM02IW.REV-DATE-DB2 = XXDATEW.DATE-YYYY-MM-DD;
+end 
+
+Function VHVM02IS-BDATE ()
+  
+  
+
+
+  
+   
+    VHVM1A3_DATA.DATE-BATTERY-REPL = VGVar.currentFormattedGregorianDate;
+end 
+
+
+Function VHVM02IS-CLEAR () 
+    set VHVM1A3_DATA empty;
+    VHVM1A3_DATA.BATTERY-REPL-IND = "N";
+    VHVM1A3_DATA.WAR-IND = "Y";
+    VHVM1A3_DATA.WHERE-IS-CAR = "YRD";
+    VHVM1A3_DATA.CAR-TYPE = "B2";
+    VHVM1A3_DATA.CURR-LOC = "HY";
+    VHVM1A3_DATA.VEH-STAT = "STOR";
+    VHVM1A3_DATA.ATO-PRESENT-IND = "N";
+    VHVM1A3_DATA.TRAIN-INCD-IND = "N";
+    VHVM1A3_DATA.CAMERA-CD = "H";
+    VHVM1A3_DATA.DATE-BATTERY-REPL = VHXREVC_DATA.SYSTEM-DATE;
+end 
+
+Function VHVM02IS-GET-CAMER ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM03II";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM1A6";
+
+  
+
+    
+    try
+        call "VHVM1A6"(XDCONTROL, VHVM1A6_CRIT, VHVM1A6_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+   
+  
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+end 
+
+Function VHVM02IS-ORIENT ()
+  
+   
+    set VHVM03IW-ORIENT empty;
+    VHVM02IW.CAR-COUNT = 1;
+    while (VHVM02IW.CAR-COUNT <= VHVM1A7_DATA.VAGen_COUNT)
+        if (VHVM1A3_DATA.CAR-TYPE == VHVM1A7_DATA.CAR-TYPE[VHVM02IW.CAR-COUNT])
+            VHVM03IW-ORIENT.ORIENTATION-CD[1] = VHVM1A7_DATA.LFT-ORIENTATION-CD[VHVM02IW.CAR-COUNT];
+            VHVM03IW-ORIENT.ORIENTATION-CD[2] = VHVM1A7_DATA.RGT-ORIENTATION-CD[VHVM02IW.CAR-COUNT];
+        end
+        VHVM02IW.CAR-COUNT = VHVM02IW.CAR-COUNT + 1;
+    end
+end 
+
+Function VHVM02IS-PRE-ADD () 
+    if (VHVM1A3_DATA.CAR-NO != "    " &&
+     VHVM1A3_DATA.CAR-TYPE != "   " &&
+     VHVM1A3_DATA.VEH-STAT != "      " &&
+     VHVM1A3_DATA.HOME-YRD != "   " &&
+     VHVM1A3_DATA.CAMERA-CD != "   " &&
+     VHVM1A3_DATA.VAGen_ORIENTATION != "   " &&
+     VHVM1A3_DATA.ATO-PRESENT-IND != " " &&
+     VHVM1A3_DATA.DATE-BATTERY-REPL not blanks &&
+     VHVM1A3_DATA.BATTERY-REPL-LOC not blanks &&
+     VHVM1A3_DATA.BATTERY-REPL-IND != " ")
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+        XXDATEW.VAGen_FUNCTION = "YMD";
+        XXDATEW.DATE-MM-DD-YYYY = VHVM1A3_DATA.DATE-BATTERY-REPL;
+        MRSCommonCode.XXDATES-CONVERT();
+        VHVM1A3_DATA.DATE-BATTERY-REPL = XXDATEW.DATE-YYYY-MM-DD;
+
+  
+  
+
+
+  
+
+  
+  
+   
+
+  
+  
+        VHVM02IW-TRIGGERS.RUN-ADD = "Y";
+        
+  
+  
+    else
+        VHVM02IW-TRIGGERS.MISSING-DATA = "Y";
+    end
+end 
+
+Function VHVM02IW-CARTYPE ()
+   
+    if (VHVM1A3_DATA.CAR-TYPE != "    ")
+        if ( VHVM1A3_DATA.CAR-TYPE == "A2" || VHVM1A3_DATA.CAR-TYPE == "B2" ||
+         VHVM1A3_DATA.CAR-TYPE == "C1" || VHVM1A3_DATA.CAR-TYPE == "C2" ||
+         VHVM1A3_DATA.CAR-TYPE == "D1" || VHVM1A3_DATA.CAR-TYPE == "E1" || 
+         VHVM1A3_DATA.CAR-TYPE == "L1" || VHVM1A3_DATA.CAR-TYPE == "M1" ||
+         VHVM1A3_DATA.CAR-TYPE == "K1" || VHVM1A3_DATA.CAR-TYPE == "K2" ||
+         XXEXT_CALL_Level77Items.UEXTNAM == "VHVM01I")
+            XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM1AA";
+
+  
+            VHVM1AA_CRIT.CAR-TYPE = VHVM1A3_DATA.CAR-TYPE;
+
+    
+            try
+                call "VHVM1AA"(XDCONTROL, VHVM1AA_CRIT, VHVM1AA_DATA);
+            
+            end
+            
+
+    
+            MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+            if (XXEXT_CALL_Level77Items.URC == 0)
+  
+                if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                    VHVM1A3_DATA.CNT-DAYS-NXT-PA = VHVM1AA_DATA.CNT-DAYS-NXT-PA;
+                    VHVM1A3_DATA.CNT-DAYS-NXT-WASH = VHVM1AA_DATA.CNT-DAYS-NXT-WASH;
+                    VHVM1A3_DATA.HRS-TO-NEXT-PM = VHVM1AA_DATA.HRS-TO-NEXT-PM;
+  
+                    VHVM1A3_DATA.DATE-NXT-PA-INSPC = VHVM1AA_DATA.DATE-NXT-PA;
+                    VHVM1A3_DATA.DATE-NXT-CAR-WASH = VHVM1AA_DATA.DATE-NXT-WASH;
+                    
+     
+                else
+
+        
+        
+                    VHVM02IW-TRIGGERS.BAD-TYPE = "Y";
+                    
+
+  
+  
+  
+  
+                end 
+            end
+        else
+            VHVM02IW-TRIGGERS.BAD-TYPE = "Y";
+        end 
+    end
+end 
+
+Function VHVM03I-DBMAINT ()
+
+   
+    if (VH01A01_DATA.USER-GROUP == "DBMAINT" || VH01A01_DATA.USER-GROUP == "TEST")
+
+    else
+        VHVM03IW-TRIGGERS.DISABLE = "Y";
+    end
+end 
+
+Function VHVM03I-PRE-UP ()
+
+
+   
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHVM1A5_DATA.DATE-BATTERY-REPL;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM1A5_DATA.DATE-BATTERY-REPL = XXDATEW.DATE-YYYY-MM-DD;
+
+
+  
+    XXDATEW.DATE-MM-DD-YYYY = VHVM1A5_DATA.DATE-CONFIG-C-STAT;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM1A5_DATA.DATE-CONFIG-C-STAT = XXDATEW.DATE-YYYY-MM-DD;
+
+  
+    XXDATEW.DATE-MM-DD-YYYY = VHVM1A5_DATA.DATE-CONFIG-UPD;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM1A5_DATA.DATE-CONFIG-UPD = XXDATEW.DATE-YYYY-MM-DD;
+
+
+  
+  
+    if (
+    VHVM1A5_DATA.ATO-PRESENT-IND != VHVM1A5_CRIT.ATO-PRESENT-IND ||
+     VHVM1A5_DATA.BATTERY-REPL-IND != VHVM1A5_CRIT.BATTERY-REPL-IND ||
+     VHVM1A5_DATA.DATE-BATTERY-REPL != VHVM1A5_CRIT.DATE-BATTERY-REPL ||
+     VHVM1A5_DATA.BATTERY-REPL-LOC != VHVM1A5_CRIT.BATTERY-REPL-LOC ||
+     VHVM1A5_DATA.BRK-IN-HRS != VHVM1A5_CRIT.BRK-IN-HRS ||
+     VHVM1A5_DATA.CAR-TYPE != VHVM1A5_CRIT.CAR-TYPE ||
+     VHVM1A5_DATA.CNT-TIMES-PA-INSPC != VHVM1A5_CRIT.CNT-TIMES-PA-INSPC ||
+     VHVM1A5_DATA.CNT-TIMES-WASH != VHVM1A5_CRIT.CNT-TIMES-WASH ||
+     VHVM1A5_DATA.CON-NO != VHVM1A5_CRIT.CON-NO ||
+     VHVM1A5_DATA.CON-NO-FAIL != VHVM1A5_CRIT.CON-NO-FAIL ||
+     VHVM1A5_DATA.CUM-HRS != VHVM1A5_CRIT.CUM-HRS ||
+     VHVM1A5_DATA.CUM-MIN != VHVM1A5_CRIT.CUM-MIN ||
+     VHVM1A5_DATA.CURR-LOC != VHVM1A5_CRIT.CURR-LOC ||
+     VHVM1A5_DATA.CURR-SCHD-PM-NO != VHVM1A5_CRIT.CURR-SCHD-PM-NO ||
+     VHVM1A5_DATA.DASH-NO != VHVM1A5_CRIT.DASH-NO ||
+     VHVM1A5_DATA.DASH-NO-FAIL != VHVM1A5_CRIT.DASH-NO-FAIL ||
+     VHVM1A5_DATA.DATE-END-CAR-REV != VHVM1A5_CRIT.DATE-END-CAR-REV ||
+     VHVM1A5_DATA.DATE-HOME-YRD-UPD != VHVM1A5_CRIT.DATE-HOME-YRD-UPD ||
+     VHVM1A5_DATA.DATE-LAST-UPD != VHVM1A5_CRIT.DATE-LAST-UPD ||
+     VHVM1A5_DATA.DATE-MAINT-UPD != VHVM1A5_CRIT.DATE-MAINT-UPD ||
+     VHVM1A5_DATA.END-CAR-HRS != VHVM1A5_CRIT.END-CAR-HRS ||
+     VHVM1A5_DATA.END-CAR-MIN != VHVM1A5_CRIT.END-CAR-MIN ||
+     VHVM1A5_DATA.HOME-YRD != VHVM1A5_CRIT.HOME-YRD ||
+     VHVM1A5_DATA.HRS-AT-LAST-PM != VHVM1A5_CRIT.HRS-AT-LAST-PM ||
+     VHVM1A5_DATA.HRS-FROM-LAST-PM != VHVM1A5_CRIT.HRS-FROM-LAST-PM ||
+     VHVM1A5_DATA.HRS-TO-NEXT-PM != VHVM1A5_CRIT.HRS-TO-NEXT-PM ||
+     VHVM1A5_DATA.LAST-PM-LOC != VHVM1A5_CRIT.LAST-PM-LOC ||
+     VHVM1A5_DATA.LAST-SCHD-PM-NO != VHVM1A5_CRIT.LAST-SCHD-PM-NO ||
+     VHVM1A5_DATA.MID-CAR-HRS != VHVM1A5_CRIT.MID-CAR-HRS ||
+     VHVM1A5_DATA.MID-CAR-MIN != VHVM1A5_CRIT.MID-CAR-MIN ||
+     VHVM1A5_DATA.MTBI != VHVM1A5_CRIT.MTBI ||
+     VHVM1A5_DATA.MTBI-HRS != VHVM1A5_CRIT.MTBI-HRS ||
+     VHVM1A5_DATA.MTBI-INCDS != VHVM1A5_CRIT.MTBI-INCDS ||
+     VHVM1A5_DATA.NEXT-SCHD-PM-NO != VHVM1A5_CRIT.NEXT-SCHD-PM-NO ||
+     VHVM1A5_DATA.VAGen_ORIENTATION != VHVM1A5_CRIT.VAGen_ORIENTATION ||
+     VHVM1A5_DATA.TERM-HOME-YRD-UPD != VHVM1A5_CRIT.TERM-HOME-YRD-UPD ||
+     VHVM1A5_DATA.TIME-END-CAR != VHVM1A5_CRIT.TIME-END-CAR ||
+     VHVM1A5_DATA.TIME-HOME-YRD-UPD != VHVM1A5_CRIT.TIME-HOME-YRD-UPD ||
+     VHVM1A5_DATA.TIME-LAST-UPD != VHVM1A5_CRIT.TIME-LAST-UPD ||
+     VHVM1A5_DATA.TIME-MAINT-UPD != VHVM1A5_CRIT.TIME-MAINT-UPD ||
+     VHVM1A5_DATA.TRAIN-INCD-IND != VHVM1A5_CRIT.TRAIN-INCD-IND ||
+     VHVM1A5_DATA.VEH-STAT != VHVM1A5_CRIT.VEH-STAT ||
+     VHVM1A5_DATA.VEH-STAT-PREV != VHVM1A5_CRIT.VEH-STAT-PREV ||
+     VHVM1A5_DATA.WAR-IND != VHVM1A5_CRIT.WAR-IND ||
+     VHVM1A5_DATA.CAMERA-CD != VHVM1A5_CRIT.CAMERA-CD ||
+     VHVM1A5_DATA.WHERE-IS-CAR != VHVM1A5_CRIT.WHERE-IS-CAR ||
+     VHVM1A5_DATA.CONFIG-CMPNT-STAT != VHVM1A5_CRIT.CONFIG-CMPNT-STAT ||
+     VHVM1A5_DATA.DATE-CONFIG-UPD != VHVM1A5_CRIT.DATE-CONFIG-UPD ||
+     VHVM1A5_DATA.CONFIG-CMPNT-TYPE != VHVM1A5_CRIT.CONFIG-CMPNT-TYPE)
+        VHVM03IW-TRIGGERS.VAGen_UPDATE = "Y";
+    else
+        VHVM03IW-TRIGGERS.NO-UPDATE = "Y";
+    end
+end 
+
+Function VHVM03I-UPDATE-CAR ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    if (VHVM1A5_DATA.DATE-END-CAR-REV != VHVM1A5_CRIT.DATE-END-CAR-REV)
+        XXDATEW.VAGen_FUNCTION = "YMD";
+        XXDATEW.DATE-MM-DD-YYYY = VHVM1A5_DATA.DATE-END-CAR-REV;
+        MRSCommonCode.XXDATES-CONVERT();
+        VHVM1A5_DATA.DATE-END-CAR-REV = XXDATEW.DATE-YYYY-MM-DD;
+    end
+
+  
+    VHVM1A4_DATA.CONFIG-UPD-SWITCH = "N";
+    if (VHVM1A5_DATA.DATE-CONFIG-UPD != " " && VHVM1A5_DATA.TIME-CONFIG-UPD != " ")
+        VHVM1A4_DATA.CONFIG-UPD-SWITCH = "Y";
+    end
+    VHVM1A4_DATA.HOME-YARD-SWITCH = "N";
+
+  
+  
+    if (VHVM1A5_DATA.HOME-YRD != VHVM1A5_CRIT.HOME-YRD)
+        XXDATEW.VAGen_FUNCTION = "YMD";
+        XXDATEW.DATE-MM-DD-YYYY = VGVar.currentFormattedGregorianDate;
+        MRSCommonCode.XXDATES-CONVERT();
+        VHVM1A5_DATA.DATE-HOME-YRD-UPD = XXDATEW.DATE-YYYY-MM-DD;
+        VHVM1A5_DATA.TERM-HOME-YRD-UPD = VH01A01_DATA.TERM-ID;
+
+  
+        VHVM1A4_DATA.HOME-YARD-SWITCH = "Y";
+    end
+
+  
+    VHVM1A5_DATA.TERM-LAST-UPD = VH01A01_DATA.TERM-ID;
+    VHVM1A5_DATA.TERM-MAINT-UPD = VH01A01_DATA.TERM-ID;
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM01I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM1A4";
+
+  
+    try
+        call "VHVM1A4"(XDCONTROL, VHVM1A4_DATA, VHVM1A5_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHVM03IW-TRIGGERS.DONE = "Y";
+            
+
+     
+        else
+           
+        
+            VHVM03IW-TRIGGERS.BAD = "Y";
+            
+
+  
+  
+  
+  
+        end 
+    end
+end 
+
+Function VHVM03IS-CLEAR () 
+    set VHVM1A5_DATA empty;
+    VHVM03IW-TRIGGERS.CLEAR = "Y";
+end 
+
+Function VHVM03IS-GET-CAMER ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM03II";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM1A6";
+
+  
+
+    
+    try
+        call "VHVM1A6"(XDCONTROL, VHVM1A6_CRIT, VHVM1A6_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHVM03IW.CAMERA-CNT = XDCONTROL.UROWCNT;
+            
+  
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+end 
+
+Function VHVM03IS-GET-CAR ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+   
+    if (VHVM1A5_DATA.CAR-NO != "    ")
+        VHVM03IW.CARS-RET = "N";
+        XXEXT_CALL_Level77Items.UEXTNAM = "VHVM03I";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM1A5";
+
+  
+        VHVM1A5_CRIT.CAR-NO = VHVM1A5_DATA.CAR-NO;
+
+  
+        try
+            call "VHVM1A5"(XDCONTROL, VHVM1A5_CRIT, VHVM1A5_DATA);
+        
+        end
+        
+
+    
+        MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+        if (XXEXT_CALL_Level77Items.URC == 0)
+  
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                XXDATEW.VAGen_FUNCTION = "MDY";
+                XXDATEW.DATE-YYYY-MM-DD = VHVM1A5_DATA.DATE-BATTERY-REPL;
+                MRSCommonCode.XXDATES-CONVERT();
+                VHVM1A5_DATA.DATE-BATTERY-REPL = XXDATEW.DATE-MM-DD-YYYY;
+                XXDATEW.DATE-YYYY-MM-DD = VHVM1A5_DATA.DATE-CONFIG-C-STAT;
+                MRSCommonCode.XXDATES-CONVERT();
+                VHVM1A5_DATA.DATE-CONFIG-C-STAT = XXDATEW.DATE-MM-DD-YYYY;
+                XXDATEW.DATE-YYYY-MM-DD = VHVM1A5_DATA.DATE-CONFIG-UPD;
+                MRSCommonCode.XXDATES-CONVERT();
+                VHVM1A5_DATA.DATE-CONFIG-UPD = XXDATEW.DATE-MM-DD-YYYY;
+                VHVM03IW.CARS-RET = "Y";
+                VHVM03IW-TRIGGERS.ENABLE-UPDATE = "Y";
+                VHVM03IS-ORIENT();
+  
+                VHVM03IW.CAMERA-INDEX = 0;
+                if (VHVM1A5_DATA.CAMERA-CD != " ")
+                    VHVM03IW.CCOUNT = 1;
+                    while (VHVM03IW.CCOUNT <= VHVM03IW.CAMERA-CNT)
+                        if (VHVM1A5_DATA.CAMERA-CD == VHVM1A6_DATA.CAMERA-CD[VHVM03IW.CCOUNT])
+                            VHVM03IW.CAMERA-INDEX = VHVM03IW.CCOUNT;
+                        end
+                        VHVM03IW.CCOUNT = VHVM03IW.CCOUNT + 1;
+                    end
+                     
+                end 
+        
+      
+                PM-COUNTER = 11;
+                VHVM03IW.SCHD-INDEX = 0;
+                if (VHVM1A5_DATA.CURR-SCHD-PM-NO != "  ")
+                    VHVM03IW.SCHD-CNT = 1;
+                    while (VHVM03IW.SCHD-CNT <= VHVM03-SCH-PM.PM-COUNTER)
+                        if (VHVM1A5_DATA.CURR-SCHD-PM-NO == VHVM03-SCH-PM.SCHD-PM[VHVM03IW.SCHD-CNT])
+                            VHVM03IW.SCHD-INDEX = VHVM03IW.SCHD-CNT;
+                        end
+                        VHVM03IW.SCHD-CNT = VHVM03IW.SCHD-CNT + 1;
+                    end
+                     
+                end 
+          
+                PM-COUNTER-2 = 11;
+                VHVM03IW.SCHD2-INDEX = 0;
+                if (VHVM1A5_DATA.NEXT-SCHD-PM-NO != "  ")
+                    VHVM03IW.SCHD2-CNT = 1;
+                    while (VHVM03IW.SCHD2-CNT <= VHVM03-SCH-PM-2.PM-COUNTER-2)
+                        if (VHVM1A5_DATA.NEXT-SCHD-PM-NO == VHVM03-SCH-PM-2.SCHD-PM-2[VHVM03IW.SCHD2-CNT])
+                            VHVM03IW.SCHD2-INDEX = VHVM03IW.SCHD2-CNT;
+                        end
+                        VHVM03IW.SCHD2-CNT = VHVM03IW.SCHD2-CNT + 1;
+                    end
+                     
+                end 
+           
+                PM-COUNTER-3 = 11;
+                VHVM03IW.SCHD3-INDEX = 0;
+                if (VHVM1A5_DATA.LAST-SCHD-PM-NO != "  ")
+                    VHVM03IW.SCHD3-CNT = 1;
+                    while (VHVM03IW.SCHD3-CNT <= VHVM03-SCH-PM-3.PM-COUNTER-3)
+                        if (VHVM1A5_DATA.LAST-SCHD-PM-NO == VHVM03-SCH-PM-3.SCHD-PM-3[VHVM03IW.SCHD3-CNT])
+                            VHVM03IW.SCHD3-INDEX = VHVM03IW.SCHD3-CNT;
+                        end
+                        VHVM03IW.SCHD3-CNT = VHVM03IW.SCHD3-CNT + 1;
+                    end
+                     
+                end
+                 
+            else
+
+        
+        
+                VHVM03IW-TRIGGERS.BAD-CAR = "Y";
+                
+
+  
+  
+  
+  
+            end 
+        end
+    end
+end 
+
+Function VHVM03IS-GET-LOCS ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHCY01I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHCY1A1";
+
+  
+
+    
+    try
+        call "MRSVehicleConsist.VHCY1A1"(XDCONTROL, VHCY1A1_CRIT, VHCY1A1_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+  
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+
+  
+    XDCONTROL.UROWCNT = XDCONTROL.UROWCNT + 1;
+end 
+
+Function VHVM03IS-GET-ORI ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHCY01I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM1A7";
+
+  
+
+    
+    try
+        call "VHVM1A7"(XDCONTROL, VHVM1A7_CRIT, VHVM1A7_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+  
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+end 
+
+Function VHVM03IS-GET-SCHD () 
+    VHVM03-SCH-PM.SCHD-PM[1] = "  ";
+    VHVM03-SCH-PM.SCHD-PM[2] = "1 ";
+    VHVM03-SCH-PM.SCHD-PM[3] = "2 ";
+    VHVM03-SCH-PM.SCHD-PM[4] = "3 ";
+    VHVM03-SCH-PM.SCHD-PM[5] = "4 ";
+    VHVM03-SCH-PM.SCHD-PM[6] = "5 ";
+    VHVM03-SCH-PM.SCHD-PM[7] = "6 ";
+    VHVM03-SCH-PM.SCHD-PM[8] = "A ";
+    VHVM03-SCH-PM.SCHD-PM[9] = "B ";
+    VHVM03-SCH-PM.SCHD-PM[10] = "C ";
+    VHVM03-SCH-PM.SCHD-PM[11] = "D ";
+    VHVM03-SCH-PM.PM-COUNTER = 11;
+    VHVM03-SCH-PM-2.SCHD-PM-2[1] = "  ";
+    VHVM03-SCH-PM-2.SCHD-PM-2[2] = "1 ";
+    VHVM03-SCH-PM-2.SCHD-PM-2[3] = "2 ";
+    VHVM03-SCH-PM-2.SCHD-PM-2[4] = "3 ";
+    VHVM03-SCH-PM-2.SCHD-PM-2[5] = "4 ";
+    VHVM03-SCH-PM-2.SCHD-PM-2[6] = "5 ";
+    VHVM03-SCH-PM-2.SCHD-PM-2[7] = "6 ";
+    VHVM03-SCH-PM-2.SCHD-PM-2[8] = "A ";
+    VHVM03-SCH-PM-2.SCHD-PM-2[9] = "B ";
+    VHVM03-SCH-PM-2.SCHD-PM-2[10] = "C ";
+    VHVM03-SCH-PM-2.SCHD-PM-2[11] = "D ";
+    VHVM03-SCH-PM-2.PM-COUNTER-2 = 11;
+    VHVM03-SCH-PM-3.SCHD-PM-3[1] = "  ";
+    VHVM03-SCH-PM-3.SCHD-PM-3[2] = "1 ";
+    VHVM03-SCH-PM-3.SCHD-PM-3[3] = "2 ";
+    VHVM03-SCH-PM-3.SCHD-PM-3[4] = "3 ";
+    VHVM03-SCH-PM-3.SCHD-PM-3[5] = "4 ";
+    VHVM03-SCH-PM-3.SCHD-PM-3[6] = "5 ";
+    VHVM03-SCH-PM-3.SCHD-PM-3[7] = "6 ";
+    VHVM03-SCH-PM-3.SCHD-PM-3[8] = "A ";
+    VHVM03-SCH-PM-3.SCHD-PM-3[9] = "B ";
+    VHVM03-SCH-PM-3.SCHD-PM-3[10] = "C ";
+    VHVM03-SCH-PM-3.SCHD-PM-3[11] = "D ";
+    VHVM03-SCH-PM-3.PM-COUNTER-3 = 11;
+end 
+
+Function VHVM03IS-GET-STATS ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM03II";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM1A9";
+
+  
+
+    
+    try
+        call "VHVM1A9"(XDCONTROL, VHVM1A9_CRIT, VHVM1A9_DATA, VHVM1A9B_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHVM03IW.STAT-CNT = XDCONTROL.UROWCNT;
+            
+  
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+end 
+
+Function VHVM03IS-ORIENT ()
+  
+   
+    set VHVM03IW-ORIENT empty;
+    VHVM02IW.CAR-COUNT = 1;
+    while (VHVM02IW.CAR-COUNT <= VHVM1A7_DATA.VAGen_COUNT)
+        if (VHVM1A5_DATA.CAR-TYPE == VHVM1A7_DATA.CAR-TYPE[VHVM02IW.CAR-COUNT])
+            VHVM03IW-ORIENT.ORIENTATION-CD[1] = VHVM1A7_DATA.LFT-ORIENTATION-CD[VHVM02IW.CAR-COUNT];
+            VHVM03IW-ORIENT.ORIENTATION-CD[2] = VHVM1A7_DATA.RGT-ORIENTATION-CD[VHVM02IW.CAR-COUNT];
+        end
+        VHVM02IW.CAR-COUNT = VHVM02IW.CAR-COUNT + 1;
+    end
+end 
+
+Function VHVM04IS-ADD () 
+    XDCONTROL.UFUNCTION = "ADD";
+end 
+
+Function VHVM04IS-UPDATE () 
+    XDCONTROL.UFUNCTION = "UPDATE";
+end 
+
+Function VHVM06IS-BEGIN ()
+  
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM04I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM4A5";
+    
+
+  
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+  
+  
+  
+
+
+  
+
+        
+        
+    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+  
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM06I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVT15A";
+    try
+        call "MRSTableMaintenance.VHYT15A"(XDCONTROL, VHYT15A_CRIT, VHYT15A_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHVM06IS-CLEAR () 
+    set VHVM06IW-SELECT empty;
+end 
+
+Function VHVM06IS-DELETE () 
+    XDCONTROL.UFUNCTION = "DELETE";
+end 
+
+Function VHVM06IS-FULLCLEAR () 
+    set VHVM06IW-SELECT empty;
+    set VHVM6A1_CRIT empty;
+    set VHVM6A1_DATA empty;
+    VHVM06IW.INCD-ROWS = 1;
+    VHVM06IW-TRIGGERS.LOAD-DATA = "Y";
+end 
+
+Function VHVM06IS-GETSUBLOC () 
+    if (VHVM06IW-SELECT.YRD-TRKG-YRD != "        ")
+        VHVM6A6_CRIT.YARD-LOC-IND = "Y";
+        try
+            call "VHVM6A6"(XDCONTROL, VHVM6A6_CRIT, VHVM6A6_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHVM06IW.ROW-COUNT = XDCONTROL.UROWCNT;
+            VHVM06IW-TRIGGERS.LOAD-SUBLOC = "Y";
+            
+    
+        else
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHVM06IS-MOD-DATA ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM06I";
+
+  
+  
+  
+  
+  
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHVM06IW-SELECT.DATE-STAT-CHG;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM6A3_DATA.DATE-STAT-CHG = XXDATEW.DATE-YYYY-MM-DD;
+    VHVM6A3_DATA.TS-STAT-CHG = VHVM06IW-SELECT.TS-STAT-CHG;
+    VHVM6A3_DATA.HOME-YRD = VHVM06IW-SELECT.HOME-YRD;
+    VHVM6A3_DATA.INCD-NO = VHVM06IW-SELECT.INCD-NO;
+    VHVM6A3_DATA.INCD-STAT-NEW = VHVM06IW-SELECT.INCD-STAT-NEW;
+    VHVM6A3_DATA.INCD-STAT-PREV = VHVM06IW-SELECT.INCD-STAT-PREV;
+    VHVM6A3_DATA.MARIS-FUNC = "VHVM06";
+    VHVM6A3_DATA.MOVE-REASON-CD = VHVM06IW-SELECT.MOVE-REASON-CD;
+    VHVM6A3_DATA.TERM-MAINT-UPD = VHVM06IW-ID.TERM-ID;
+    VHVM6A3_DATA.TIME-STAT-CHG = VHVM06IW-SELECT.TIME-STAT-CHG;
+    VHVM6A3_DATA.USER-GRP = VHVM06IW-ID.USER-GROUP;
+    VHVM6A3_DATA.YRD-SUB-LOC = VHVM06IW-SELECT.YRD-SUB-LOC;
+    VHVM6A3_DATA.YRD-TRKG-YRD = VHVM06IW-SELECT.YRD-TRKG-YRD;
+    VHVM6A3_DATA.PSEUDO-CON-NO = VHVM06IW-SELECT.PSEUDO-CON-NO;
+
+  
+    if (XDCONTROL.UFUNCTION == "UPDATE" || XDCONTROL.UFUNCTION == "ADD")
+        if (VHVM6A3_DATA.INCD-NO not blanks &&
+         VHVM6A3_DATA.DATE-STAT-CHG not blanks &&
+         VHVM6A3_DATA.TIME-STAT-CHG not blanks &&
+         VHVM6A3_DATA.INCD-STAT-NEW not blanks &&
+         VHVM6A3_DATA.HOME-YRD not blanks)
+
+
+  
+            if (XDCONTROL.UFUNCTION == "UPDATE")
+                try
+                    call "VHVM6A3"(XDCONTROL, VHVM6A3_CRIT, VHVM6A3_DATA);
+                
+                end
+                if (XXEXT_CALL_Level77Items.URC == 0)
+
+  
+                    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                        VHVM06IW-TRIGGERS.UPDATED = "Y";
+                        VHVM06IW-SELECT_Level77Items.SELECTION-IDX = 0;
+                        XDCONTROL.UFUNCTION = "RETRIEVE";
+                    else
+                        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                    end 
+                end
+            end
+  
+
+  
+            if (XDCONTROL.UFUNCTION == "ADD")
+                VHVM6A3_DATA.STAT-CHG-ACTN = "MAINT ADD";
+                VHVM6A3_DATA.TERM-LAST-UPD = "MAINT ADD";
+                try
+                    call "VHVM6A2"(XDCONTROL, VHVM6A3_DATA);
+                
+                end
+                if (XXEXT_CALL_Level77Items.URC == 0)
+
+  
+                    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                        VHVM06IW-TRIGGERS.ADDED = "Y";
+                        VHVM06IW-SELECT_Level77Items.SELECTION-IDX = 0;
+                        XDCONTROL.UFUNCTION = "RETRIEVE";
+                        VHVM06IW.ROW-COUNT = VHVM06IW.ROW-COUNT + 1;
+                    else
+                        if (XDCONTROL.UMSGINS[1] == "-803")
+                            VHVM06IW-TRIGGERS.DUPLICATE-KEY = "Y";
+                        else
+                            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                        end 
+                    end
+                end
+            end
+        else
+  
+            VHVM06IW-TRIGGERS.DATA-ERROR = "Y";
+            
+
+  
+  
+        end
+    else
+
+  
+        if (XDCONTROL.UFUNCTION == "DELETE")
+            try
+                call "VHVM6A4"(XDCONTROL, VHVM6A3_DATA);
+            
+            end
+            if (XXEXT_CALL_Level77Items.URC == 0)
+     
+                if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                    VHVM06IW-TRIGGERS.DELETED = "Y";
+                    XDCONTROL.UFUNCTION = "RETRIEVE";
+                    
+  
+  
+                else
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end 
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end
+    end
+  
+    if (XDCONTROL.UFUNCTION == "RETRIEVE")
+        VHVM06IW.ROW-COUNT = 0;
+        try
+            call "VHVM6A1"(XDCONTROL, VHVM6A1_CRIT, VHVM6A1_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHVM06IW.INCD-ROWS = XDCONTROL.UROWCNT;
+            VHVM06IW-TRIGGERS.LOAD-DATA = "Y";
+            VHVM06IW.RETURNED-DATA = "Y";
+            VHVM06IW-TRIGGERS.PUSH-CLEAR = "Y";
+        else
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    else 
+        VHVM06IW-TRIGGERS.MISSING-VALUES = "Y";
+    end
+end 
+
+Function VHVM06IS-RET-DATA () 
+    if (VHVM6A1_CRIT.INCD-NO != "        ")
+        VHVM06IW.ROW-COUNT = 0;
+        try
+            call "VHVM6A1"(XDCONTROL, VHVM6A1_CRIT, VHVM6A1_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHVM06IW.INCD-ROWS = XDCONTROL.UROWCNT;
+            VHVM06IW-TRIGGERS.LOAD-DATA = "Y";
+            VHVM06IW.RETURNED-DATA = "Y";
+        else
+        
+        
+            VHVM06IW-TRIGGERS.BAD-INCIDENT = "Y";
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHVM06IS-SELECT () 
+    if (SELECTION-IDX > 0)
+        VHVM06IW-SELECT.DATA_ROW = VHVM6A1_DATA.DATA_ROW[SELECTION-IDX];
+        VHVM06IW-TRIGGERS.ENABLE-UPDATE = "Y";
+    end
+end 
+
+Function VHVM06IS-VDATE ()
+  
+  
+  
+   
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHVM06IW-SELECT.DATE-STAT-CHG;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM6A3_DATA.DATE-STAT-CHG = XXDATEW.DATE-YYYY-MM-DD;
+    VHVM6A3_DATA.TS-STAT-CHG = VHVM06IW-SELECT.TS-STAT-CHG;
+    VHVM6A3_DATA.HOME-YRD = VHVM06IW-SELECT.HOME-YRD;
+    VHVM6A3_DATA.INCD-NO = VHVM06IW-SELECT.INCD-NO;
+    VHVM6A3_DATA.INCD-STAT-NEW = VHVM06IW-SELECT.INCD-STAT-NEW;
+    VHVM6A3_DATA.INCD-STAT-PREV = VHVM06IW-SELECT.INCD-STAT-PREV;
+    VHVM6A3_DATA.MARIS-FUNC = "VHVM06";
+    VHVM6A3_DATA.MOVE-REASON-CD = VHVM06IW-SELECT.MOVE-REASON-CD;
+    VHVM6A3_DATA.TERM-MAINT-UPD = VHVM06IW-ID.TERM-ID;
+    VHVM6A3_DATA.TIME-STAT-CHG = VHVM06IW-SELECT.TIME-STAT-CHG;
+    VHVM6A3_DATA.USER-GRP = VHVM06IW-ID.USER-GROUP;
+    VHVM6A3_DATA.YRD-SUB-LOC = VHVM06IW-SELECT.YRD-SUB-LOC;
+    VHVM6A3_DATA.YRD-TRKG-YRD = VHVM06IW-SELECT.YRD-TRKG-YRD;
+    VHVM6A3_DATA.PSEUDO-CON-NO = VHVM06IW-SELECT.PSEUDO-CON-NO;
+
+  
+    VHVM06IS-DATE.TODAY = VGVar.currentGregorianDate;
+    VHVM06IS-DATE.CURRENT-TIME = VGVar.currentFormattedTime;
+  
+    VHVM06IS-DATE.ENTRY-DATE-Y = VHVM06IS-DATE.YR-IN-N;
+    VHVM06IS-DATE.ENTRY-DATE-M = VHVM06IS-DATE.MO-IN-N;
+    VHVM06IS-DATE.ENTRY-DATE-D = VHVM06IS-DATE.DAY-IN-N;
+    VHVM06IW-TRIGGERS.BAD-TIME = "N";
+    VHVM06IW-TRIGGERS.BAD-DATE = "N";
+    VHVM06IW-TRIGGERS.BLANK = "N";
+    if (VHVM06IS-DATE.MO-IN-N < 1 || VHVM06IS-DATE.MO-IN-N > 12)
+  
+  
+        VHVM06IW-TRIGGERS.BAD-DATE = "Y";
+    end
+    if (VHVM06IS-DATE.DAY-IN-N < 1 || VHVM06IS-DATE.DAY-IN-N > 31)
+  
+  
+        VHVM06IW-TRIGGERS.BAD-DATE = "Y";
+    end
+    if (VHVM06IS-DATE.YR-IN-N < 1999 || VHVM06IS-DATE.YR-IN-N > 2100)
+  
+  
+        VHVM06IW-TRIGGERS.BAD-DATE = "Y";
+    end
+  
+    if (VHVM06IS-DATE.ENTRY-DATE > VHVM06IS-DATE.TODAY-N)
+   
+  
+        VHVM06IW-TRIGGERS.BAD-DATE = "Y";
+    end
+
+
+  
+    if (VHVM06IS-DATE.HR-IN-N > 24)
+  
+  
+        VHVM06IW-TRIGGERS.BAD-TIME = "Y";
+    end
+    if (VHVM06IS-DATE.MIN-IN-N > 59)
+  
+  
+        VHVM06IW-TRIGGERS.BAD-TIME = "Y";
+    end
+    if (VHVM06IS-DATE.HR-IN-N == 0 && VHVM06IS-DATE.MIN-IN-N == 0)
+  
+  
+        VHVM06IW-TRIGGERS.BAD-TIME = "Y";
+    end
+  
+    if ((VHVM06IS-DATE.TODAY-N == VHVM06IS-DATE.ENTRY-DATE) && VHVM06IS-DATE.TIME-IN > CURRENT-TIME)
+        VHVM06IW-TRIGGERS.BAD-TIME = "Y";
+    end
+    if (VHVM06IW-TRIGGERS.BAD-DATE == "Y")
+        VHVM06IW-TRIGGERS.BAD-DATE-MSG = "Y";
+    end
+    if (VHVM06IW-TRIGGERS.BAD-TIME == "Y")
+        VHVM06IW-TRIGGERS.BAD-TIME-MSG = "Y";
+    end
+
+  
+  
+  
+    if (XDCONTROL.UFUNCTION == "UPDATE" || XDCONTROL.UFUNCTION == "ADD")
+        if (VHVM6A3_DATA.YRD-TRKG-YRD not blanks && VHVM6A3_DATA.YRD-SUB-LOC is blanks)
+            VHVM06IW-TRIGGERS.BLANK-SUB-LOC = "Y";
+            VHVM06IW-TRIGGERS.BLANK = "Y";
+        end
+        if (VHVM6A3_DATA.INCD-STAT-PREV is blanks && SELECTION-IDX > 1)
+            VHVM06IW-TRIGGERS.BLANK-PREV-STAT = "Y";
+            VHVM06IW-TRIGGERS.BLANK = "Y";
+             
+        end
+    end
+    if (VHVM06IW-TRIGGERS.BAD-TIME == "N" &&
+     VHVM06IW-TRIGGERS.BAD-DATE == "N" &&
+     VHVM06IW-TRIGGERS.BLANK == "N")
+        VHVM06IW-TRIGGERS.RUN-PGM = "Y";
+    end
+end 
+
+Function VHVM08IS-CALC ()
+  
+  
+   
+    VHVM08IW.N-CUM-HRS = VHVM1A5_DATA.CUM-HRS;
+    VHVM08IW.N-NEXT-PM-HRS = VHVM1A5_DATA.HRS-TO-NEXT-PM - VHVM08IW.TEST-HRS;
+    VHVM08IW.N-LAST-PM-HRS = VHVM1A5_DATA.HRS-FROM-LAST-PM + VHVM08IW.TEST-HRS;
+end 
+
+Function VHVM08IS-CLEAR () 
+    set VHVM1A5_DATA empty;
+    set VHVM08IW empty;
+end 
+
+Function VHVM08IS-GET-CAR ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+   
+    if (VHVM1A5_DATA.CAR-NO != "    ")
+  
+        XXEXT_CALL_Level77Items.UEXTNAM = "VHVM08I";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM1A5";
+
+  
+        VHVM1A5_CRIT.CAR-NO = VHVM1A5_DATA.CAR-NO;
+
+  
+        try
+            call "VHVM1A5"(XDCONTROL, VHVM1A5_CRIT, VHVM1A5_DATA);
+        
+        end
+        
+
+    
+        MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+        if (XXEXT_CALL_Level77Items.URC == 0)
+  
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                VHVM08IW-TRIGGERS.GOT-CAR = "Y";
+                
+
+        
+            else
+
+        
+        
+                VHVM08IW-TRIGGERS.BAD-CAR = "Y";
+                
+
+  
+  
+  
+  
+            end 
+        end
+    end
+end 
+
+Function VHVM08IS-UPDATE ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+   
+    if (VHVM1A5_DATA.CAR-NO != "    ")
+        XXEXT_CALL_Level77Items.UEXTNAM = "VHVM08I";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM8A1";
+        set VHVM8A1_DATA empty;
+
+  
+        VHVM8A1_CRIT.CAR-NO = VHVM1A5_DATA.CAR-NO;
+        VHVM8A1_DATA.CUM-HRS = VHVM08IW.N-CUM-HRS;
+        VHVM8A1_DATA.HRS-TO-NEXT-PM = VHVM08IW.N-NEXT-PM-HRS;
+        VHVM8A1_DATA.HRS-FROM-LAST-PM = VHVM08IW.N-LAST-PM-HRS;
+        VHVM8A1_DATA.TERM-LAST-UPD = VHVM08IW-PASS.TERM-ID;
+
+  
+        try
+            call "VHVM8A1"(XDCONTROL, VHVM8A1_CRIT, VHVM8A1_DATA);
+        
+        end
+        
+
+    
+        MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+        if (XXEXT_CALL_Level77Items.URC == 0)
+  
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                VHVM08IW-TRIGGERS.UPDATED = "Y";
+                
+
+        
+            else
+
+        
+        
+                VHVM08IW-TRIGGERS.BAD-CAR = "Y";
+                
+
+  
+  
+  
+  
+            end 
+        end
+    end
+end 
+
+Function VHVM10IS-ADD () 
+    XDCONTROL.UFUNCTION = "ADD";
+end 
+
+Function VHVM10IS-BEGIN ()
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM04I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM4A5";
+    try
+        call "MRSVehicleMenu.VH01A01"(XDCONTROL, VH01A01_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHVM10IS-CLEAR () 
+    set VHVM10IW-SELECT empty;
+    set VHVM10C_DATA empty;
+end 
+
+Function VHVM10IS-MOD-DATA ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM10I";
+
+  
+  
+  
+    VHVM10C_DATA.CON-NO = VHVM10IW-SELECT.CON-NO;
+  
+  
+    VHVM10C_DATA.TERM-MAINT-UPD = VHVM10IW-ID.TERM-ID;
+
+
+  
+    if (XDCONTROL.UFUNCTION == "UPDATE" || XDCONTROL.UFUNCTION == "ADD")
+        if (VHVM10C_DATA.CON-NO not blanks &&
+         VHVM10C_DATA.CON-STAT not blanks)
+
+
+  
+            if (XDCONTROL.UFUNCTION == "UPDATE")
+                try
+                    call "VHVM10C"(XDCONTROL, VHVM10C_DATA);
+                
+                end
+                if (XXEXT_CALL_Level77Items.URC == 0)
+
+  
+                    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                        VHVM10IW-TRIGGERS.UPDATED = "Y";
+                        VHVM10IW-SELECT_Level77Items.SELECTION-IDX = 0;
+                        XDCONTROL.UFUNCTION = "RETRIEVE";
+                    else
+                        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                    end 
+                end
+            end
+  
+
+  
+            if (XDCONTROL.UFUNCTION == "ADD")
+                try
+
+
+
+                end
+                if (XXEXT_CALL_Level77Items.URC == 0)
+
+  
+                    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                        VHVM10IW-TRIGGERS.ADDED = "Y";
+                        VHVM10IW-SELECT_Level77Items.SELECTION-IDX = 0;
+                        XDCONTROL.UFUNCTION = "RETRIEVE";
+                        VHVM10IW.ROW-COUNT = VHVM10IW.ROW-COUNT + 1;
+                    else
+                        if (XDCONTROL.UMSGINS[1] == "-803")
+                            VHVM10IW-TRIGGERS.DUPLICATE-KEY = "Y";
+                        else
+                            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                        end 
+                    end
+                end
+            end
+        else
+  
+            VHVM10IW-TRIGGERS.DATA-ERROR = "Y";
+            
+
+  
+  
+        end
+    else
+
+  
+        if (XDCONTROL.UFUNCTION == "DELETEZZ")
+            try
+                call "MRSAFCMaintenance.AFC5304"(XDCONTROL, VHVM10C_DATA);
+            
+            end
+            if (XXEXT_CALL_Level77Items.URC == 0)
+     
+                if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                    XDCONTROL.UFUNCTION = "RETRIEVE";
+                    XXMESSAGE.UMSGCODE = "RECORD DELETED";
+                    XXMESSAGE.UMSGINS[1] = "Status Change";
+                else
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end 
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end
+    end
+  
+    if (XDCONTROL.UFUNCTION == "RETRIEVE")
+        try
+            call "VHVM10A"(XDCONTROL, VHVM10A_CRIT, VHVM10A_DATA);
+        
+        end
+        if (XXEXT_CALL_Level77Items.URC == 0)
+
+  
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                VHVM10IW-TRIGGERS.LOAD-DATA = "Y";
+                VHVM10IW-TRIGGERS.PUSH-CLEAR = "Y";
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end 
+        end
+    end
+end 
+
+Function VHVM10IS-OUT-DATE ()
+  
+  
+
+   
+    if (VHVM10C_DATA.CON-STAT == "OUT" && VHVM10IW.DATE-OUTSRV == "          ")
+        VHVM10C_DATA.DATE-OUTSRV = VHVM10IW-SELECT.DATE-INSRV-REV;
+        VHVM10IW.DATE-OUTSRV = VHVM10C_DATA.DATE-OUTSRV;
+         
+    else
+        VHVM10C_DATA.DATE-OUTSRV = VHVM10IW-SELECT.DATE-OUTSRV;
+    end
+end 
+
+Function VHVM10IS-RET-DATA () 
+    VHVM10IW.ROW-COUNT = 0;
+    if (VHVM10A_CRIT.CON-NO-BEG != "   ")
+        if (VHVM10A_CRIT.CON-NO-END == "   ")
+            VHVM10A_CRIT.CON-NO-END = VHVM10A_CRIT.CON-NO-BEG;
+        end
+        try
+            call "VHVM10A"(XDCONTROL, VHVM10A_CRIT, VHVM10A_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHVM10IW.ROW-COUNT = XDCONTROL.UROWCNT;
+            VHVM10IW-TRIGGERS.LOAD-DATA = "Y";
+            VHVM10IW.RETURNED-DATA = "Y";
+        else
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+  
+        if (VHVM10A_DATA.CON-NO[182] != "   ")
+            VHVM10IW-TRIGGERS.SHOW-MSG = "Y";
+        end
+    end
+end 
+
+Function VHVM10IS-SELECT () 
+    if (SELECTION-IDX > 0)
+        VHVM10IW-SELECT.DATA_ROW = VHVM10A_DATA.DATA_ROW[SELECTION-IDX];
+        VHVM10IW-TRIGGERS.ENABLE-UPDATE = "Y";
+    end
+end 
+
+Function VHVM10IS-UPDATE () 
+    XDCONTROL.UFUNCTION = "UPDATE";
+end 
+
+Function VHVM11I-ADD ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    VHVM11IW-WORKING.STOCK-NO-FAILED = "N";
+    VHVM11L_CRIT.STOCK-NO = VHVM11B_DATA.TRKG-REF-NO;
+
+  
+  
+  
+  
+    if (VHVM11IW-WORKING.STOCK-NO-FAILED != "Y") 
+        if (VHVM11B_DATA.CAR-NO != " " && VHVM11B_DATA.EVENT-STAT != " " && VHVM11B_DATA.EVENT-TYPE != " " && VHVM11B_DATA.TRKG-REF-NO != " ")
+
+  
+            XXDATEW.DATE-MM-DD-YYYY = VHVM11B_DATA.DATE-INITIALIZED;
+            XXDATEW.VAGen_FUNCTION = "YMD";
+            MRSCommonCode.XXDATES-CONVERT();
+            VHVM11B_DATA.DATE-INITIALIZED-DB2 = XXDATEW.DATE-YYYY-MM-DD;
+            VHVM11B_DATA.DATE-REMOVED = "0001-01-01";
+            VHVM11B_DATA.TIME-REMOVED = "00.00.00";
+            VHVM11B_DATA.ACTV-IND = "Y";
+            VHVM11B_DATA.TERM-LAST-UPD = VHVM11IW-PASSVALUE.TERM-ID;
+
+
+  
+            XXEXT_CALL_Level77Items.UEXTNAM = "VHVM11I";
+            XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11B";
+            try
+                call "VHVM11B"(XDCONTROL, VHVM11B_DATA);
+            
+            end
+            
+
+    
+            MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+            if (XXEXT_CALL_Level77Items.URC == 0)
+  
+                if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                    VHVM11IW-TRIGGERS.REFRESH-LIST = "Y";
+                    VHVM11IW-WORKING.MSG = "Event Type Has Been Added to Vehicle Parts and Mod Tracking File";
+                    set VHVM11B_DATA empty;
+                else
+
+        
+        
+                    if (XDCONTROL.UMSGINS[1] == "-803")
+                        VHVM11IW-TRIGGERS.DUP-ADD = "Y";
+                    else
+                        VHVM11IW-TRIGGERS.ERROR-ADD = "Y";
+                    end
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end
+            end
+        else
+
+  
+            VHVM11IW-WORKING.MSG = "Some of the Required Data is Missing ";
+        end 
+    end
+end 
+
+Function VHVM11I-BAT-SEL ()
+  
+  
+  
+
+
+  
+  
+   
+    if (VHVM11IW-SELECT.BATTERY-LOC != "CY" || VHVM11IW-SELECT.BATTERY-LOC != "DY" || VHVM11IW-SELECT.BATTERY-LOC != "HY" || VHVM11IW-SELECT.BATTERY-LOC != "RY")
+        VHVM11IW-SELECT.BATTERY-LOC = VHVM11A_DATA.HOME-YRD[SELECT-INDEX];
+    end
+end 
+
+Function VHVM11I-BEGIN ()
+    
+    try
+        call "VHVMDTA"(XDCONTROL, VHVMDTA_CRIT, VHVMDTA_DATA);
+    
+    end
+    if (XDCONTROL.UROWCNT == 1)
+        VHVM11IW-WORKING.RUN-DATE = VHVMDTA_CRIT.CURRENT-DATE;
+    else
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        return;
+    end
+
+
+  
+    if (VHVM11IW-PASS-DATA.PASS-FROM-GUI == " " || VHVM11IW-PASS-DATA.EVENT-TYPE == " ")
+        VHVM11IW-TRIGGERS.INITIAL-VALUE = "Y";
+    end
+    VHVM11IW-WORKING.CAR-NO = VHVM11IW-PASS-DATA.CAR-NO;
+    
+
+  
+    if (VH01A01_DATA.USER-GROUP == "TEST" || VH01A01_DATA.USER-GROUP == " " || VH01A01_DATA.USER-GROUP == "DBMAINT" ||
+     VH01A01_DATA.USER-GROUP == "SHOPSUPR" || VH01A01_DATA.USER-GROUP == "MAINTADM" ||
+     VH01A01_DATA.USER-GROUP == "VEHSHOPS" || VH01A01_DATA.USER-GROUP == "HYSHOP" || VH01A01_DATA.USER-GROUP == "CYSHOP" ||
+     VH01A01_DATA.USER-GROUP == "DYSHOP" || VH01A01_DATA.USER-GROUP == "RYSHOP" ||
+     VH01A01_DATA.USER-GROUP == "VEHMENG" || VH01A01_DATA.USER-GROUP == "VHMENG" || VHVM11IW-PASS-DATA.PASS-FROM-GUI == "VHCI02" || VHVM11IW-PASS-DATA.PASS-FROM-GUI == "VHCI03" ||
+     VHVM11IW-PASS-DATA.PASS-FROM-GUI == "VHSV02")
+
+    else
+        VHVM11IW-TRIGGERS.QUERY-ONLY = "Y";
+    end
+
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM11I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11E";
+    
+
+  
+
+
+  
+    try
+        call "VHVM11E"(XDCONTROL, VHVM11E_CRIT, VHVM11E_DATA);
+    
+    end
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+
+  
+            VHVM11IW-WORKING.NUM-EVENT = XDCONTROL.UROWCNT;
+        end 
+
+        
+    else
+
+        
+        
+        VHVM11IW-WORKING.MSG = "The Event type data is not on file";
+        
+
+  
+  
+  
+  
+    end
+
+
+  
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM11I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11F";
+    
+
+  
+
+  
+    try
+        call "VHVM11F"(XDCONTROL, VHVM11F_CRIT, VHVM11F_DATA);
+    
+    end
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHVM11IW-WORKING.DATE-FROM = VHVM11F_CRIT.BEGIN-DATE;
+            if (VHVM11IW-WORKING.DATE-FROM == " ")
+                VHVM11IW-WORKING.DATE-FROM = "12-01-2006";
+            end
+            VHVM11IW-WORKING.NUM-EVENT-STAT = XDCONTROL.UROWCNT;
+        end 
+
+        
+    else
+
+        
+        
+        VHVM11IW-WORKING.MSG = "The Event Stat data is not on file";
+        
+
+  
+  
+  
+  
+    end
+
+  
+  
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM11I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11G";
+    
+
+  
+
+  
+    try
+        call "VHVM11G"(XDCONTROL, VHVM11G_CRIT, VHVM11G_DATA);
+    
+    end
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+
+  
+            VHVM11IW-WORKING.NUM-LOCS = XDCONTROL.UROWCNT;
+        end 
+
+        
+    else
+
+        
+        
+        VHVM11IW-WORKING.MSG = "The Event Stat data is not on file";
+        
+
+  
+  
+  
+  
+    end
+
+  
+    ICT = 3;
+    JCT = 3;
+    
+
+  
+    VHVM11IW-EVENTS.EVENT-TYPE[1] = VHVM11E_DATA.EVENT-TYPE[1];
+    VHVM11IW-EVENTS.EVENT-TYPE[2] = VHVM11E_DATA.EVENT-TYPE[2];
+    VHVM11IW-EVENTS.EVENT-SUB-TYPE-DSC[2] = " ALL";
+    while (ICT <= VHVM11IW-WORKING.NUM-EVENT)
+        if (VHVM11E_DATA.EVENT-TYPE[ICT] != " ")
+            VHVM11IW-EVENTS.EVENT-TYPE[JCT] = VHVM11E_DATA.EVENT-TYPE[ICT];
+            VHVM11IW-EVENTS.EVENT-SUB-TYPE[JCT] = VHVM11E_DATA.EVENT-SUB-TYPE[ICT];
+            if (VHVM11IW-EVENTS.EVENT-SUB-TYPE[JCT] != " ") 
+                VHVM11IW-EVENTS.EVENT-DASH[JCT] = "-";
+            end
+            VHVM11IW-EVENTS.EVENT-SUB-TYPE-DSC[JCT] = VHVM11E_DATA.EVENT-SUB-TYPE-DSC[ICT];
+            JCT = JCT + 1;
+        end
+        ICT = ICT + 1;
+    end
+
+  
+    ICT = 3;
+    JCT = 1;
+    while (ICT <= VHVM11IW-WORKING.NUM-EVENT)
+        VHVM11IW-EVENT.EVENT-TYPE[JCT] = VHVM11IW-EVENTS.EVENT-TYPE[ICT];
+        VHVM11IW-EVENT.EVENT-SUB-TYPE[JCT] = VHVM11IW-EVENTS.EVENT-SUB-TYPE[ICT];
+        VHVM11IW-EVENT.EVENT-SUB-TYPE-DSC[JCT] = VHVM11IW-EVENTS.EVENT-SUB-TYPE-DSC[ICT];
+        if (VHVM11IW-EVENT.EVENT-SUB-TYPE[JCT] != " ") 
+            VHVM11IW-EVENT.EVENT-DASH[JCT] = "-";
+        end
+        ICT = ICT + 1;
+        JCT = JCT + 1;
+    end
+
+  
+    ICT = 2;
+    JCT = 1;
+    while (ICT <= VHVM11IW-WORKING.NUM-EVENT-STAT)
+        VHVM11IW-STATUS.EVENT-STAT[JCT] = VHVM11F_DATA.EVENT-STAT[ICT];
+        ICT = ICT + 1;
+        JCT = JCT + 1;
+    end
+
+
+  
+    if (VHVM11IW-PASS-DATA.PASS-FROM-GUI == "VHCI03")
+        VHVM11IW-TRIGGERS.FROM-CI-NEVERGO = "Y";
+    end
+
+  
+    if (VHVM11IW-PASS-DATA.PASS-FROM-GUI == "VHCI02")
+        VHVM11IW-TRIGGERS.FROM-CI-GO = "Y";
+    end
+
+
+  
+  
+  
+    VHVM11IW-WORKING.DATE-FROM = VHVM11F_CRIT.BEGIN-DATE;
+    if (VHVM11IW-WORKING.DATE-FROM == " ")
+        VHVM11IW-WORKING.DATE-FROM = "12-01-2006";
+    end
+end 
+
+Function VHVM11I-CLEAR () 
+    set VHVM11IW-WORKING empty;
+    set VHVM11A_CRIT empty;
+    set VHVM11IW-SELECT empty;
+    VHVM11IW-WORKING.DATE-FROM = "01-01-2000";
+    VHVM11IW-WORKING.NUM-CARS = 0;
+    VHVM11IW-TRIGGERS.CARS-RET = "Y";
+    VHVM11IW-TRIGGERS.INITIAL-VALUE = "Y";
+    VHVM11IW-TRIGGERS.DISABLE-UPDATE = "Y";
+    VHVM11IW-TRIGGERS.DISABLE-CREATE-ACTION = "Y";
+    VHVM11IW-TRIGGERS.ENABLE-ADD = "Y";
+    VHVM11IW-TRIGGERS.HIDE-LOC-DROPDOWN = "Y";
+    VHVM11IW-TRIGGERS.SHOW-LOC-TEXT = "Y";
+    VHVM11IW-WORKING.RUN-DATE = VGVar.currentFormattedGregorianDate;
+    VHVM11IW-WORKING.DATE-FROM = VHVM11F_CRIT.BEGIN-DATE;
+end 
+
+Function VHVM11I-CLEAR-LINE () 
+    set VHVM11IW-SELECT empty;
+    VHVM11IW-WORKING.RUN-DATE = VGVar.currentFormattedGregorianDate;
+end 
+
+Function VHVM11I-CLOSED () 
+    VHVM11IW-WORKING.STOCK-NO-FAILED = "N";
+    VHVM11L_CRIT.STOCK-NO = VHVM11B_DATA.TRKG-REF-NO;
+
+  
+  
+  
+  
+  
+  
+    if (VHVM11B_DATA.EVENT-TYPE == "AWP" && VHVM11B_DATA.TRKG-REF-NO != " ")
+  
+
+    end
+    if (VHVM11IW-WORKING.STOCK-NO-FAILED != "Y") 
+        set VHVM11C_DATA empty;
+        if ((VHVM11IW-PASSVALUE.EVENT-TYPE != "BAT" &&
+         VHVM11IW-SELECT.CAR-NO != " " && VHVM11IW-SELECT.TRKG-REF-NO != " ") ||
+         (VHVM11IW-PASSVALUE.EVENT-TYPE == "BAT" &&
+         VHVM11IW-SELECT.CAR-NO != " "))
+
+
+  
+            VHVM11C_CRIT.CLOSED-FLAG = "Y";
+
+  
+            if (VHVM11IW-SELECT.INCD-NO-PREFIX == "I")
+                VHVM11C_CRIT.I-INCIDENT-FLAG = "Y";
+            else
+                VHVM11C_CRIT.I-INCIDENT-FLAG = "N";
+            end
+            XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-SELECT.DATE-INITIALIZED;
+            XXDATEW.VAGen_FUNCTION = "YMD";
+            MRSCommonCode.XXDATES-CONVERT();
+            VHVM11C_DATA.DATE-INITIALIZED = XXDATEW.DATE-YYYY-MM-DD;
+
+
+  
+            if (VHVM11IW-SELECT.DATE-CLOSED == "          ")
+                XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-WORKING.RUN-DATE;
+                XXDATEW.VAGen_FUNCTION = "YMD";
+                MRSCommonCode.XXDATES-CONVERT();
+                VHVM11C_DATA.DATE-CLOSED = XXDATEW.DATE-YYYY-MM-DD;
+            else 
+                XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-SELECT.DATE-CLOSED;
+                XXDATEW.VAGen_FUNCTION = "YMD";
+                MRSCommonCode.XXDATES-CONVERT();
+                VHVM11C_DATA.DATE-CLOSED = XXDATEW.DATE-YYYY-MM-DD;
+            end 
+
+
+   
+            VHVM11C_DATA.TERM-LAST-UPD = VH01A01_DATA.TERM-ID;
+            VHVM11C_DATA.EVENT-STAT = VHVM11IW-SELECT.EVENT-STAT;
+            VHVM11C_DATA.EVENT-TYPE = VHVM11IW-SELECT.EVENT-TYPE;
+            VHVM11C_DATA.EVENT-SUB-TYPE = VHVM11IW-SELECT.EVENT-SUB-TYPE;
+            VHVM11C_DATA.TRKG-REF-NO = VHVM11IW-SELECT.TRKG-REF-NO;
+            VHVM11C_DATA.CAR-NO = VHVM11IW-SELECT.CAR-NO;
+            VHVM11C_DATA.DATE-LAST-UPD = VHVM11IW-SELECT.DATE-LAST-UPD;
+            VHVM11C_DATA.INCD-NO = VHVM11IW-SELECT.INCD-NO;
+            VHVM11C_DATA.EVENT-COMMENT = VHVM11IW-SELECT.EVENT-COMMENT;
+  
+            VHVM11C_DATA.LOC-CMPLT-EVENT = VHVM11IW-SELECT.LOC;
+            VHVM11C_DATA.TIME-INITIALIZED = VHVM11IW-SELECT.TIME-INITIALIZED;
+            VHVM11C_DATA.ACTV-IND = "N";
+
+  
+            XXEXT_CALL_Level77Items.UEXTNAM = "VHVM11I";
+            XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11C";
+            try
+                call "VHVM11C"(XDCONTROL, VHVM11C_CRIT, VHVM11C_DATA);
+            
+            end
+            
+
+    
+            MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+            if (XXEXT_CALL_Level77Items.URC == 0)
+  
+                if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                    VHVM11IW-WORKING.MSG = "Event Entry Has Been CLOSED in  the AWP and Mod Tracking File";
+                    VHVM11C_CRIT.CLOSED-FLAG = "N";
+                    VHVM11IW-TRIGGERS.REFRESH-LIST = "Y";
+                else
+
+        
+        
+                    if (XDCONTROL.UMSGINS[1] == "-803")
+                        VHVM11IW-TRIGGERS.DUP-ADD = "Y";
+                    else
+                        VHVM11IW-TRIGGERS.ERROR-ADD = "Y";
+                    end
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end
+            end
+
+  
+  
+            if (VHVM11C_DATA.EVENT-TYPE == "BAT")
+                VHVM11J_DATA.CAR-NO = VHVM11C_DATA.CAR-NO;
+                VHVM11J_DATA.BATTERY-REPL-LOC = VHVM11C_DATA.LOC-CMPLT-EVENT;
+                VHVM11J_DATA.DATE-BATTERY-REPL = VHVM11C_DATA.DATE-CLOSED;
+                XXEXT_CALL_Level77Items.UEXTNAM = "VHVM11I";
+                XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11J";
+                try
+                    call "VHVM11J"(XDCONTROL, VHVM11J_CRIT, VHVM11J_DATA);
+                
+                end
+                
+
+    
+                MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+                if (XXEXT_CALL_Level77Items.URC == 0)
+  
+                    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                        VHVM11IW-WORKING.MSG = "Event Entry Has Been CLOSED in  the Tracking File and Vehicle Record was Updated";
+                        
+  
+  
+                    else
+
+        
+        
+                        if (XDCONTROL.UMSGINS[1] == "-803")
+                            VHVM11IW-TRIGGERS.DUP-ADD = "Y";
+                        else
+                            VHVM11IW-TRIGGERS.ERROR-ADD = "Y";
+                        end
+                        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                    end
+                end
+  
+            end 
+  
+            set VHVM11IW-SELECT empty;
+        else 
+
+  
+            VHVM11IW-WORKING.MSG = "Please Provide ALL Esential Data";
+        end
+    end
+end 
+
+Function VHVM11I-GET-DATA ()
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    set VHVM11A_CRIT empty;
+    set VHVM11A_DATA empty;
+  
+
+  
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-WORKING.DATE-FROM;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM11A_CRIT.DATE-FROM = XXDATEW.DATE-YYYY-MM-DD;
+    XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-WORKING.DATE-TO;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM11A_CRIT.DATE-TO = XXDATEW.DATE-YYYY-MM-DD;
+
+  
+  
+  
+  
+
+  
+    if (VHVM11IW-WORKING.CAR-NO == "ALL")
+        VHVM11A_CRIT.CAR-NO = "    ";
+    else
+        VHVM11A_CRIT.CAR-NO = VHVM11IW-WORKING.CAR-NO;
+        VHVM11IW-SELECT.CAR-NO = VHVM11IW-WORKING.CAR-NO;
+    end
+    if (VHVM11IW-WORKING.CAR-TYPE == "ALL" || VHVM11IW-WORKING.CAR-TYPE == "  ")
+        VHVM11A_CRIT.BEG-CAR-TYPE = "A1";
+        VHVM11A_CRIT.END-CAR-TYPE = "C2";
+    else
+        VHVM11A_CRIT.BEG-CAR-TYPE = VHVM11IW-WORKING.CAR-TYPE;
+        VHVM11A_CRIT.END-CAR-TYPE = VHVM11IW-WORKING.CAR-TYPE;
+    end
+    if (VHVM11IW-WORKING.HOME-YRD == "ALL")
+        VHVM11A_CRIT.HOME-YRD = "  ";
+    else
+        VHVM11A_CRIT.HOME-YRD = VHVM11IW-WORKING.HOME-YRD;
+    end
+    if (VHVM11IW-WORKING.EVENT-TYPE == "ALL")
+        VHVM11A_CRIT.EVENT-TYPE = "    ";
+    else
+        VHVM11A_CRIT.EVENT-TYPE = VHVM11IW-WORKING.EVENT-TYPE;
+    end
+    if (VHVM11IW-WORKING.EVENT-STAT == "ALL")
+        VHVM11A_CRIT.EVENT-STAT = "       ";
+    else
+        VHVM11A_CRIT.EVENT-STAT = VHVM11IW-WORKING.EVENT-STAT;
+    end
+    if (VHVM11IW-WORKING.CURR-LOC == "ALL")
+        VHVM11A_CRIT.CURR-LOC = "       ";
+    else
+        VHVM11A_CRIT.CURR-LOC = VHVM11IW-WORKING.CURR-LOC;
+    end
+    VHVM11A_CRIT.EVENT-SUB-TYPE = VHVM11IW-WORKING.EVENT-SUB-TYPE;
+    if (VHVM11IW-WORKING.TRKG-F-D == "-" && VHVM11IW-WORKING.TRKG-S-D == "-")
+        VHVM11IW-WORKING.TRKG-1-TO-2 = VHVM11IW-WORKING.TRKG-F-2;
+        VHVM11IW-WORKING.TRKG-3-TO-4 = VHVM11IW-WORKING.TRKG-S-2;
+        VHVM11IW-WORKING.TRKG-5-TO-7 = VHVM11IW-WORKING.TRKG-L-3;
+        VHVM11IW-WORKING.TRKG-8-TO-9 = VHVM11IW-WORKING.TRKG-L-2;
+    else
+        VHVM11IW-WORKING.TRKG-REF-NO = VHVM11IW-WORKING.TRKG-REF-NO-9;
+    end
+    VHVM11A_CRIT.TRKG-REF-NO = VHVM11IW-WORKING.TRKG-REF-NO;
+    VHVM11A_CRIT.SORT-ORDER = VHVM11IW-WORKING.SORT-ORDER;
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM11I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11A";
+
+  
+    try
+        call "VHVM11A"(XDCONTROL, VHVM11A_CRIT, VHVM11A_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+            VHVM11IW-SELECT.EVENT-STAT = "OPEN";
+  
+            VHVM11IW-TRIGGERS.CARS-RET = "Y";
+            VHVM11IW-TRIGGERS.ENABLE-ADD = "Y";
+            VHVM11IW-TRIGGERS.DISABLE-UPDATE = "Y";
+            VHVM11IW-TRIGGERS.DISABLE-CREATE-ACTION = "Y";
+            if (VHVM11A_CRIT.EVENT-TYPE != "BAT")
+                VHVM11IW-TRIGGERS.HIDE-LOC-DROPDOWN = "Y";
+                VHVM11IW-TRIGGERS.SHOW-LOC-TEXT = "Y";
+            else
+                VHVM11IW-TRIGGERS.SHOW-LOC-DROPDOWN = "Y";
+                VHVM11IW-TRIGGERS.HIDE-LOC-TEXT = "Y";
+            end
+            VHVM11IW-WORKING.NUM-CARS = XDCONTROL.UROWCNT;
+            if (VHVM11A_CRIT.MAX-ROWS-EXCEEDED == "Y")
+                VHVM11IW-WORKING.MSG = "TOTAL ROWS SELECTED EXCEEDS THE MAX ROWS OF 146";
+            end
+            
+   
+        
+        else
+
+        
+        
+  
+      
+            VHVM11IW-WORKING.MSG = "No data found with your criteria or stock # is entered with an incorrect format-Correct Format: 999999999 or 99-99-99999";
+            
+  
+  
+  
+  
+        end 
+    end
+end 
+
+Function VHVM11I-GET-DATA2 ()
+  
+   
+    set VHVM11A_CRIT empty;
+  
+
+  
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-WORKING.DATE-FROM;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM11A_CRIT.DATE-FROM = XXDATEW.DATE-YYYY-MM-DD;
+    XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-WORKING.DATE-TO;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM11A_CRIT.DATE-TO = XXDATEW.DATE-YYYY-MM-DD;
+
+  
+  
+  
+  
+
+  
+  
+    VHVM11A_CRIT.CAR-NO = VHVM11IW-PASS-DATA.CAR-NO;
+    VHVM11IW-WORKING.CAR-NO = VHVM11IW-PASS-DATA.CAR-NO;
+
+  
+    VHVM11A_CRIT.BEG-CAR-TYPE = "A1";
+    VHVM11A_CRIT.END-CAR-TYPE = "C2";
+
+  
+    VHVM11A_CRIT.HOME-YRD = "  ";
+
+  
+    VHVM11A_CRIT.EVENT-TYPE = VHVM11IW-PASS-DATA.EVENT-TYPE;
+    VHVM11IW-WORKING.EVENT-TYPE = "ALL";
+
+  
+    if (VHVM11IW-PASS-DATA.EVENT-TYPE == "AWP")
+        VHVM11IW-WORKING.EVENT-TYPE = "AWP";
+    end
+    if (VHVM11IW-PASS-DATA.EVENT-TYPE == "BAT")
+        VHVM11IW-WORKING.EVENT-TYPE = "BAT";
+    end
+
+
+  
+    VHVM11IW-WORKING.EVENT-STAT = "ALL";
+    VHVM11A_CRIT.EVENT-STAT = "OPEN       ";
+
+  
+    VHVM11A_CRIT.CURR-LOC = "       ";
+    VHVM11A_CRIT.TRKG-REF-NO = " ";
+    VHVM11A_CRIT.SORT-ORDER = 1;
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM11I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11A";
+
+  
+    try
+        call "VHVM11A"(XDCONTROL, VHVM11A_CRIT, VHVM11A_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHVM11IW-WORKING.MSG = " ";
+            VHVM11IW-TRIGGERS.CARS-RET = "Y";
+            VHVM11IW-WORKING.NUM-CARS = XDCONTROL.UROWCNT;
+            if (VHVM11A_CRIT.MAX-ROWS-EXCEEDED == "Y")
+                VHVM11IW-WORKING.MSG = "TOTAL ROWS SELECTED EXCEEDS THE MAX ROWS OF 117";
+            end
+            
+   
+        
+        else
+
+        
+        
+  
+            VHVM11IW-WORKING.MSG = "THERE WAS NO DATA SELECTED WITH YOUR SEARCH CRITERIA";
+            
+  
+  
+  
+  
+        end 
+    end
+
+  
+    VHVM11IW-SELECT.EVENT-STAT = VHVM11IW-PASS-DATA.EVENT-STAT;
+    VHVM11IW-SELECT.EVENT-TYPE = VHVM11IW-PASS-DATA.EVENT-TYPE;
+    VHVM11IW-SELECT.CAR-NO = VHVM11IW-PASS-DATA.CAR-NO;
+    VHVM11IW-SELECT.INCD-NO = VHVM11IW-PASS-DATA.INCD-NO;
+
+  
+    if (VHVM11IW-PASS-DATA.DATE-INITIALIZED == " ")
+        VHVM11IW-SELECT.DATE-INITIALIZED = VHVM11IW-WORKING.DATE-TO;
+    else
+        VHVM11IW-SELECT.DATE-INITIALIZED = VHVM11IW-PASS-DATA.DATE-INITIALIZED;
+    end
+
+  
+    VHVM11IW-TRIGGERS.ENABLE-ADD = "Y";
+    VHVM11IW-TRIGGERS.DISABLE-UPDATE = "Y";
+    VHVM11IW-TRIGGERS.SET-FOCUS-STK = "Y";
+    if (VHVM11IW-PASS-DATA.EVENT-TYPE == "BAT")
+        VHVM11IW-TRIGGERS.SHOW-LOC-DROPDOWN = "Y";
+        VHVM11IW-TRIGGERS.HIDE-LOC-TEXT = "Y";
+    else
+        VHVM11IW-TRIGGERS.HIDE-LOC-DROPDOWN = "Y";
+        VHVM11IW-TRIGGERS.SHOW-LOC-TEXT = "Y";
+    end
+end 
+
+Function VHVM11I-GET-DATA3 ()
+  
+   
+    set VHVM11A_CRIT empty;
+  
+
+  
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = "01-01-2000";
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM11A_CRIT.DATE-FROM = XXDATEW.DATE-YYYY-MM-DD;
+    XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-WORKING.DATE-TO;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM11A_CRIT.DATE-TO = XXDATEW.DATE-YYYY-MM-DD;
+
+  
+  
+    VHVM11A_CRIT.CAR-NO = VHVM11IW-PASS-DATA.CAR-NO;
+    VHVM11IW-WORKING.CAR-NO = VHVM11IW-PASS-DATA.CAR-NO;
+
+  
+    VHVM11A_CRIT.BEG-CAR-TYPE = "A1";
+    VHVM11A_CRIT.END-CAR-TYPE = "C2";
+
+  
+    VHVM11A_CRIT.HOME-YRD = "  ";
+
+  
+    VHVM11A_CRIT.EVENT-TYPE = "MOD";
+    VHVM11IW-WORKING.EVENT-TYPE = "MOD";
+
+  
+    VHVM11A_CRIT.EVENT-STAT = "OPEN       ";
+    VHVM11IW-WORKING.EVENT-STAT = "OPEN";
+
+  
+    VHVM11A_CRIT.CURR-LOC = "       ";
+    VHVM11A_CRIT.TRKG-REF-NO = " ";
+    VHVM11A_CRIT.SORT-ORDER = 2;
+    VHVM11IW-TRIGGERS.FOUND-MODS = "N"; 
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM11I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11A";
+
+  
+    try
+        call "VHVM11A"(XDCONTROL, VHVM11A_CRIT, VHVM11A_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHVM11IW-TRIGGERS.FOUND-MODS = "Y";
+            VHVM11IW-WORKING.MSG = " ";
+            VHVM11IW-TRIGGERS.CARS-RET = "Y";
+  
+  
+            VHVM11IW-TRIGGERS.HIDE-LOC-DROPDOWN = "Y";
+            VHVM11IW-TRIGGERS.SHOW-LOC-TEXT = "Y";
+            VHVM11IW-WORKING.NUM-CARS = XDCONTROL.UROWCNT;
+            if (VHVM11A_CRIT.MAX-ROWS-EXCEEDED == "Y")
+                VHVM11IW-WORKING.MSG = "TOTAL ROWS SELECTED EXCEEDS THE MAX ROWS OF 117";
+            end
+            
+   
+        
+        else
+            VHVM11IW-TRIGGERS.FOUND-MODS = "N";
+        
+        
+  
+            VHVM11IW-WORKING.MSG = "THERE WAS NO DATA SELECTED WITH YOUR SEARCH CRITERIA";
+            
+  
+  
+  
+  
+        end 
+    end
+
+
+  
+  
+    if (VHVM11IW-TRIGGERS.FOUND-MODS == "Y")
+        MOD-INDEX = 0;
+        JCT = 1;
+        while (JCT <= VHVM11IW-WORKING.NUM-CARS && VHVM11IW-WORKING.MOD-INDEX == 0)
+            if (VHVM11A_DATA.INCD-NO[JCT] == " ")
+                move JCT to MOD-INDEX withV60Compat;
+            end 
+            JCT = JCT + 1;
+        end
+         
+    end 
+
+  
+    if (VHVM11IW-WORKING.MOD-INDEX > 0)
+        move MOD-INDEX to SELECT-INDEX withV60Compat;
+        VHVM11IW-SELECT.EVENT-STAT = VHVM11A_DATA.EVENT-STAT[SELECT-INDEX];
+        VHVM11IW-SELECT.EVENT-TYPE = VHVM11A_DATA.EVENT-TYPE[SELECT-INDEX];
+        VHVM11IW-SELECT.DATE-INITIALIZED = VHVM11A_DATA.DATE-INITIALIZED[SELECT-INDEX];
+        VHVM11IW-SELECT.TIME-INITIALIZED = VHVM11A_DATA.TIME-INITIALIZED[SELECT-INDEX];
+        VHVM11IW-SELECT.TRKG-REF-NO = VHVM11A_DATA.TRKG-REF-NO[SELECT-INDEX];
+        VHVM11IW-SELECT.DATE-CLOSED = VHVM11A_DATA.DATE-CLOSED[SELECT-INDEX];
+        VHVM11IW-SELECT.TIME-CLOSED = VHVM11A_DATA.TIME-CLOSED[SELECT-INDEX];
+        VHVM11IW-SELECT.CAR-NO = VHVM11A_DATA.CAR-NO[SELECT-INDEX];
+        VHVM11IW-SELECT.VEH-STAT = VHVM11A_DATA.VEH-STAT[SELECT-INDEX];
+        VHVM11IW-SELECT.DATE-LAST-UPD = VHVM11A_DATA.DATE-LAST-UPD[SELECT-INDEX];
+        VHVM11IW-SELECT.HOME-YRD = VHVM11A_DATA.HOME-YRD[SELECT-INDEX];
+  
+        VHVM11IW-SELECT.INCD-NO = VHVM11IW-PASS-DATA.INCD-NO; 
+        VHVM11IW-SELECT.EVENT-COMMENT = VHVM11A_DATA.EVENT-COMMENT[SELECT-INDEX];
+        VHVM11IW-SELECT.LOC = VHVM11A_DATA.LOC[SELECT-INDEX];
+        VHVM11IW-SELECT.LOC-CMPLT-EVENT = VHVM11A_DATA.LOC-CMPLT-EVENT[SELECT-INDEX];
+        VHVM11IW-SELECT.ACTV-IND = VHVM11A_DATA.ACTV-IND[SELECT-INDEX];
+        VHVM11IW-TRIGGERS.ENABLE-UPDATE = "Y";
+        VHVM11IW-TRIGGERS.DISABLE-ADD = "Y";
+        VHVM11IW-TRIGGERS.SET-FOCUS-STK = "Y";
+    end
+
+  
+  
+    if (VHVM11IW-WORKING.MOD-INDEX == 0)
+  
+        if (VHVM11IW-PASS-DATA.DATE-INITIALIZED == " ")
+            VHVM11IW-SELECT.DATE-INITIALIZED = VHVM11IW-WORKING.DATE-TO;
+        else
+            VHVM11IW-SELECT.DATE-INITIALIZED = VHVM11IW-PASS-DATA.DATE-INITIALIZED;
+        end
+        VHVM11IW-SELECT.EVENT-STAT = "OPEN";
+        VHVM11IW-SELECT.EVENT-TYPE = VHVM11IW-PASS-DATA.EVENT-TYPE;
+        VHVM11IW-SELECT.CAR-NO = VHVM11IW-PASS-DATA.CAR-NO;
+        VHVM11IW-SELECT.INCD-NO = VHVM11IW-PASS-DATA.INCD-NO;
+        VHVM11IW-TRIGGERS.ENABLE-ADD = "Y";
+        VHVM11IW-TRIGGERS.DISABLE-UPDATE = "Y";
+        VHVM11IW-TRIGGERS.HIDE-LOC-DROPDOWN = "Y";
+        VHVM11IW-TRIGGERS.SHOW-LOC-TEXT = "Y";
+        VHVM11IW-TRIGGERS.SET-FOCUS-STK = "Y";
+    end
+end 
+
+Function VHVM11I-PRINT ()
+   
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-WORKING.DATE-FROM;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM11IW-PRINT.DATE-FROM-DB2 = XXDATEW.DATE-YYYY-MM-DD;
+    XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-WORKING.DATE-TO;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM11IW-PRINT.DATE-TO-DB2 = XXDATEW.DATE-YYYY-MM-DD;
+    VHVM11IW-PRINT.DATE-FROM = VHVM11IW-WORKING.DATE-FROM;
+    VHVM11IW-PRINT.DATE-TO = VHVM11IW-WORKING.DATE-TO;
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+    VHVM11IW-PRINT.CAR-NO = VHVM11IW-WORKING.CAR-NO;
+  
+    if (VHVM11IW-WORKING.CAR-TYPE == "ALL" || VHVM11IW-WORKING.CAR-TYPE == "  ")
+        VHVM11IW-PRINT.BEG-CAR-TYPE = "A1";
+        VHVM11IW-PRINT.END-CAR-TYPE = "C2";
+    else
+        VHVM11IW-PRINT.BEG-CAR-TYPE = VHVM11IW-WORKING.CAR-TYPE;
+        VHVM11IW-PRINT.END-CAR-TYPE = VHVM11IW-WORKING.CAR-TYPE;
+    end
+    if (VHVM11IW-WORKING.HOME-YRD == "ALL")
+        VHVM11IW-PRINT.HOME-YRD = "  ";
+    else
+        VHVM11IW-PRINT.HOME-YRD = VHVM11IW-WORKING.HOME-YRD;
+    end
+    if (VHVM11IW-WORKING.EVENT-TYPE == "ALL")
+        VHVM11IW-PRINT.EVENT-TYPE = "    ";
+    else
+        VHVM11IW-PRINT.EVENT-TYPE = VHVM11IW-WORKING.EVENT-TYPE;
+    end
+    if (VHVM11IW-WORKING.EVENT-SUB-TYPE != " ")
+        VHVM11IW-PRINT.EVENT-SUB-TYPE = VHVM11IW-WORKING.EVENT-SUB-TYPE;
+    end
+    if (VHVM11IW-WORKING.EVENT-STAT == "ALL")
+        VHVM11IW-PRINT.EVENT-STAT = "       ";
+    else
+        VHVM11IW-PRINT.EVENT-STAT = VHVM11IW-WORKING.EVENT-STAT;
+    end
+    if (VHVM11IW-WORKING.CURR-LOC == "ALL")
+        VHVM11IW-PRINT.CURR-LOC = "       ";
+    else
+        VHVM11IW-PRINT.CURR-LOC = VHVM11IW-WORKING.CURR-LOC;
+    end
+    VHVM11IW-PRINT.TRKG-REF-NO = VHVM11IW-WORKING.TRKG-REF-NO;
+
+  
+    if (VHVM11IW-WORKING.SORT-ORDER == "2")
+        VHVM11IW-PRINT.SORT-ORDER = "T";
+    end
+    if (VHVM11IW-WORKING.SORT-ORDER == "1")
+        VHVM11IW-PRINT.SORT-ORDER = "D";
+    end
+    if (VHVM11IW-WORKING.SORT-ORDER == "3")
+        VHVM11IW-PRINT.SORT-ORDER = "S";
+    end
+end 
+
+Function VHVM11I-REFRESH ()
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    set VHVM11A_DATA empty;
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM11I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11A";
+
+  
+    try
+        call "VHVM11A"(XDCONTROL, VHVM11A_CRIT, VHVM11A_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHVM11IW-SELECT.EVENT-STAT = "OPEN";
+  
+            VHVM11IW-TRIGGERS.CARS-RET = "Y";
+            VHVM11IW-TRIGGERS.ENABLE-ADD = "Y";
+            VHVM11IW-TRIGGERS.DISABLE-UPDATE = "Y";
+            VHVM11IW-TRIGGERS.DISABLE-CREATE-ACTION = "Y";
+            if (VHVM11A_CRIT.EVENT-TYPE != "BAT")
+                VHVM11IW-TRIGGERS.HIDE-LOC-DROPDOWN = "Y";
+                VHVM11IW-TRIGGERS.SHOW-LOC-TEXT = "Y";
+            else
+                VHVM11IW-TRIGGERS.SHOW-LOC-DROPDOWN = "Y";
+                VHVM11IW-TRIGGERS.HIDE-LOC-TEXT = "Y";
+            end
+            VHVM11IW-WORKING.NUM-CARS = XDCONTROL.UROWCNT;
+            if (VHVM11A_CRIT.MAX-ROWS-EXCEEDED == "Y")
+                VHVM11IW-WORKING.MSG = "TOTAL ROWS SELECTED EXCEEDS THE MAX ROWS OF 154";
+            end
+            
+   
+        
+        else
+
+        
+        
+            VHVM11IW-TRIGGERS.PUSH-ZERO = "Y";
+            
+  
+  
+  
+  
+  
+  
+  
+        end 
+    end
+    VHVM11IW-WORKING.RUN-DATE = VGVar.currentFormattedGregorianDate;
+end 
+
+Function VHVM11I-REMOVE () 
+    set VHVM11C_DATA empty;
+    VHVM11C_CRIT.REMOVED-FLAG = "Y";
+
+  
+    if (VHVM11IW-SELECT.INCD-NO-PREFIX == "I")
+        VHVM11C_CRIT.I-INCIDENT-FLAG = "Y";
+    else
+        VHVM11C_CRIT.I-INCIDENT-FLAG = "N";
+    end
+    if (VHVM11IW-SELECT.CAR-NO != " " && VHVM11IW-SELECT.EVENT-STAT != " " && VHVM11IW-SELECT.EVENT-TYPE != " " && VHVM11IW-SELECT.TRKG-REF-NO != " ")
+
+  
+        XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-SELECT.DATE-INITIALIZED;
+        XXDATEW.VAGen_FUNCTION = "YMD";
+        MRSCommonCode.XXDATES-CONVERT();
+        VHVM11C_DATA.DATE-INITIALIZED = XXDATEW.DATE-YYYY-MM-DD;
+  
+  
+  
+
+  
+        if (VHVM11IW-SELECT.DATE-CLOSED != "          ")
+            XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-SELECT.DATE-CLOSED;
+            XXDATEW.VAGen_FUNCTION = "YMD";
+            MRSCommonCode.XXDATES-CONVERT();
+            VHVM11C_DATA.DATE-CLOSED = XXDATEW.DATE-YYYY-MM-DD;
+        end 
+        VHVM11C_DATA.TERM-LAST-UPD = VHVM11IW-PASSVALUE.TERM-ID;
+        VHVM11C_DATA.EVENT-STAT = VHVM11IW-SELECT.EVENT-STAT;
+        VHVM11C_DATA.EVENT-TYPE = VHVM11IW-SELECT.EVENT-TYPE;
+        VHVM11C_DATA.TRKG-REF-NO = VHVM11IW-SELECT.TRKG-REF-NO;
+        VHVM11C_DATA.CAR-NO = VHVM11IW-SELECT.CAR-NO;
+        VHVM11C_DATA.DATE-LAST-UPD = VHVM11IW-SELECT.DATE-LAST-UPD;
+        VHVM11C_DATA.INCD-NO = VHVM11IW-SELECT.INCD-NO;
+        VHVM11C_DATA.EVENT-COMMENT = VHVM11IW-SELECT.EVENT-COMMENT;
+  
+        VHVM11C_DATA.LOC-CMPLT-EVENT = VHVM11IW-SELECT.LOC-CMPLT-EVENT;
+        VHVM11C_DATA.TIME-INITIALIZED = VHVM11IW-SELECT.TIME-INITIALIZED;
+        VHVM11C_DATA.ACTV-IND = "N";
+
+  
+        XXEXT_CALL_Level77Items.UEXTNAM = "VHVM11I";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11C";
+        try
+            call "VHVM11C"(XDCONTROL, VHVM11C_CRIT, VHVM11C_DATA);
+        
+        end
+        
+
+    
+        MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+        if (XXEXT_CALL_Level77Items.URC == 0)
+  
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                VHVM11IW-WORKING.MSG = "Event Entry Has Been REMOVED From  the AWP and Mod Tracking File";
+                VHVM11C_CRIT.REMOVED-FLAG = "N";
+                VHVM11IW-TRIGGERS.REFRESH-LIST = "Y";
+            else
+
+        
+        
+                if (XDCONTROL.UMSGINS[1] == "-803")
+                    VHVM11IW-TRIGGERS.DUP-ADD = "Y";
+                else
+                    VHVM11IW-TRIGGERS.ERROR-ADD = "Y";
+                end
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end
+
+  
+        set VHVM11IW-SELECT empty;
+    else
+
+  
+        VHVM11IW-WORKING.MSG = "Please Provide ALL Esential Data";
+    end
+end 
+
+Function VHVM11I-SELECT () 
+    if (SELECT-INDEX > 0)
+  
+  
+        XXDATEW.VAGen_FUNCTION = "YMD";
+        XXDATEW.DATE-MM-DD-YYYY = VHVM11A_DATA.DATE-INITIALIZED[SELECT-INDEX];
+        MRSCommonCode.XXDATES-CONVERT();
+        VHVM11H_CRIT.DATE-INITIALIZED = XXDATEW.DATE-YYYY-MM-DD;
+        VHVM11H_CRIT.TIME-INITIALIZED = VHVM11A_DATA.TIME-INITIALIZED[SELECT-INDEX];
+        VHVM11H_CRIT.CAR-NO = VHVM11A_DATA.CAR-NO[SELECT-INDEX];
+        XXEXT_CALL_Level77Items.UEXTNAM = "VHVM11I";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11H";
+
+  
+
+
+  
+        try
+            call "VHVM11H"(XDCONTROL, VHVM11H_CRIT, VHVM11H_DATA);
+        
+        end
+        
+
+    
+        MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+        if (XXEXT_CALL_Level77Items.URC == 0)
+  
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+       
+                VHVM11IW-SELECT.EVENT-COMMENT = VHVM11H_DATA.EVENT-COMMENT;
+            end 
+
+        
+        else
+
+        
+        
+            VHVM11IW-WORKING.MSG = "The Event type data is not on file";
+            
+
+  
+  
+  
+  
+        end
+  
+  
+        VHVM11IW-WORKING.MSG = " ";
+
+  
+        if (VHVM11A_DATA.EVENT-TYPE[SELECT-INDEX] == "BAT")
+            VHVM11IW-TRIGGERS.SHOW-LOC-DROPDOWN = "Y";
+            VHVM11IW-TRIGGERS.HIDE-LOC-TEXT = "Y";
+        else
+            VHVM11IW-TRIGGERS.HIDE-LOC-DROPDOWN = "Y";
+            VHVM11IW-TRIGGERS.SHOW-LOC-TEXT = "Y";
+        end
+  
+        VHVM11IW-SELECT.EVENT-STAT = VHVM11A_DATA.EVENT-STAT[SELECT-INDEX];
+        VHVM11IW-SELECT.EVENT-TYPE = VHVM11A_DATA.EVENT-TYPE[SELECT-INDEX];
+        VHVM11IW-SELECT.EVENT-SUB-TYPE = VHVM11A_DATA.EVENT-SUB-TYPE[SELECT-INDEX];
+  
+        VHVM11IW-SELECT.DATE-INITIALIZED = VHVM11A_DATA.DATE-INITIALIZED[SELECT-INDEX];
+        VHVM11IW-SELECT.TIME-INITIALIZED = VHVM11A_DATA.TIME-INITIALIZED[SELECT-INDEX];
+        VHVM11IW-SELECT.TRKG-REF-NO = VHVM11A_DATA.TRKG-REF-NO[SELECT-INDEX];
+        VHVM11IW-SELECT.DATE-CLOSED = VHVM11A_DATA.DATE-CLOSED[SELECT-INDEX];
+        VHVM11IW-SELECT.TIME-CLOSED = VHVM11A_DATA.TIME-CLOSED[SELECT-INDEX];
+        VHVM11IW-SELECT.CAR-NO = VHVM11A_DATA.CAR-NO[SELECT-INDEX];
+
+  
+        set VHVM11C_CRIT empty;
+        VHVM11C_CRIT.CAR-NO = VHVM11A_DATA.CAR-NO[SELECT-INDEX];
+  
+        VHVM11IW-SELECT.VEH-STAT = VHVM11A_DATA.VEH-STAT[SELECT-INDEX];
+        VHVM11IW-SELECT.DATE-LAST-UPD = VHVM11A_DATA.DATE-LAST-UPD[SELECT-INDEX];
+        VHVM11IW-SELECT.HOME-YRD = VHVM11A_DATA.HOME-YRD[SELECT-INDEX];
+        VHVM11IW-SELECT.INCD-NO = VHVM11A_DATA.INCD-NO[SELECT-INDEX];
+        VHVM11IW-SELECT.EVENT-COMMENT = VHVM11A_DATA.EVENT-COMMENT[SELECT-INDEX];
+        VHVM11IW-SELECT.LOC = VHVM11A_DATA.LOC[SELECT-INDEX];
+        VHVM11IW-SELECT.LOC-CMPLT-EVENT = VHVM11A_DATA.LOC-CMPLT-EVENT[SELECT-INDEX];
+        VHVM11IW-SELECT.ACTV-IND = VHVM11A_DATA.ACTV-IND[SELECT-INDEX];
+
+  
+        if (VHVM11IW-SELECT.INCD-NO-PREFIX == "I")
+            VHVM11IW-TRIGGERS.DISABLE-CREATE-ACTION = "Y";
+        else
+            VHVM11IW-TRIGGERS.ENABLE-CREATE-ACTION = "Y";
+        end
+        VHVM11IW-TRIGGERS.ENABLE-UPDATE = "Y";
+        VHVM11IW-TRIGGERS.ENABLE-DELETE = "Y";
+        VHVM11IW-TRIGGERS.DISABLE-ADD = "Y";
+        VHVM11IW-TRIGGERS.DISABLE-FIELD = "Y";
+        if (VHVM11A_DATA.EVENT-TYPE[SELECT-INDEX] == "BAT")
+            VHVM11IW-PASSVALUE.EVENT-TYPE = VHVM11A_DATA.EVENT-TYPE[SELECT-INDEX];
+            VHVM11IW-TRIGGERS.SHOW-LOC-DROPDOWN = "Y";
+            VHVM11IW-TRIGGERS.HIDE-LOC-TEXT = "Y";
+            VHVM11IW-TRIGGERS.DISABLE-CREATE-ACTION = "Y";
+            VHVM11IW-SELECT.EVENT-STAT = "CLOSED";
+  
+            VHVM11IW-TRIGGERS.SHOW-LOC-TEXT = "Y";
+        end
+        if (VHVM11A_DATA.EVENT-TYPE[SELECT-INDEX] != "BAT")
+            if (VHVM11IW-SELECT.DATE-CLOSED == " ")
+   
+  
+  
+  
+  
+  
+  
+
+            end
+        end
+
+  
+        EVENT-INDEX = 1;
+        POINTER = 1;
+        while (POINTER <= 10)
+            if (VHVM11IW-SELECT.EVENT-TYPE == VHVM11IW-EVENT.EVENT-TYPE[POINTER] &&
+             VHVM11IW-SELECT.EVENT-SUB-TYPE == VHVM11IW-EVENT.EVENT-SUB-TYPE[POINTER])
+                move POINTER to EVENT-INDEX withV60Compat;
+            end
+            POINTER = POINTER + 1;
+        end 
+
+  
+        if (VHVM11A_DATA.EVENT-TYPE[SELECT-INDEX] == "BAT")
+            VHVM11IW-TRIGGERS.RUN-BATTERY-CHECK = "Y";
+        end
+        
+
+  
+  
+  
+    end
+end 
+
+Function VHVM11I-STOCK ()
+  
+
+  
+  
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM11I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11L";
+    
+
+  
+    set VHVM11L_DATA empty;
+    
+
+  
+    try
+        call "VHVM11L"(XDCONTROL, VHVM11L_CRIT, VHVM11L_DATA);
+    
+    end
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+  
+
+        end 
+
+        
+    else
+
+        
+        
+        VHVM11IW-WORKING.MSG = "The Event type data is not on file";
+        
+
+  
+  
+  
+  
+    end
+    if (VHVM11L_CRIT.STOCK-NO != VHVM11L_DATA.STOCK-NO)
+        VHVM11IW-WORKING.STOCK-NO-FAILED = "Y";
+        VHVM11IW-WORKING.MSG = "THE STOCK NUMBER YOU ENTERED CANNOT BE VALIDATED IN MRS_VEH_STOCK";
+        return;
+    end
+end 
+
+Function VHVM11I-UPDATE () 
+    if (VHVM11IW-SELECT.EVENT-TYPE == "BAT")
+        VHIM11IS-BAT();
+    end
+
+  
+    if (VHVM11IW-SELECT.EVENT-TYPE == VHVM11B_DATA.EVENT-TYPE)
+        VHVM11IW-WORKING.STOCK-NO-FAILED = "N";
+        VHVM11L_CRIT.STOCK-NO = VHVM11B_DATA.TRKG-REF-NO;
+
+  
+  
+  
+  
+        if (VHVM11IW-WORKING.STOCK-NO-FAILED != "Y") 
+            set VHVM11C_DATA empty;
+            if (VHVM11IW-SELECT.CAR-NO != " " && VHVM11IW-SELECT.EVENT-STAT != " " && VHVM11IW-SELECT.EVENT-TYPE != " " && VHVM11IW-SELECT.TRKG-REF-NO != " ")
+                VHVM11C_CRIT.UPDATE-FLAG = "Y"; 
+  
+                XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-SELECT.DATE-INITIALIZED;
+                XXDATEW.VAGen_FUNCTION = "YMD";
+                MRSCommonCode.XXDATES-CONVERT();
+                VHVM11C_DATA.DATE-INITIALIZED = XXDATEW.DATE-YYYY-MM-DD;
+  
+  
+  
+
+  
+                if (VHVM11IW-SELECT.DATE-CLOSED != "          ")
+                    XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-SELECT.DATE-CLOSED;
+                    XXDATEW.VAGen_FUNCTION = "YMD";
+                    MRSCommonCode.XXDATES-CONVERT();
+                    VHVM11C_DATA.DATE-CLOSED = XXDATEW.DATE-YYYY-MM-DD;
+                end 
+
+  
+                VHVM11C_DATA.TERM-LAST-UPD = VH01A01_DATA.TERM-ID;
+                VHVM11C_DATA.EVENT-STAT = VHVM11IW-SELECT.EVENT-STAT;
+                if (VHVM11IW-SELECT.EVENT-TYPE == "AWP") 
+                    VHVM11C_DATA.EVENT-TYPE = VHVM11B_DATA.EVENT-TYPE;
+                    VHVM11C_DATA.EVENT-SUB-TYPE = VHVM11B_DATA.EVENT-SUB-TYPE;
+                else
+                    VHVM11C_DATA.EVENT-TYPE = VHVM11IW-SELECT.EVENT-TYPE;
+                    VHVM11C_DATA.EVENT-SUB-TYPE = VHVM11IW-SELECT.EVENT-SUB-TYPE;
+                end
+                VHVM11C_DATA.TRKG-REF-NO = VHVM11IW-SELECT.TRKG-REF-NO;
+                VHVM11C_DATA.CAR-NO = VHVM11IW-SELECT.CAR-NO;
+                VHVM11C_DATA.DATE-LAST-UPD = VHVM11IW-SELECT.DATE-LAST-UPD;
+                VHVM11C_DATA.INCD-NO = VHVM11IW-SELECT.INCD-NO;
+                VHVM11C_DATA.EVENT-COMMENT = VHVM11IW-SELECT.EVENT-COMMENT;
+  
+                VHVM11C_DATA.LOC-CMPLT-EVENT = VHVM11IW-SELECT.LOC-CMPLT-EVENT;
+                VHVM11C_DATA.TIME-INITIALIZED = VHVM11IW-SELECT.TIME-INITIALIZED;
+                VHVM11C_DATA.ACTV-IND = "Y";
+
+
+  
+                XXEXT_CALL_Level77Items.UEXTNAM = "VHVM11I";
+                XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11C";
+                try
+                    call "VHVM11C"(XDCONTROL, VHVM11C_CRIT, VHVM11C_DATA);
+                
+                end
+                
+
+    
+                MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+                if (XXEXT_CALL_Level77Items.URC == 0)
+  
+                    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                        VHVM11IW-TRIGGERS.REFRESH-LIST = "Y";
+                        VHVM11IW-WORKING.MSG = "Event Entry Has Been UPDATED in the Vehicle Parts and Mod Tracking File";
+                        VHVM11C_CRIT.UPDATE-FLAG = "N";
+                        VHVM11IW-TRIGGERS.CLEAR-SELECT = "Y";
+                    else
+
+        
+        
+                        if (XDCONTROL.UMSGINS[1] == "-803")
+                            VHVM11IW-TRIGGERS.DUP-ADD = "Y";
+                        else
+                            VHVM11IW-TRIGGERS.ERROR-ADD = "Y";
+                        end
+                        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                    end
+                end
+            else
+
+  
+                VHVM11IW-WORKING.MSG = "Please Provide ALL Esential Data";
+            end
+             
+        end
+         
+
+   
+    else
+        VHVM11IW-WORKING.MSG = "You Cannot Change Event Types only Sub-types within an Event";
+    end
+end 
+
+Function VHVM11I-UP_CLOSE ()
+  
+
+
+  
+  
+  
+  
+
+  
+
+
+  
+  
+  
+  
+   
+    if (VHVM11IW-SELECT.EVENT-STAT == "OPEN" && VHVM11IW-SELECT.DATE-CLOSED != " ")
+        VHVM11IW-WORKING.MSG = "YOU HAVE ENTERED A CLOSED DATE, BUT THE EVENT STATUS IS OPEN PLEASE FIX";
+    else
+        if (VHVM11IW-SELECT.EVENT-STAT == "OPEN")
+            VHVM11IW-TRIGGERS.RUN-UPDATE = "Y";
+        end
+        if (VHVM11IW-SELECT.EVENT-STAT == "CLOSED")
+            VHVM11IW-TRIGGERS.RUN-PRE-CLOSE = "Y";
+        end
+    end
+end 
+
+Function VHVM11I-VALID-CAR () 
+    if (VHVM11B_DATA.CAR-NO != "    ") 
+  
+        XXEXT_CALL_Level77Items.UEXTNAM = "VHVM03I";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM1A5";
+
+  
+        VHVM1A5_DATA.CAR-NO = VHVM11B_DATA.CAR-NO;
+
+  
+        try
+            call "VHVM1A5"(XDCONTROL, VHVM1A5_CRIT, VHVM1A5_DATA);
+        
+        end
+        
+
+    
+        MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+        if (XXEXT_CALL_Level77Items.URC == 0)
+  
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+
+  
+                VHVM11IW-WORKING.CAR-FAILED = "N";
+                VHVM11IW-WORKING.MSG = " ";
+            else
+                VHVM11IW-WORKING.MSG = "The Car Number You Entered Does Not Exist";
+                VHVM11IW-TRIGGERS.BAD-CAR = "Y";
+                VHVM11IW-WORKING.CAR-FAILED = "Y";
+            end 
+
+        
+        else
+
+        
+        
+  
+            VHVM11IW-WORKING.MSG = "The Car Number You Entered Does Not Exist";
+            
+
+  
+  
+  
+  
+        end 
+    else
+        VHVM11IW-WORKING.MSG = "Valid Car Number is Required";
+    end
+end 
+
+Function VHVM11I-VALID-DATE ()
+  
+   
+    set VHVM11IW-VDATE empty;
+    VHVM11IW-WORKING.DATE-OK = "Y";
+    if (VHVM11IW-SELECT.DATE-CLOSED != "          ")
+        VHVM11IW-VDATE.ENTRY-DATE = VHVM11IW-SELECT.DATE-CLOSED;
+
+  
+        if (VHVM11IW-VDATE.ENTRY-REST != "  ")
+            move ENTRY-DATE to EXIT-DATE withV60Compat;
+        end
+
+  
+        if (VHVM11IW-VDATE.ENTRY-YEAR2 == "  ")
+            move ENTRY-MO to EXIT-MO withV60Compat;
+            EXIT-DASH1 = "-";
+            move ENTRY-DAY to EXIT-DAY withV60Compat;
+            EXIT-DASH2 = "-";
+            move ENTRY-YEAR1 to ENTRY-YEAR2 withV60Compat;
+            ENTRY-YEAR1 = "20";
+            move ENTRY-YEAR to EXIT-YEAR withV60Compat;
+        end
+
+  
+        if (VHVM11IW-VDATE.ENTRY-REST == "  ")
+            move ENTRY-MO to EXIT-MO withV60Compat;
+            EXIT-DASH1 = "-";
+            move ENTRY-DAY to EXIT-DAY withV60Compat;
+            EXIT-DASH2 = "-";
+            move ENTRY-YEAR to EXIT-YEAR withV60Compat;
+        end
+        if (NUM-MO < 1 || NUM-MO > 12)
+            VHVM11IW-WORKING.MSG = "You have entered an Invalid Month ";
+            VHVM11IW-WORKING.DATE-OK = "N";
+        end
+        if (NUM-DAY < 1 || NUM-DAY > 31)
+            VHVM11IW-WORKING.MSG = "You have entered an Invalid DAY ";
+            VHVM11IW-WORKING.DATE-OK = "N";
+        end
+        if (NUM-YEAR < 2000)
+            VHVM11IW-WORKING.MSG = "You have entered an Invalid Year ";
+            VHVM11IW-WORKING.DATE-OK = "N";
+        end
+
+  
+        move EXIT-YEAR to E-YEAR withV60Compat;
+        move EXIT-MO to E-MO withV60Compat;
+        move EXIT-DAY to E-DAY withV60Compat;
+        VHVMDTA_CRIT.CURR-YYYY = VHVMDTA_CRIT.CURRENT-YYYY;
+        VHVMDTA_CRIT.CURR-MM = VHVMDTA_CRIT.CURRENT-MM;
+        VHVMDTA_CRIT.CURR-DD = VHVMDTA_CRIT.CURRENT-DD;
+        E-DATE-TODAY = VHVMDTA_CRIT.CURRENT-DATE-8;
+        if (E-DATE-COMPARE > E-DATE-TODAY)
+            VHVM11IW-WORKING.MSG = "You have entered a Date Grater Than Todays Dater ";
+            VHVM11IW-WORKING.DATE-OK = "N";
+        end
+        if (VHVM11IW-WORKING.DATE-OK == "Y") 
+            VHVM11IW-SELECT.DATE-CLOSED = VHVM11IW-VDATE.EXIT-DATE;
+        end
+    else
+        if (VHVM11IW-SELECT.EVENT-TYPE == "BAT" && VHVM11IW-SELECT.DATE-CLOSED == "  ")
+            VHVM11IW-WORKING.MSG = "You Must Specify a CLOSED DATE  For the Battery Replacement";
+            VHVM11IW-TRIGGERS.NEED-BATTERY-LOC = "Y";
+            VHVM11IW-WORKING.DATE-OK = "N";
+        end
+    end
+end 
+
+Function VHVM11IS-CONT-B () 
+    VHVM11C_CRIT.BATTERY-REPL-SW = "Y";
+end 
+
+Function VHVM11IS-CONT-B1 () 
+    VHVM11C_CRIT.BATTERY-REPL-SW = " ";
+end 
+
+Function VHVM11IS-CONT-B11 () 
+    VHVM11C_CRIT.BATTERY-REPL-SW = " ";
+end 
+
+Function VHVM11IS-CONT-B2 () 
+    VHVM11C_CRIT.BATTERY-REPL-SW = "Y";
+end 
+
+Function VHVM11IS-EXIT ()
+   
+    set VHVM11IW-PASS-DATA empty;
+end 
+
+Function VHVM11IS-GEN-INCD ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    if (VHVM11IW-SELECT.INCD-NO-PREFIX != "I") 
+
+  
+        XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-SELECT.DATE-INITIALIZED;
+        XXDATEW.VAGen_FUNCTION = "YMD";
+        MRSCommonCode.XXDATES-CONVERT();
+        VHVM11K_DATA.DATE-INSRV-REV = XXDATEW.DATE-YYYY-MM-DD;
+
+  
+        VHVM11K_DATA.DATE-INSRV = XXDATEW.DATE-YYYY-MM-DD;
+        VHVM11K_DATA.DATE-INCD-OCCR-REV = XXDATEW.DATE-YYYY-MM-DD;
+        VHVM11K_DATA.DATE-INCD-OCCR = XXDATEW.DATE-YYYY-MM-DD;
+        VHVM11K_DATA.CAR-NO = VHVM11IW-SELECT.CAR-NO;
+        VHVM11K_DATA.VEH-INCD-STAT = "TRK";
+        VHVM11K_DATA.INCD-TYPE = "TRK";
+        VHVM11K_DATA.INCD-LOC = VHVM11IW-SELECT.LOC;
+        VHVM11K_DATA.HOME-YRD = VHVM11IW-SELECT.HOME-YRD;
+        VHVM11K_DATA.SYMP-CD = " ";
+        VHVM11K_DATA.USER-GRP = VH01A01_DATA.USER-GROUP;
+        VHVM11K_DATA.TERM-LAST-UPD = VH01A01_DATA.TERM-ID;
+        VHVM11K_DATA.NARR = "SHOP ASSIGNMENT";
+
+
+  
+        XXEXT_CALL_Level77Items.UEXTNAM = "VHVM11I";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11K";
+        try
+            call "VHVM11K"(XDCONTROL, VHVM11K_CRIT, VHVM11K_DATA);
+        
+        end
+        
+
+    
+        MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+        if (XXEXT_CALL_Level77Items.URC == 0)
+  
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                VHVM11IW-WORKING.MSG2A = "THE FOLLOWING INCIDENT NUMBER WAS CREATED";
+                VHVM11IW-WORKING.MSG2B = VHVM11K_DATA.INCD-NO;
+                VHVM11IW-WORKING.MSG = VHVM11IW-WORKING.MSG2;
+     
+  
+                VHVM11C_DATA.INCD-NO = VHVM11K_DATA.INCD-NO;
+                VHVM11IW-SELECT.INCD-NO = VHVM11K_DATA.INCD-NO;
+                VHVM11IW-TRIGGERS.RUN-UPDATE = "Y";
+            else
+
+        
+        
+                if (XDCONTROL.UMSGINS[1] == "-803")
+                    VHVM11IW-TRIGGERS.DUP-ADD = "Y";
+                else
+                    VHVM11IW-TRIGGERS.ERROR-ADD = "Y";
+                end
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end
+    else
+
+  
+        VHVM11IW-WORKING.MSG = "Some of the Required Data is Missing ";
+    end
+end 
+
+Function VHVM11IS-LIST () 
+    VHVM11IW-WORKING.MSG = " ";
+    set VHVM11A_CRIT empty;
+    set VHVM11IW-SELECT empty;
+    VHVM11IW-WORKING.NUM-CARS = 0;
+    VHVM11IW-TRIGGERS.CARS-RET = "Y";
+    VHVM11IW-TRIGGERS.INITIAL-VALUE = "Y";
+    VHVM11IW-TRIGGERS.DISABLE-UPDATE = "Y";
+    VHVM11IW-TRIGGERS.DISABLE-CREATE-ACTION = "Y";
+    VHVM11IW-TRIGGERS.ENABLE-ADD = "Y";
+    VHVM11IW-TRIGGERS.HIDE-LOC-DROPDOWN = "Y";
+    VHVM11IW-TRIGGERS.SHOW-LOC-TEXT = "Y";
+end 
+
+Function VHVM11IW-FROM-CI03 ()
+   
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-PASS-DATA.DATE-INITIALIZED;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM11IW-SELECT.DATE-INITIALIZED = XXDATEW.DATE-YYYY-MM-DD;
+
+  
+    if (VHVM11IW-PASS-DATA.EVENT-TYPE == "AWP" || VHVM11IW-PASS-DATA.EVENT-TYPE == "BAT" || VHVM11IW-PASS-DATA.EVENT-TYPE == " ")
+        VHVM11I-GET-DATA2();
+    end
+    if (VHVM11IW-PASS-DATA.EVENT-TYPE == "MOD")
+        VHVM11I-GET-DATA3();
+    end
+    if (VHVM11IW-PASS-DATA.EVENT-TYPE == "BAT")
+        VHVM11IW-SELECT.EVENT-STAT = VHVM11IW-PASS-DATA.EVENT-STAT;
+        VHVM11IW-SELECT.EVENT-TYPE = VHVM11IW-PASS-DATA.EVENT-TYPE;
+        VHVM11IW-SELECT.CAR-NO = VHVM11IW-PASS-DATA.CAR-NO;
+        VHVM11IW-SELECT.INCD-NO = VHVM11IW-PASS-DATA.INCD-NO;
+        VHVM11IW-TRIGGERS.ENABLE-UPDATE = "Y";
+        VHVM11IW-TRIGGERS.ENABLE-DELETE = "Y";
+        VHVM11IW-TRIGGERS.DISABLE-ADD = "Y";
+        VHVM11IW-TRIGGERS.DISABLE-FIELD = "Y";
+        if (VHVM11IW-PASS-DATA.EVENT-TYPE == "BAT")
+            VHVM11IW-TRIGGERS.SHOW-LOC-DROPDOWN = "Y";
+            VHVM11IW-TRIGGERS.HIDE-LOC-TEXT = "Y";
+        end
+    end
+end 
+
+Function VHVM11IW-FROM-CI05 ()
+   
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-PASS-DATA.DATE-INITIALIZED;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM11IW-SELECT.DATE-INITIALIZED = XXDATEW.DATE-YYYY-MM-DD;
+    set VHVM11A_CRIT empty;
+  
+
+  
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-WORKING.DATE-FROM;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM11A_CRIT.DATE-FROM = XXDATEW.DATE-YYYY-MM-DD;
+    XXDATEW.DATE-MM-DD-YYYY = VHVM11IW-WORKING.DATE-TO;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM11A_CRIT.DATE-TO = XXDATEW.DATE-YYYY-MM-DD;
+
+  
+  
+    VHVM11A_CRIT.CAR-NO = VHVM11IW-PASS-DATA.CAR-NO;
+    VHVM11IW-WORKING.CAR-NO = VHVM11IW-PASS-DATA.CAR-NO;
+
+  
+    VHVM11A_CRIT.BEG-CAR-TYPE = "A1";
+    VHVM11A_CRIT.END-CAR-TYPE = "C2";
+
+  
+    VHVM11A_CRIT.HOME-YRD = "  ";
+
+  
+    VHVM11A_CRIT.EVENT-TYPE = "    ";
+
+  
+    VHVM11A_CRIT.EVENT-STAT = "OPEN       ";
+
+  
+    VHVM11A_CRIT.CURR-LOC = "       ";
+    VHVM11A_CRIT.TRKG-REF-NO = " ";
+    VHVM11A_CRIT.SORT-ORDER = 1;
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM11I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11A";
+
+  
+    try
+        call "VHVM11A"(XDCONTROL, VHVM11A_CRIT, VHVM11A_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHVM11IW-WORKING.MSG = " ";
+            VHVM11IW-TRIGGERS.CARS-RET = "Y";
+            VHVM11IW-WORKING.NUM-CARS = XDCONTROL.UROWCNT;
+            if (VHVM11A_CRIT.MAX-ROWS-EXCEEDED == "Y")
+                VHVM11IW-WORKING.MSG = "TOTAL ROWS SELECTED EXCEEDS THE MAX ROWS OF 117";
+            end
+            
+   
+        
+        else
+
+        
+        
+  
+            VHVM11IW-WORKING.MSG = "THERE WAS NO DATA SELECTED WITH YOUR SEARCH CRITERIA";
+            
+  
+  
+  
+  
+        end 
+    end
+
+  
+
+  
+  
+  
+  
+  
+
+  
+    VHVM11IW-TRIGGERS.ENABLE-ADD = "Y";
+    VHVM11IW-TRIGGERS.DISABLE-UPDATE = "Y";
+    VHVM11IW-TRIGGERS.HIDE-LOC-DROPDOWN = "Y";
+    VHVM11IW-TRIGGERS.SHOW-LOC-TEXT = "Y";
+end 
+
+Function VHVM11IW-PRE-CLOSE ()
+   
+    VHVM11I-VALID-DATE();
+
+  
+  
+    if (VHVM11IW-SELECT.EVENT-TYPE == "BAT")
+        if (VHVM11IW-SELECT.BATTERY-LOC == "    ")
+            VHVM11IW-WORKING.MSG = "You Must Specify a Location For the Battery Replacement";
+            VHVM11IW-TRIGGERS.NEED-BATTERY-LOC = "Y";
+            VHVM11IW-WORKING.DATE-OK = "N";
+        end
+    end
+    if (VHVM11IW-WORKING.DATE-OK == "Y")
+        if (VHVM11IW-SELECT.EVENT-STAT == "CLOSED ")
+            VHVM11IW-TRIGGERS.RUN-CLOSE = "Y";
+        else
+            VHVM11IW-TRIGGERS.PROMPT-CLOSE = "Y";
+        end
+    end
+end 
+
+Function VHVM12I-BEGIN ()
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "WS100I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "WS70A01";
+
+    
+    try
+        call "WS70A01"(XDCONTROL, WS70A01_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHYT27IW.PRINTER-COUNT = XDCONTROL.UROWCNT;
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+end 
+
+Function VHVM12IS-HARD-COPY () 
+    if (PRINT-IDX > 0)
+        ENABLE-HARD = "Y";
+        VHVM12IW.VTAM-NAME = WS70A01_DATA.VTAM-NAME[PRINT-IDX];
+    else
+        DISABLE-HARD = "Y";
+    end
+end 
+
+Function VHVM12IS-SUBMIT ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHVM12IW.DATE-FROM;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM12A_CRIT.DATE-FROM = XXDATEW.DATE-YYYY-MM-DD;
+
+  
+  
+    XXDATEW.DATE-MM-DD-YYYY = VHVM12IW.DATE-TO;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM12A_CRIT.DATE-TO = XXDATEW.DATE-YYYY-MM-DD;
+    VHVM12A_CRIT.CAR-NO = VHVM12IW-PASS-DATA.CAR-NO;
+    VHVM12A_CRIT.BEG-CAR-TYPE = VHVM12IW-PASS-DATA.CAR-TYPE;
+    VHVM12A_CRIT.END-CAR-TYPE = VHVM12IW-PASS-DATA.CAR-TYPE;
+    VHVM12A_CRIT.HOME-YRD = VHVM12IW-PASS-DATA.HOME-YRD;
+    VHVM12A_CRIT.EVENT-TYPE = VHVM12IW-PASS-DATA.EVENT-TYPE;
+    VHVM12A_CRIT.EVENT-SUB-TYPE = VHVM12IW-PASS-DATA.EVENT-SUB-TYPE;
+    VHVM12A_CRIT.EVENT-STAT = VHVM12IW-PASS-DATA.EVENT-STAT;
+    VHVM12A_CRIT.CURR-LOC = VHVM12IW-PASS-DATA.CURR-LOC;
+    VHVM12A_CRIT.TRKG-REF-NO = VHVM12IW-PASS-DATA.TRKG-REF-NO;
+    VHVM12A_CRIT.SORT-ORDER = VHVM12IW-PASS-DATA.SORT-ORDER;
+    VHVM12A_CRIT.VTAM-NAME = VHVM12IW.VTAM-NAME;
+
+
+    
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM12AI";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM12A";
+
+
+    
+    try
+        call "VHVM12A"(XDCONTROL, VHVM12A_CRIT, VHVM12A_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+
+      
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        
+       
+
+        else
+
+        
+
+
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+end 
+
+Function VHVM13I-BEGIN ()
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    VHVM13IW-PASS-DATA.DATE-INITIALIZED = VGVar.currentFormattedGregorianDate;
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "WS100I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "WS70A01";
+
+
+    
+    try
+        call "WS70A01"(XDCONTROL, WS70A01_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHYT27IW.PRINTER-COUNT = XDCONTROL.UROWCNT;
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+  
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM13I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM11E";
+
+  
+
+
+  
+    try
+        call "VHVM11E"(XDCONTROL, VHVM11E_CRIT, VHVM11E_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHVM13IW-WORKING.NUM-EVENT = XDCONTROL.UROWCNT;
+        end 
+
+        
+    else
+
+        
+        
+
+
+  
+  
+  
+  
+
+    end
+
+  
+  
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM13I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM13B";
+
+  
+
+  
+    try
+        call "VHVM13B"(XDCONTROL, VHVM13B_CRIT, VHVM13B_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+
+  
+            VHVM13IW-WORKING.NUM-EVENT-TYPE = XDCONTROL.UROWCNT;
+        end 
+
+        
+    else
+
+        
+        
+
+
+  
+  
+  
+  
+
+    end
+end 
+
+Function VHVM13I-RE-DATE ()
+  
+
+    
+    try
+        call "VHVMDTA"(XDCONTROL, VHVMDTA_CRIT, VHVMDTA_DATA);
+    
+    end
+    if (XDCONTROL.UROWCNT == 1)
+        VHVM11IW-WORKING.RUN-DATE = VHVMDTA_CRIT.CURRENT-DATE;
+    else
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        return;
+    end
+end 
+
+Function VHVM13IS-HARD-COPY () 
+    if (PRINT-IDX > 0)
+        ENABLE-HARD = "Y";
+        VHVM13IW.VTAM-NAME = WS70A01_DATA.VTAM-NAME[PRINT-IDX];
+    else
+        DISABLE-HARD = "Y";
+    end
+end 
+
+Function VHVM13IS-INIT ()
+  
+
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM13C";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM13C";
+    try
+        call "VHVM13C"(XDCONTROL, VHVM13C_CRIT, VHVM13C_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHVM13IW-WORKING.COUNTER = UROWCNT;
+    else
+        VHVM13C_DATA.EVENT-TYPE[1] = "CE";
+        VHVM13C_DATA.EVENT-TYPE[2] = "MOD";
+        VHVM13IW-WORKING.COUNTER = 2;
+    end
+    VHVM13IW-WORKING.LOAD-EVENTS = "Y";
+end 
+
+Function VHVM13IS-SUBMIT ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    if (VHVM13IW-PASS-DATA.CAR-TYPE != " " && VHVM13IW-PASS-DATA.DATE-INITIALIZED != " " && VHVM13IW-PASS-DATA.TRKG-REF-NO != " " && VHVM13IW-PASS-DATA.COMMENTS != " ")
+        XXDATEW.VAGen_FUNCTION = "YMD";
+        XXDATEW.DATE-MM-DD-YYYY = VHVM13IW-PASS-DATA.DATE-INITIALIZED;
+        MRSCommonCode.XXDATES-CONVERT();
+        VHVM13A_CRIT.DATE-FROM = XXDATEW.DATE-YYYY-MM-DD;
+
+  
+        VHVM13A_CRIT.CAR-TYPE = VHVM13IW-PASS-DATA.CAR-TYPE;
+        VHVM13A_CRIT.EVENT-TYPE = VHVM13IW-PASS-DATA.EVENT-TYPE;
+        VHVM13A_CRIT.EVENT-STAT = VHVM13IW-PASS-DATA.EVENT-STAT;
+        VHVM13A_CRIT.TRKG-REF-NO = VHVM13IW-PASS-DATA.TRKG-REF-NO;
+        VHVM13A_CRIT.COMMENTS = VHVM13IW-PASS-DATA.COMMENTS;
+        VHVM13A_CRIT.VTAM-NAME = VHVM13IW.VTAM-NAME;
+        VHVM13A_CRIT.HOME-YRD = VHVM13IW-PASS-DATA.HOME-YRD;
+
+
+    
+        XXEXT_CALL_Level77Items.UEXTNAM = "VHVM13AI";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM13A";
+
+
+    
+        try
+            call "VHVM13A"(XDCONTROL, VHVM13A_CRIT, VHVM13A_DATA);
+        
+        end
+        
+
+    
+        MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+        if (XXEXT_CALL_Level77Items.URC == 0)
+
+      
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4 || XDCONTROL.URC == 100)
+                VHVM13IW.VALID = "Y";
+                
+        
+       
+            else
+
+        
+
+
+        
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end 
+        end
+    else 
+        if (VHVM13IW-PASS-DATA.CAR-TYPE == " ")
+            VHVM13IW.MISSING-CAR-TYPE = "Y";
+        end
+        if (VHVM13IW-PASS-DATA.DATE-INITIALIZED == " ")
+            VHVM13IW.MISSING-DATE = "Y";
+        end
+        if (VHVM13IW-PASS-DATA.TRKG-REF-NO == " ")
+            VHVM13IW.MISSING-REF-NO = "Y";
+        end
+        if (VHVM13IW-PASS-DATA.COMMENTS == " ")
+            VHVM13IW.MISSING-COMMENTS = "Y";
+        end
+        VHVM13IW.NOT-VALID = "Y";
+    end
+end 
+
+Function VHVM19IS-BEGIN ()
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM04I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHVM4A5";
+    try
+        call "MRSVehicleMenu.VH01A01"(XDCONTROL, VH01A01_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHVM19IS-CLEAR () 
+    set VHVM19A_DATA empty;
+    set VHVM19B_CRIT empty;
+    set VHVM19B_DATA empty;
+    set VHVM19IW-SELECT empty;
+    VHVM19A_CRIT.CON-NO-BEG = " ";
+    VHVM19A_CRIT.CON-NO-END = " ";
+    VHVM19IW.ROW-COUNT = 1;
+    VHVM19IW-TRIGGERS.LOAD-DATA = "Y";
+end 
+
+Function VHVM19IS-MOD-DATA ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHVM19I";
+
+  
+  
+  
+
+  
+    VHVM19B_CRIT.CON-NO = VHVM19IW-SELECT.CON-NO;
+    VHVM19B_CRIT.DASH-NO = VHVM19IW-SELECT.DASH-NO;
+    VHVM19B_CRIT.TIME-INSRV = VHVM19IW-SELECT.TIME-INSRV;
+    VHVM19B_CRIT.TERM-LAST-UPD = VH01A01_DATA.TERM-ID;
+    VHVM19B_CRIT.TERM-MAINT-UPD = VH01A01_DATA.TERM-ID;
+
+  
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHVM19IW-SELECT.DATE-INSRV;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM19B_CRIT.DATE-INSRV = XXDATEW.DATE-YYYY-MM-DD;
+    XXDATEW.DATE-MM-DD-YYYY = VHVM19IW-SELECT.DATE-INSRV-REV;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM19B_CRIT.DATE-INSRV-REV = XXDATEW.DATE-YYYY-MM-DD;
+
+  
+    if (VHVM19B_DATA.DATE-INSRV-ICS != " ")
+        XXDATEW.DATE-MM-DD-YYYY = VHVM19B_DATA.DATE-INSRV-ICS;
+        MRSCommonCode.XXDATES-CONVERT();
+        VHVM19B_DATA.DATE-INSRV-ICS = XXDATEW.DATE-YYYY-MM-DD;
+    end
+
+  
+    if (XDCONTROL.UFUNCTION == "UPDATE" || XDCONTROL.UFUNCTION == "ADD")
+        if (VHVM19B_DATA.CON-STAT not blanks)
+
+
+  
+            if (XDCONTROL.UFUNCTION == "UPDATE")
+                try
+                    call "VHVM19B"(XDCONTROL, VHVM19B_CRIT, VHVM19B_DATA);
+                
+                end
+                if (XXEXT_CALL_Level77Items.URC == 0)
+
+  
+                    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                        VHVM19IW-TRIGGERS.UPDATED = "Y";
+                        VHVM19IW-SELECT_Level77Items.SELECTION-IDX = 0;
+                        XDCONTROL.UFUNCTION = "RETRIEVE";
+                        VHVM19IW.MSG = "The Consist History Record was Updated ";
+                    else
+                        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                    end 
+                end
+            end
+  
+        else
+  
+            VHVM19IW-TRIGGERS.DATA-ERROR = "Y";
+            
+
+  
+  
+        end
+    end
+  
+    if (XDCONTROL.UFUNCTION == "RETRIEVE")
+        try
+            call "VHVM19A"(XDCONTROL, VHVM19A_CRIT, VHVM19A_DATA);
+        
+        end
+        if (XXEXT_CALL_Level77Items.URC == 0)
+
+  
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                VHVM19IW-TRIGGERS.LOAD-DATA = "Y";
+                VHVM19IW-TRIGGERS.DESELECT-ALL-ITEMS = "Y";
+                set VHVM19IW-SELECT empty;
+                set VHVM19B_DATA empty;
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end 
+        end
+    end
+end 
+
+Function VHVM19IS-RET-DATA () 
+    VHVM19IW.ROW-COUNT = 0;
+    VHVM19IW.MSG = " ";
+    if (VHVM19A_CRIT.CON-NO-BEG != "   ") 
+        XXDATEW.VAGen_FUNCTION = "YMD";
+        XXDATEW.DATE-MM-DD-YYYY = VHVM19IW.REV-DATE-MMDDYYYY;
+        MRSCommonCode.XXDATES-CONVERT();
+        VHVM19A_CRIT.REV-DATE = XXDATEW.DATE-YYYY-MM-DD;
+        if (VHVM19A_CRIT.CON-NO-END == "   ")
+            VHVM19A_CRIT.CON-NO-END = VHVM19A_CRIT.CON-NO-BEG;
+        end
+        try
+            call "VHVM19A"(XDCONTROL, VHVM19A_CRIT, VHVM19A_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHVM19IW.ROW-COUNT = XDCONTROL.UROWCNT;
+            VHVM19IW-TRIGGERS.LOAD-DATA = "Y";
+            VHVM19IW.RETURNED-DATA = "Y";
+        else
+            VHVM19IW.MSG = "No Data Available For the Selected Criteria";
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+  
+        if (VHVM19A_DATA.CON-NO[150] != "   ")
+            VHVM19IW.MSG = "You Have Exceeded the Max Number of Rows of 188";
+        end
+    end
+end 
+
+Function VHVM19IS-REV-DATE ()
+  
+   
+    set VHYT34A_DATA empty;
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHYT34A";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHIE01I";
+    set VHYT34A_DATA empty;
+
+    
+    try
+        call "MrsYardTrackingQueries.VHYT34A"(XDCONTROL, VHYT34A_CRIT, VHYT34A_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+  
+        
+        
+  
+            if (XDCONTROL.URC == 100)
+
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end 
+
+  
+    end
+
+  
+    if (VHYT34A_DATA.CURRENT-TIME > VHYT34A_DATA.TIME-REV-END)
+        VHVM19IW.REV-DATE = VHYT34A_DATA.CURRENT-DATE;
+    else
+        VHVM19IW.REV-DATE = VHYT34A_DATA.YESTERDAY;
+    end
+
+  
+    XXDATEW.VAGen_FUNCTION = "MDY";
+    XXDATEW.DATE-YYYY-MM-DD = VHVM19IW.REV-DATE;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHVM19IW.REV-DATE-MMDDYYYY = XXDATEW.DATE-MM-DD-YYYY;
+end 
+
+Function VHVM19IS-SELECT () 
+    if (SELECTION-IDX > 0)
+        VHVM19IW-SELECT.DATA_ROW = VHVM19A_DATA.DATA_ROW[SELECTION-IDX];
+        VHVM19IW-TRIGGERS.ENABLE-UPDATE = "Y";
+    end
+end 
+
+Function VHVM19IS-UPDATE () 
+    XDCONTROL.UFUNCTION = "UPDATE";
+end

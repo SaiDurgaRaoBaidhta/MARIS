@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/bart-logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MARIS</title>
+    <script>
+      // theme before first paint, so the dark theme never flashes light
+      // as the reference: the saved choice, else the system's light / dark preference
+      try { var t = localStorage.getItem("maris.theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); if (t === "dark") document.documentElement.dataset.theme = "dark"; } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

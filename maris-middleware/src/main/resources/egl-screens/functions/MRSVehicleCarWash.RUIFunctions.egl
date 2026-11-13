@@ -1,0 +1,1295 @@
+
+
+package MRSVehicleCarWash;
+ 
+
+Function VHCWA1IS-VALID ()
+   
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHCWA1_DATA.DATE-CAR-WASH;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHCWA1IW.CAR-WASH-DB2 = XXDATEW.DATE-YYYY-MM-DD;
+    VHCWA2_CRIT.CON-NO = VHCWA1_DATA.CON-NO;
+    VHCWA2_CRIT.DASH-NO = VHCWA1_DATA.DASH-NO;
+    VHCWA2_CRIT.CAR-NO = VHCWA1_DATA.CAR-NO;
+    VHCWA2_CRIT.DATE-INSRV-REV = VHCWA1IW.CAR-WASH-DB2;
+
+
+  
+  
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VCWA1I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHCWA2";
+
+
+    
+    try
+        call "MRSVehicleQueries.VHCWA2"(XDCONTROL, VHCWA2_CRIT, VHCWA2_DATA, VHCWA3_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            if (XDCONTROL.UROWCNT > 0)
+                VHCWA1IW-TRIGGERS.OK = "Y";
+            else
+                VHCWA1IW-TRIGGERS.NOT-OK = "Y";
+            end
+
+  
+        else
+            VHCWA1IW-TRIGGERS.NOT-OK = "Y";
+        end 
+    end
+end 
+
+Function VHCWA2I-CAL-REV ()
+  
+  
+  
+  
+  
+  
+  
+   
+    set VHIE01B_DATA empty;
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHIE01B";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHIE01I";
+    set VHIE01B_DATA empty;
+
+    
+    try
+        call "MRSVehicleIncdEvent.VHIE01B"(XDCONTROL, VHIE01B_CRIT, VHIE01B_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+  
+        
+        
+  
+            if (XDCONTROL.URC == 100)
+
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end 
+
+  
+    end
+
+  
+    if (VHIE01B_DATA.CURRENT-TIME >= VHIE01B_DATA.TIME-REV-START)
+        VHCWA2IW.REV-DATE = VHIE01B_DATA.CURRENT-DATE;
+    else
+        VHCWA2IW.REV-DATE = VHIE01B_DATA.YESTERDAY;
+    end
+
+  
+    XXDATEW.VAGen_FUNCTION = "MDY";
+    XXDATEW.DATE-YYYY-MM-DD = VHCWA2IW.REV-DATE;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHCWA2IW.REV-DATE-MMDDYYYY = XXDATEW.DATE-MM-DD-YYYY;
+
+  
+  
+  
+  
+    VHST01IW.REV-DATE-DB2 = VHCWA2IW.REV-DATE;
+end 
+
+Function VHCWA2I-GET-CARS ()
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    VHCWA5_DATA.WASH-IND = "N";
+    if (VHCWA1_DATA.CON-NO != "    ")
+        VHCWA1IW.CARS-RET = "N";
+        XXEXT_CALL_Level77Items.UEXTNAM = "VHCWA2I";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "VHCWA5";
+
+  
+        VHCWA5_CRIT.CON-NO = VHCWA1_DATA.CON-NO;
+        VHCWA5_CRIT.USE-DASH-NO = "N";
+
+  
+        XXDATEW.VAGen_FUNCTION = "YMD";
+  
+        XXDATEW.DATE-MM-DD-YYYY = VHCWA1_DATA.DATE-CAR-WASH;
+        MRSCommonCode.XXDATES-CONVERT();
+        VHCWA5_CRIT.DATE-INSRV-REV = XXDATEW.DATE-YYYY-MM-DD;
+
+    
+        try
+            call "MRSVehicleQueries.VHCWA5"(XDCONTROL, VHCWA5_CRIT, VHCWA5_DATA);
+        
+        end
+        
+
+    
+        MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+        if (XXEXT_CALL_Level77Items.URC == 0)
+  
+            if ((XDCONTROL.URC == 0 || XDCONTROL.URC == 4) && XDCONTROL.UROWCNT > 0)
+                VHCWA2IW-CARS.CAR-NO1 = VHCWA5_DATA.CAR-NO[1];
+                VHCWA2IW-CARS.CAR-NO2 = VHCWA5_DATA.CAR-NO[2];
+                VHCWA2IW-CARS.CAR-NO3 = VHCWA5_DATA.CAR-NO[3];
+                VHCWA2IW-CARS.CAR-NO4 = VHCWA5_DATA.CAR-NO[4];
+                VHCWA2IW-CARS.CAR-NO5 = VHCWA5_DATA.CAR-NO[5];
+                VHCWA2IW-CARS.CAR-NO6 = VHCWA5_DATA.CAR-NO[6];
+                VHCWA2IW-CARS.CAR-NO7 = VHCWA5_DATA.CAR-NO[7];
+                VHCWA2IW-CARS.CAR-NO8 = VHCWA5_DATA.CAR-NO[8];
+                VHCWA2IW-CARS.CAR-NO9 = VHCWA5_DATA.CAR-NO[9];
+                VHCWA2IW-CARS.CAR-NO10 = VHCWA5_DATA.CAR-NO[10];
+                VHCWA1_DATA.DASH-NO = VHCWA5_CRIT.DASH-NO;
+                VHCWA1IW.CARS-RET = "Y";
+                VHCWA3_CRIT.NUM-CARS = XDCONTROL.UROWCNT;
+                VHCWA1IW.MSG = "Enter Yard and Time Consist was Washed                 ";
+                
+
+  
+            else
+
+        
+        
+                VHCWA1IW.MSG = "The Con Number  Is Either Still In Service, or All Dash Numbers Have Already been Washed";
+                VHCWA1IW-TRIGGERS.SET-FOCUS = "Y";
+                
+
+  
+  
+  
+  
+            end 
+        end
+
+  
+  
+  
+        if (VHCWA1IW.CARS-RET == "Y")
+  
+            XXEXT_CALL_Level77Items.UEXTNAM = "VHCWA2I";
+            XXEXT_CALL_Level77Items.UAPPLNAM = "VHCWA3";
+
+
+    
+            try
+                call "MRSVehicleQueries.VHCWA3"(XDCONTROL, VHCWA3_CRIT, VHCWA3_DATA, VHCWA5_DATA);
+            
+            end
+            
+
+    
+            MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+            if (XXEXT_CALL_Level77Items.URC == 0)
+  
+    
+
+            else
+                VHCWA1IW-TRIGGERS.BAD-CON = "Y";
+        
+        
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end 
+        end
+    end
+    if (VHCWA5_DATA.WASH-IND == "Y")
+        VHCWA1IW.MSG = "This Consist Has Already Been Washed on the Date You Entered";
+        VHCWA1IW.DISABLE-UPDATE = "Y";
+    end
+end 
+
+Function VHCWA2IS-BEGIN () 
+    VHCWA1IW.DISABLE-UPDATE = "Y";
+    VHCWA1IW.MSG = "Enter Data              ";
+end 
+
+Function VHCWA2IS-CALCDATE ()
+  
+
+  
+  
+
+
+  
+   
+    XDATECON-W2.WS-GREG-IN-FLAG = "R";
+    XDATECON-W2.WS-RPT-GREG-IN = VHCWA1_DATA.DATE-CAR-WASH;
+    MRSCommonCode.XDATECON-GREG2JUL();
+    VHCWA1IW.DATE-CAR-WASH-J = XDATECON-W1.WS-DATES-CYDDD;
+
+  
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHCWA1_DATA.DATE-CAR-WASH;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHCWA1IW.CAR-WASH-DB2 = XXDATEW.DATE-YYYY-MM-DD;
+
+  
+    CNT = 1;
+    while (CNT <= VHCWA3_CRIT.NUM-CARS)
+  
+        VHCWA5_DATA.NEXT-WASH-JULIAN[CNT] = VHCWA1IW.DATE-CAR-WASH-J + VHCWA5_DATA.CNT-DAYS-NXT-WASH[CNT];
+
+  
+        XDATECON-W2.WS-JUL-IN = VHCWA5_DATA.NEXT-WASH-JULIAN[CNT];
+        MRSCommonCode.XDATECON-JUL2GREG();
+        VHCWA5_DATA.NEXT-WASH-GREG[CNT] = XDATECON-W1.WS-DATES-MDCY;
+
+  
+        XXDATEW.VAGen_FUNCTION = "YMD";
+        XXDATEW.DATE-MM-DD-YYYY = VHCWA5_DATA.NEXT-WASH-GREG[CNT];
+        MRSCommonCode.XXDATES-CONVERT();
+        VHCWA5_DATA.NEXT-WASH-DB2[CNT] = XXDATEW.DATE-YYYY-MM-DD;
+        CNT = CNT + 1;
+    end
+end 
+
+Function VHCWA2IS-CLEAR () 
+    set VHCWA1_DATA empty;
+    set VHCWA2_DATA empty;
+    set VHCWA1IW empty;
+    set VHCWA1I-CLEAR empty;
+    set VHCWA2IW-CARS empty;
+    VHCWA1_DATA.DATE-CAR-WASH = VHCWA2IW.REV-DATE-MMDDYYYY;
+    VHCWA1IW.MSG = "                                                    ";
+end 
+
+Function VHCWA2IS-UPDATE ()
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHCWA1_DATA.DATE-CAR-WASH;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHCWA1IW.CAR-WASH-DB2 = XXDATEW.DATE-YYYY-MM-DD;
+
+
+  
+
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHCWA2I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHCWA6";
+
+  
+    VHCWA6_DATA.TOTAL-CARS = VHCWA3_CRIT.NUM-CARS;
+    VHCWA6_DATA.GUI-NAME = "VHCWA2";
+
+  
+  
+    VHCWA6_DATA.DATE-CAR-WASH = VHCWA1IW.CAR-WASH-DB2;
+    VHCWA6_DATA.TIME-CAR-WASH = VHCWA1_DATA.TIME-CAR-WASH;
+  
+    VHCWA6_DATA.CAR-WASH-LOC = VHCWA1_DATA.CAR-WASH-LOC;
+    VHCWA6_DATA.CON-NO = VHCWA1_DATA.CON-NO;
+    VHCWA6_DATA.DASH-NO = VHCWA1_DATA.DASH-NO;
+    VHCWA6_DATA.TERM-LAST-UPD = VH01A01_DATA.TERM-ID;
+
+  
+  
+
+    
+    try
+        call "MRSVehicleQueries.VHCWA6"(XDCONTROL, VHCWA6_DATA, VHCWA5_DATA, VHCWAF_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCWA1IW.MSG = "Car Wash History Records Were Updated";
+            VHCWA1IW-TRIGGERS.DISABLE-UPDATE = "Y";
+            
+  
+        else
+            VHCWA1IW.MSG = "There was a problem updating the records";
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+end 
+
+Function VHCWA2IW-OK () 
+    if ((VHCWA1_DATA.CAR-WASH-LOC != "    ") &&
+     (VHCWA1_DATA.CAR-WASH-LOC == "DY" || VHCWA1_DATA.CAR-WASH-LOC == "HY" || VHCWA1_DATA.CAR-WASH-LOC == "CY" ||
+     VHCWA1_DATA.CAR-WASH-LOC == "RY") &&
+     VHCWA1_DATA.CON-NO != "    " &&
+     VHCWA1_DATA.DASH-NO > 0 &&
+     VHCWA1IW.TIME-ERROR == "N" &&
+     VHCWA1_DATA.DATE-CAR-WASH != "          ")
+        VHCWA1IW.ENABLE-UPDATE = "Y";
+        VHCWA1IW.MSG = "Press Update Button";
+    else
+        VHCWA1IW.DISABLE-UPDATE = "Y";
+        VHCWA1IW.MSG = "Correct Error(s) in Data";
+    end
+end 
+
+Function VHCWA3IS-A-TIME () 
+    VHCWA3IW.TIME-ERROR = "N";
+    if (VHCWA3IW-TIME.TIME-IN != "        ")
+        if (VHCWA3IW-TIME.POS6 != "." || VHCWA3IW-TIME.POS6 != ":")
+            VHCWA3IW-TIME.HOURS1 = VHCWA3IW-TIME.POS8;
+            VHCWA3IW-TIME.HOURS2 = VHCWA3IW-TIME.POS7;
+            VHCWA3IW-TIME.COLON = ":";
+            VHCWA3IW-TIME.MINUTES1 = VHCWA3IW-TIME.POS6;
+            VHCWA3IW-TIME.MINUTES2 = VHCWA3IW-TIME.POS5;
+            VHCWA3IW-TIME.COLON2 = ":";
+            VHCWA3IW-TIME.SEC1 = VHCWA3IW-TIME.POS2;
+            VHCWA3IW-TIME.SEC2 = VHCWA3IW-TIME.POS1;
+        end
+        if (VHCWA3IW-TIME.POS6 == "." || VHCWA3IW-TIME.POS6 == ":")
+            VHCWA3IW-TIME.HOURS1 = VHCWA3IW-TIME.POS8;
+            VHCWA3IW-TIME.HOURS2 = VHCWA3IW-TIME.POS7;
+            VHCWA3IW-TIME.COLON = ":";
+            VHCWA3IW-TIME.MINUTES1 = VHCWA3IW-TIME.POS5;
+            VHCWA3IW-TIME.MINUTES2 = VHCWA3IW-TIME.POS4;
+            VHCWA3IW-TIME.COLON2 = ":";
+            VHCWA3IW-TIME.SEC1 = VHCWA3IW-TIME.POS2;
+            VHCWA3IW-TIME.SEC2 = VHCWA3IW-TIME.POS1;
+        end
+
+  
+        if (VHCWA3IW-TIME.SEC1 == " ")
+            VHCWA3IW-TIME.SEC1 = "0";
+        end
+        if (VHCWA3IW-TIME.SEC2 == " ")
+            VHCWA3IW-TIME.SEC2 = "0";
+        end
+
+  
+        if (VHCWA3IW-TIME.HOURS1 == " ")
+            VHCWA3IW-TIME.HOURS1 = "0";
+        end
+        VHCWA3IW.TIME-CAR-WASH = VHCWA3IW-TIME.TIME-OUT;
+  
+        VHSC01IW-TIME2.HOURS1 = VHCWA3IW-TIME.HOURS1N;
+        VHSC01IW-TIME2.HOURS2 = VHCWA3IW-TIME.HOURS2N;
+        VHSC01IW-TIME2.MINUTES1 = VHCWA3IW-TIME.MINUTES1N;
+        VHSC01IW-TIME2.MINUTES2 = VHCWA3IW-TIME.MINUTES2N;
+        if (VHCWA3IW-TIME.HOURS1 is numeric && VHCWA3IW-TIME.HOURS2 is numeric)
+            if (VHSC01IW-TIME2.HOURS-OUT < 00 ||
+             VHSC01IW-TIME2.HOURS-OUT > 23)
+  
+                VHCWA3IW-MSG.FINAL-MSG = "THE TIME(HOURS) YOU ENTERED IS OUT OF RANGE";
+                VHCWA3IW.TIME-ERROR = "Y";
+                VHCWA3IW-TRIGGERS.DISABLE-UPDATE = "Y ";
+            else
+                if (VHCWA3IW-TIME.MINUTES1 is numeric &&
+                 VHCWA3IW-TIME.MINUTES2 is numeric)
+                    if (VHSC01IW-TIME2.MINUTES-OUT < 00 ||
+                     VHSC01IW-TIME2.MINUTES-OUT > 59)
+  
+                        VHCWA3IW-MSG.FINAL-MSG = "THE TIME(MINUTES) YOU ENTERED IS OUT OF RANGE";
+                        VHCWA3IW.TIME-ERROR = "Y";
+                        VHCWA3IW-TRIGGERS.DISABLE-UPDATE = "Y";
+                    end
+                else
+  
+                    VHCWA3IW-MSG.FINAL-MSG = "THE TIME YOU ENTERED IS NOT NUMERIC";
+                    VHCWA3IW.TIME-ERROR = "Y";
+                    VHCWA3IW-TRIGGERS.DISABLE-UPDATE = "Y";
+                end
+            end
+        else
+  
+            VHCWA3IW-MSG.FINAL-MSG = "THE TIME YOU ENTERED IS NOT NUMERIC";
+            VHCWA3IW.TIME-ERROR = "Y";
+            VHCWA3IW-TRIGGERS.DISABLE-UPDATE = "Y";
+        end
+    else
+        VHCWA3IW.TIME-ERROR = "Y";
+        VHCWA3IW-MSG.FINAL-MSG = "Please Enter Time Field";
+    end
+    if (VHCWA3IW.TIME-ERROR != "Y")
+        VHCWA3IW-TRIGGERS.ENABLE-UPDATE = "Y";
+        VHCWA3IW-MSG.FINAL-MSG = "Enter Car numbers and press Update button to update";
+    else
+        VHCWA3IW-TRIGGERS.DISABLE-UPDATE = "Y";
+    end
+end 
+
+Function VHCWA3IS-CLEAR () 
+    set VHCWA3IW-CARS empty;
+    set VHCWA3IW empty;
+    set VHCWA3IW-MSG empty;
+    VHCWA3IW.DATE-CAR-WASH = VHCWA3IW-DATE.REV-DATE-MMDDYYYY;
+    VHCWA3IW-TRIGGERS.BAD1 = " ";
+    VHCWA3IW-TRIGGERS.BAD2 = " ";
+    VHCWA3IW-TRIGGERS.BAD3 = " ";
+    VHCWA3IW-TRIGGERS.BAD4 = " ";
+    VHCWA3IW-TRIGGERS.BAD5 = " ";
+    VHCWA3IW-TRIGGERS.BAD6 = " ";
+    VHCWA3IW-TRIGGERS.BAD7 = " ";
+    VHCWA3IW-TRIGGERS.BAD8 = " ";
+    VHCWA3IW-TRIGGERS.BAD9 = " ";
+    VHCWA3IW-TRIGGERS.BAD10 = " ";
+    VHCWA3IW.CON-NO = "088";
+    VHCWA3IW-TRIGGERS.DISABLE-UPDATE = "Y";
+    VHCWA3IW-TRIGGERS.YRD-SETFOCUS = "Y";
+    VHCWA3IW-MSG.FINAL-MSG = "Please Enter Data ";
+end 
+
+Function VHCWA3IS-ENABLE ()
+  
+  
+  
+   
+    if (VHCWA3IW.CAR-WASH-LOC != "  ")
+  
+        VHCWA3IW-MSG.FINAL-MSG = "Enter Car numbers and time then  press Update button to update";
+    end
+end 
+
+Function VHCWA3IS-GET-B () 
+    if (CNT == 1)
+        VHCWA3IW-TRIGGERS.BAD1 = "B";
+    else
+        if (CNT == 2)
+            VHCWA3IW-TRIGGERS.BAD2 = "B";
+        else
+            if (CNT == 3)
+                VHCWA3IW-TRIGGERS.BAD3 = "B";
+            else
+                if (CNT == 4)
+                    VHCWA3IW-TRIGGERS.BAD4 = "B";
+                else
+                    if (CNT == 5)
+                        VHCWA3IW-TRIGGERS.BAD5 = "B";
+                    else
+                        if (CNT == 6)
+                            VHCWA3IW-TRIGGERS.BAD6 = "B";
+                        else
+                            if (CNT == 7)
+                                VHCWA3IW-TRIGGERS.BAD7 = "B";
+                            else
+                                if (CNT == 8)
+                                    VHCWA3IW-TRIGGERS.BAD8 = "B";
+                                else
+                                    if (CNT == 9)
+                                        VHCWA3IW-TRIGGERS.BAD9 = "B";
+                                    else
+                                        if (CNT == 10)
+                                            VHCWA3IW-TRIGGERS.BAD10 = "B";
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end 
+
+Function VHCWA3IS-GET-DTE () 
+    CNT = 1;
+    while (CNT <= VHCWA3IW-CARS.NUM-OF-CARS)
+        VHCWA3B_CRIT.CAR-NO = VHCWA3IW-CARS.CAR-NO[CNT];
+        VHCWA3B_CRIT.TERM-ID = VH01A01_DATA.TERM-ID;
+        try
+            call "VHCWA3B"(XDCONTROL, VHCWA3B_CRIT, VHCWA3B_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCWA3IW-CARS.DATE-NXT-CAR-WASH[CNT] = VHCWA3B_DATA.DATE-NXT-CAR-WASH;
+            VHCWA3IW-CARS.CNT-TIMES-WASH[CNT] = VHCWA3B_DATA.CNT-TIMES-WASH;
+            
+  
+        else
+            VHCWA3IW-MSG.FINAL-MSG = "PLEASE CHECK DATA BASE ";
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            return;
+        end
+        CNT = CNT + 1;
+    end
+    VHCWA3IS-UPDATE1();
+end 
+
+Function VHCWA3IS-INIT () 
+    VHCWA3IW-MSG.FINAL-MSG = " ";
+    set VHCWA3IW empty;
+    VHCWA3IW-TRIGGERS.DISABLE-UPDATE = "Y";
+    VHCWA3IW-TRIGGERS.DISABLE-CLEAR = "Y";
+    VHCWA3IS-REV-DTE-2();
+    VHCWA3IS-CLEAR();
+    VHCWA3IW-MSG.FINAL-MSG = "Please Enter Data ";
+
+  
+    VHCWA3IW.TIME-CAR-WASH = VHIE01B_DATA.CURRENT-TIME;
+
+  
+    if (VH01A01_DATA.TERM-ID == " ")
+        VH01A01_DATA.TERM-ID = "VHCWA3I-CGJ";
+    end
+end 
+
+Function VHCWA3IS-NEW-DT () 
+    VHCWA3IW-TRIGGERS.INVALID-DATE-TIME = "Y";
+    VHCWA3IW.WS-DATE = VHCWA3IW.DATE-CAR-WASH;
+    VHCWA3IW.WS-TIME = VHCWA3IW.TIME-CAR-WASH;
+
+  
+    XXDATEW.DATE-MM-DD-YYYY = VHCWA3IW.WS-DATE;
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    MRSCommonCode.XXDATES-CONVERT();
+    VHINVB_CRIT.INPUT-DATE = XXDATEW.DATE-YYYY-MM-DD;
+    VHCWA3IW.WS-DATE = XXDATEW.DATE-YYYY-MM-DD;
+    VHINVB_CRIT.INPUT-TIME = VHCWA3IW.WS-TIME;
+    VHINVB_CRIT.USER-TERM-ID = VH01A01_DATA.TERM-ID;
+    VHINVB_CRIT.MARIS-SUBSYS = "VEHICLE";
+    VHINVB_CRIT.USER-GRP = "VEHICLE";
+    try
+        call "MRSVehicleIncident.VHINVB"(XDCONTROL, VHINVB_DATA, VHINVB_CRIT);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+  
+        VHCWA3IW-TRIGGERS.INVALID-DATE-TIME = "N";
+    else
+  
+
+    end
+end 
+
+Function VHCWA3IS-REV-DTE ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    VHXREVC_CRIT.SEL-IDX = 3;
+    
+    try
+        call "VHXREVC"(XDCONTROL, VHXREVC_CRIT, VHXREVC_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+    else
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+    end 
+
+
+  
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHXREVC_DATA.REVENUE-DATE;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHST01IW.REV-DATE-DB2 = XXDATEW.DATE-YYYY-MM-DD;
+end 
+
+Function VHCWA3IS-REV-DTE-2 ()
+  
+  
+  
+  
+  
+  
+  
+   
+    set VHIE01B_DATA empty;
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHIE01B";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHIE01I";
+    set VHIE01B_DATA empty;
+
+    
+    try
+        call "MRSVehicleIncdEvent.VHIE01B"(XDCONTROL, VHIE01B_CRIT, VHIE01B_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+  
+        
+        
+  
+            if (XDCONTROL.URC == 100)
+
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end 
+
+  
+    end
+
+  
+    if (VHIE01B_DATA.CURRENT-TIME >= VHIE01B_DATA.TIME-REV-START)
+        VHCWA3IW-DATE.REV-DATE = VHIE01B_DATA.CURRENT-DATE;
+    else
+        VHCWA3IW-DATE.REV-DATE = VHIE01B_DATA.YESTERDAY;
+    end
+
+  
+    XXDATEW.VAGen_FUNCTION = "MDY";
+    XXDATEW.DATE-YYYY-MM-DD = VHCWA3IW-DATE.REV-DATE;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHCWA3IW-DATE.REV-DATE-MMDDYYYY = XXDATEW.DATE-MM-DD-YYYY;
+
+  
+  
+  
+  
+    VHST01IW.REV-DATE-DB2 = VHCWA3IW-DATE.REV-DATE;
+end 
+
+Function VHCWA3IS-UPDATE1 ()
+  
+  
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHCWA3I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHCWA3D";
+    VHCWA3D_DATA.DATE-CAR-WASH = VHCWA3B_DATA.DATE-CAR-WASH;
+  
+    VHCWA3D_DATA.TIME-CAR-WASH = VHCWA3IW.TIME-CAR-WASH;
+    VHCWA3D_DATA.CAR-WASH-LOC = VHCWA3IW.CAR-WASH-LOC;
+    VHCWA3D_DATA.TERM-LAST-UPD = VH01A01_DATA.TERM-ID;
+    VHCWA3D_DATA.CON-NO = VHCWA3IW.CON-NO;
+    VHCWA3D_DATA.DASH-NO = 1;
+
+    
+    try
+        call "VHCWA3D"(XDCONTROL, VHCWA3D_DATA, VHCWA3D_CRIT, VHCWA3IW-CARS);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHCWA3IS-CLEAR();
+        VHCWA3IW-TRIGGERS.DISABLE-UPDATE = "Y";
+        VHCWA3IW-MSG.FINAL-MSG = "Car Wash History records were updated. Enter more data. ";
+    else
+        VHCWA3IW-MSG.FINAL-MSG = "Error - record(s) may already exist in the database; Please check data";
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+    end
+end 
+
+Function VHCWA3IS-VAL-CARS () 
+    VHCWA3IW-TRIGGERS.BAD1 = " ";
+    VHCWA3IW-TRIGGERS.BAD2 = " ";
+    VHCWA3IW-TRIGGERS.BAD3 = " ";
+    VHCWA3IW-TRIGGERS.BAD4 = " ";
+    VHCWA3IW-TRIGGERS.BAD5 = " ";
+    VHCWA3IW-TRIGGERS.BAD6 = " ";
+    VHCWA3IW-TRIGGERS.BAD7 = " ";
+    VHCWA3IW-TRIGGERS.BAD8 = " ";
+    VHCWA3IW-TRIGGERS.BAD9 = " ";
+    VHCWA3IW-TRIGGERS.BAD10 = " ";
+    VHCWA3IW-TRIGGERS.INVALID-CAR = "N";
+    
+
+  
+    VHCWA3IW-CARS.CAR-NO[1] = VHCWA3IW-CARS.CAR-NO1;
+    VHCWA3IW-CARS.CAR-NO[2] = VHCWA3IW-CARS.CAR-NO2;
+    VHCWA3IW-CARS.CAR-NO[3] = VHCWA3IW-CARS.CAR-NO3;
+    VHCWA3IW-CARS.CAR-NO[4] = VHCWA3IW-CARS.CAR-NO4;
+    VHCWA3IW-CARS.CAR-NO[5] = VHCWA3IW-CARS.CAR-NO5;
+    VHCWA3IW-CARS.CAR-NO[6] = VHCWA3IW-CARS.CAR-NO6;
+    VHCWA3IW-CARS.CAR-NO[7] = VHCWA3IW-CARS.CAR-NO7;
+    VHCWA3IW-CARS.CAR-NO[8] = VHCWA3IW-CARS.CAR-NO8;
+    VHCWA3IW-CARS.CAR-NO[9] = VHCWA3IW-CARS.CAR-NO9;
+    VHCWA3IW-CARS.CAR-NO[10] = VHCWA3IW-CARS.CAR-NO10;
+    
+
+  
+    CNT = 1;
+    LOOP = 1;
+    while (LOOP <= 11)
+        if (VHCWA3IW-CARS.CAR-NO[LOOP] == "    ")
+            VHCWA3IW-CARS.NUM-OF-CARS = LOOP - 1;
+            LOOP = 12;
+        end
+        LOOP = LOOP + 1;
+    end
+
+  
+    CNT = 1;
+    if (VHCWA3IW-CARS.NUM-OF-CARS <= 0)
+        VHCWA3IW-TRIGGERS.INVALID-CAR = "Y";
+        VHCWA3IW-MSG.FINAL-MSG = "NO CAR IS ENTERED";
+        VHCWA3IW-TRIGGERS.CAR1-SETFOCUS = "Y";
+    else
+        while (CNT <= VHCWA3IW-CARS.NUM-OF-CARS)
+            VHCWA3A_CRIT.CAR-NO = VHCWA3IW-CARS.CAR-NO[CNT];
+            VHCWA3A_CRIT.DATE-CAR-WASH = VHCWA3IW.WS-DATE;
+            VHCWA3A_CRIT.TIME-CAR-WASH = VHCWA3IW.WS-TIME;
+            try
+                call "VHCWA3A"(XDCONTROL, VHCWA3A_CRIT, VHCWA3A_DATA);
+            
+            end
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4 || XDCONTROL.URC == 100)
+                if (VHCWA3A_DATA.CAR-IS-VALID == "N")
+                    VHCWA3IW-TRIGGERS.INVALID-CAR = "Y";
+                    VHCWA3IS-GET-B();
+                end
+            else
+                VHCWA3IW-MSG.FINAL-MSG = "PLEASE CHECK DATA BASE ";
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                return;
+            end
+            CNT = CNT + 1;
+        end
+        if (VHCWA3IW-TRIGGERS.INVALID-CAR == "Y")
+            VHCWA3IW-MSG.FINAL-MSG = "Car with B is invalid car number; Please re enter the correct car number";
+            VHCWA3IW-TRIGGERS.CAR1-SETFOCUS = "Y";
+        else
+            VHCWA3IW-MSG.FINAL-MSG = "   ";
+        end
+    end
+end 
+
+Function VHCWA3IS-VAL-DT () 
+    VHCWA3IW.WS-DATE = VHCWA3IW.DATE-CAR-WASH;
+    VHCWA3IW.WS-TIME = VHCWA3IW.TIME-CAR-WASH;
+    if (VHCWA3IW.WS-1 == "-")
+        VHCWA3E_CRIT.DATE-WORK = VHCWA3IW.WS-DATE;
+    else
+        XXDATEW.DATE-MM-DD-YYYY = VHCWA3IW.WS-DATE;
+        move MONTH-MM-DD-YYYY to MONTH-YYYY-MM-DD withV60Compat;
+        move DAY-MM-DD-YYYY to DAY-YYYY-MM-DD withV60Compat;
+        move YEAR-MM-DD-YYYY to YEAR-YYYY-MM-DD withV60Compat;
+        SEP1-YYYY-MM-DD = "-";
+        SEP2-YYYY-MM-DD = "-";
+        VHCWA3E_CRIT.DATE-WORK = XXDATEW.DATE-YYYY-MM-DD;
+        VHCWA3IW.WS-DATE = XXDATEW.DATE-YYYY-MM-DD;
+    end
+    VHCWA3E_CRIT.TIME-WORK = VHCWA3IW.WS-TIME;
+    try
+        call "VHCWA3E"(XDCONTROL, VHCWA3E_CRIT, VHCWA3E_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHCWA3IW-TRIGGERS.INVALID-DATE-TIME = "N";
+        VHCWA3IW-MSG.FINAL-MSG = " ";
+    else
+        VHCWA3IW-TRIGGERS.INVALID-DATE-TIME = "Y";
+        VHCWA3IW-TRIGGERS.DATE-SETFOCUS = "Y";
+        VHCWA3IW-MSG.FINAL-MSG = "Date or Time entered is not valid; please check and re-enter the correct date or time";
+    end
+end 
+
+Function VHCWA3IS-VAL-YRD () 
+    if (VHCWA3IW.CAR-WASH-LOC == "    ")
+        VHCWA3IW-TRIGGERS.INVALID-YRD = "Y";
+    else
+        if ((VHCWA3IW.CAR-WASH-LOC == "DY" || VHCWA3IW.CAR-WASH-LOC == "HY" || VHCWA3IW.CAR-WASH-LOC == "CY" || VHCWA3IW.CAR-WASH-LOC == "RY"))
+            VHCWA3IW-TRIGGERS.INVALID-YRD = "N";
+            VHCWA3IW-MSG.FINAL-MSG = " ";
+        else
+            VHCWA3IW-TRIGGERS.INVALID-YRD = "Y";
+            VHCWA3IW-TRIGGERS.YRD-SETFOCUS = "Y";
+            VHCWA3IW-MSG.FINAL-MSG = "Yard entered is not one of the valid yard; please re-enter";
+        end
+    end
+end 
+
+Function VHCWA3IS-VALID ()
+   
+    VHCWA3IS-VAL-YRD();
+    if (VHCWA3IW-TRIGGERS.INVALID-YRD == "N")
+
+  
+  
+        VHCWA3IS-NEW-DT(); 
+        if (VHCWA3IW-TRIGGERS.INVALID-DATE-TIME == "N")
+
+       
+            VHCWA3IS-VAL-CARS();
+            if (VHCWA3IW-TRIGGERS.INVALID-CAR == "N")
+
+      
+                VHCWA3IS-GET-DTE();
+            end
+        end
+    end
+end 
+
+Function VHCWAIS-VAL-TIME ()
+  
+   
+    VHCWA1IW.TIME-ERROR = "N";
+    if (VHSC01IW-TIME.TIME-IN != "        ")
+        if (VHSC01IW-TIME.POS6 != "." || VHSC01IW-TIME.POS6 != ":")
+            VHSC01IW-TIME.HOURS1 = VHSC01IW-TIME.POS8;
+            VHSC01IW-TIME.HOURS2 = VHSC01IW-TIME.POS7;
+            VHSC01IW-TIME.COLON = ":";
+            VHSC01IW-TIME.MINUTES1 = VHSC01IW-TIME.POS6;
+            VHSC01IW-TIME.MINUTES2 = VHSC01IW-TIME.POS5;
+            VHSC01IW-TIME.COLON2 = ":";
+            VHSC01IW-TIME.SEC1 = VHSC01IW-TIME.POS2;
+            VHSC01IW-TIME.SEC2 = VHSC01IW-TIME.POS1;
+        end
+        if (VHSC01IW-TIME.POS6 == "." || VHSC01IW-TIME.POS6 == ":")
+            VHSC01IW-TIME.HOURS1 = VHSC01IW-TIME.POS8;
+            VHSC01IW-TIME.HOURS2 = VHSC01IW-TIME.POS7;
+            VHSC01IW-TIME.COLON = ":";
+            VHSC01IW-TIME.MINUTES1 = VHSC01IW-TIME.POS5;
+            VHSC01IW-TIME.MINUTES2 = VHSC01IW-TIME.POS4;
+            VHSC01IW-TIME.COLON2 = ":";
+            VHSC01IW-TIME.SEC1 = VHSC01IW-TIME.POS2;
+            VHSC01IW-TIME.SEC2 = VHSC01IW-TIME.POS1;
+        end
+
+  
+        if (VHSC01IW-TIME.SEC1 == " ")
+            VHSC01IW-TIME.SEC1 = "0";
+        end
+        if (VHSC01IW-TIME.SEC2 == " ")
+            VHSC01IW-TIME.SEC2 = "0";
+        end
+
+  
+        if (VHSC01IW-TIME.HOURS1 == " ")
+            VHSC01IW-TIME.HOURS1 = "0";
+        end
+        VHCWA1_DATA.TIME-CAR-WASH = VHSC01IW-TIME.TIME-OUT;
+        VHSC01IW-TIME2.HOURS1 = VHSC01IW-TIME.HOURS1N;
+        VHSC01IW-TIME2.HOURS2 = VHSC01IW-TIME.HOURS2N;
+        VHSC01IW-TIME2.MINUTES1 = VHSC01IW-TIME.MINUTES1N;
+        VHSC01IW-TIME2.MINUTES2 = VHSC01IW-TIME.MINUTES2N;
+        if (VHSC01IW-TIME.HOURS1 is numeric && VHSC01IW-TIME.HOURS2 is numeric)
+            if (VHSC01IW-TIME2.HOURS-OUT < 00 ||
+             VHSC01IW-TIME2.HOURS-OUT > 23)
+  
+                VHCWA1IW.MSG = "THE TIME(HOURS) YOU ENTERED IS OUT OF RANGE";
+                VHCWA1IW.TIME-ERROR = "Y";
+            else
+                if (VHSC01IW-TIME.MINUTES1 is numeric &&
+                 VHSC01IW-TIME.MINUTES2 is numeric)
+                    if (VHSC01IW-TIME2.MINUTES-OUT < 00 ||
+                     VHSC01IW-TIME2.MINUTES-OUT > 59)
+  
+                        VHCWA1IW.MSG = "THE TIME(MINUTES) YOU ENTERED IS OUT OF RANGE";
+                        VHCWA1IW.TIME-ERROR = "Y";
+                    end
+                else
+  
+                    VHCWA1IW.MSG = "THE TIME YOU ENTERED IS NOT NUMERIC";
+                    VHCWA1IW.TIME-ERROR = "Y";
+                end
+            end
+        else
+  
+            VHCWA1IW.MSG = "THE TIME YOU ENTERED IS NOT NUMERIC";
+            VHCWA1IW.TIME-ERROR = "Y";
+        end
+    end
+end 
+
+Function VHCWR1IS-PRINT () 
+    VHCWR1IW.CAR-COUNT = 0;
+    VHCWR1IW.SYSTEM-DATE = VGVar.currentFormattedGregorianDate;
+    if (VHCWR1IW.YARD == " ")
+        INVALID-YARD = "Y";
+        return;
+    else
+        if (VHCWR1IW.YARD != "CY" &&
+         VHCWR1IW.YARD != "DY" &&
+         VHCWR1IW.YARD != "HY" &&
+         VHCWR1IW.YARD != "RY")
+            INVALID-YARD = "Y";
+            return;
+        end
+    end
+    if (VHCWR1IW.FROM-DATE == " ")
+        INVALID-FROM-DATE = "Y";
+        return;
+    else
+        if ((VHCWR1IW.FROM-DATE-FILLER1 != "-" &&
+         VHCWR1IW.FROM-DATE-FILLER1 != "/") ||
+         (VHCWR1IW.FROM-DATE-FILLER2 != "-" &&
+         VHCWR1IW.FROM-DATE-FILLER2 != "/"))
+            INVALID-FROM-DATE = "Y";
+            return;
+        else
+            AFCXVLD_CRIT.FORM-DATE = VHCWR1IW.FROM-DATE;
+            MRSCommonCode.AFCXVLD-VALIDATE();
+            if (AFCXVLDW.INCORRECT-DATE == "Y")
+                INVALID-FROM-DATE = "Y";
+                return;
+            else
+                if (AFCXVLDW.SQL-ERROR == "Y")
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                    return;
+                else
+                    if (AFCXVLDW.NO-ERROR == "Y")
+
+                    end
+                end
+            end
+        end
+    end
+    if (VHCWR1IW.FROM-DATE-YR > VHCWR1IW.SYSTEM-DATE-YR ||
+     (VHCWR1IW.FROM-DATE-YR == VHCWR1IW.SYSTEM-DATE-YR &&
+     VHCWR1IW.FROM-DATE-MON > VHCWR1IW.SYSTEM-DATE-MON) ||
+     (VHCWR1IW.FROM-DATE-YR == VHCWR1IW.SYSTEM-DATE-YR &&
+     VHCWR1IW.FROM-DATE-MON == VHCWR1IW.SYSTEM-DATE-MON &&
+     VHCWR1IW.FROM-DATE-DAY > VHCWR1IW.SYSTEM-DATE-DAY))
+        FROM-GR-SYS = "Y";
+        return;
+    end
+    if (VHCWR1IW.TO-DATE == " ")
+        INVALID-TO-DATE = "Y";
+        return;
+    else
+        if ((VHCWR1IW.TO-DATE-FILLER1 != "-" &&
+         VHCWR1IW.TO-DATE-FILLER1 != "/") ||
+         (VHCWR1IW.TO-DATE-FILLER2 != "-" &&
+         VHCWR1IW.TO-DATE-FILLER2 != "/"))
+            INVALID-TO-DATE = "Y";
+            return;
+        else
+            AFCXVLD_CRIT.FORM-DATE = VHCWR1IW.TO-DATE;
+            MRSCommonCode.AFCXVLD-VALIDATE();
+            if (AFCXVLDW.INCORRECT-DATE == "Y")
+                VHCWR1IW-TRIGGER.INVALID-TO-DATE = "Y";
+                return;
+            else
+                if (AFCXVLDW.SQL-ERROR == "Y")
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                    return;
+                else
+                    if (AFCXVLDW.NO-ERROR == "Y")
+
+                    end
+                end
+            end
+        end
+    end
+    if (VHCWR1IW.TO-DATE-YR > VHCWR1IW.SYSTEM-DATE-YR ||
+     (VHCWR1IW.TO-DATE-YR == VHCWR1IW.SYSTEM-DATE-YR &&
+     VHCWR1IW.TO-DATE-MON > VHCWR1IW.SYSTEM-DATE-MON) ||
+     (VHCWR1IW.TO-DATE-YR == VHCWR1IW.SYSTEM-DATE-YR &&
+     VHCWR1IW.TO-DATE-MON == VHCWR1IW.SYSTEM-DATE-MON &&
+     VHCWR1IW.TO-DATE-DAY > VHCWR1IW.SYSTEM-DATE-DAY))
+        TO-GR-SYS = "Y";
+        return;
+    end
+    if (VHCWR1IW.TO-DATE-YR < VHCWR1IW.FROM-DATE-YR ||
+     (VHCWR1IW.TO-DATE-YR == VHCWR1IW.FROM-DATE-YR &&
+     VHCWR1IW.TO-DATE-MON < VHCWR1IW.FROM-DATE-MON) ||
+     (VHCWR1IW.TO-DATE-YR == VHCWR1IW.FROM-DATE-YR &&
+     VHCWR1IW.TO-DATE-MON == VHCWR1IW.FROM-DATE-MON &&
+     VHCWR1IW.TO-DATE-DAY < VHCWR1IW.FROM-DATE-DAY))
+        FROM-LESS-TO = "Y";
+        return;
+    end
+    if (AFCXVLDW.NO-ERROR == "Y")
+        VHCWR1IW-TRIGGER.SUBMIT = "Y";
+        VHCWR1IW.REPORT-ID = "YARD";
+    end
+end 
+
+Function VHCWR1IS-RET-DATA () 
+    VHCWR1IW.CAR-COUNT = 0;
+    VHCWR1IW.SYSTEM-DATE = VGVar.currentFormattedGregorianDate;
+    if (VHCWR1IW.YARD == " ")
+        INVALID-YARD = "Y";
+        return;
+    else
+        if (VHCWR1IW.YARD != "CY" &&
+         VHCWR1IW.YARD != "DY" &&
+         VHCWR1IW.YARD != "HY" &&
+         VHCWR1IW.YARD != "RY")
+            INVALID-YARD = "Y";
+            return;
+        end
+    end
+    if (VHCWR1IW.FROM-DATE == " ")
+        INVALID-FROM-DATE = "Y";
+        return;
+    else
+        if ((VHCWR1IW.FROM-DATE-FILLER1 != "-" &&
+         VHCWR1IW.FROM-DATE-FILLER1 != "/") ||
+         (VHCWR1IW.FROM-DATE-FILLER2 != "-" &&
+         VHCWR1IW.FROM-DATE-FILLER2 != "/"))
+            INVALID-FROM-DATE = "Y";
+            return;
+        else
+            AFCXVLD_CRIT.FORM-DATE = VHCWR1IW.FROM-DATE;
+            MRSCommonCode.AFCXVLD-VALIDATE();
+            if (AFCXVLDW.INCORRECT-DATE == "Y")
+                INVALID-FROM-DATE = "Y";
+                return;
+            else
+                if (AFCXVLDW.SQL-ERROR == "Y")
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                    return;
+                else
+                    if (AFCXVLDW.NO-ERROR == "Y")
+
+                    end
+                end
+            end
+        end
+    end
+    if (VHCWR1IW.FROM-DATE-YR > VHCWR1IW.SYSTEM-DATE-YR ||
+     (VHCWR1IW.FROM-DATE-YR == VHCWR1IW.SYSTEM-DATE-YR &&
+     VHCWR1IW.FROM-DATE-MON > VHCWR1IW.SYSTEM-DATE-MON) ||
+     (VHCWR1IW.FROM-DATE-YR == VHCWR1IW.SYSTEM-DATE-YR &&
+     VHCWR1IW.FROM-DATE-MON == VHCWR1IW.SYSTEM-DATE-MON &&
+     VHCWR1IW.FROM-DATE-DAY > VHCWR1IW.SYSTEM-DATE-DAY))
+        FROM-GR-SYS = "Y";
+        return;
+    end
+    if (VHCWR1IW.TO-DATE == " ")
+        INVALID-TO-DATE = "Y";
+        return;
+    else
+        if ((VHCWR1IW.TO-DATE-FILLER1 != "-" &&
+         VHCWR1IW.TO-DATE-FILLER1 != "/") ||
+         (VHCWR1IW.TO-DATE-FILLER2 != "-" &&
+         VHCWR1IW.TO-DATE-FILLER2 != "/"))
+            INVALID-TO-DATE = "Y";
+            return;
+        else
+            AFCXVLD_CRIT.FORM-DATE = VHCWR1IW.TO-DATE;
+            MRSCommonCode.AFCXVLD-VALIDATE();
+            if (AFCXVLDW.INCORRECT-DATE == "Y")
+                VHCWR1IW-TRIGGER.INVALID-TO-DATE = "Y";
+                return;
+            else
+                if (AFCXVLDW.SQL-ERROR == "Y")
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                    return;
+                else
+                    if (AFCXVLDW.NO-ERROR == "Y")
+
+                    end
+                end
+            end
+        end
+    end
+    if (VHCWR1IW.TO-DATE-YR > VHCWR1IW.SYSTEM-DATE-YR ||
+     (VHCWR1IW.TO-DATE-YR == VHCWR1IW.SYSTEM-DATE-YR &&
+     VHCWR1IW.TO-DATE-MON > VHCWR1IW.SYSTEM-DATE-MON) ||
+     (VHCWR1IW.TO-DATE-YR == VHCWR1IW.SYSTEM-DATE-YR &&
+     VHCWR1IW.TO-DATE-MON == VHCWR1IW.SYSTEM-DATE-MON &&
+     VHCWR1IW.TO-DATE-DAY > VHCWR1IW.SYSTEM-DATE-DAY))
+        TO-GR-SYS = "Y";
+        return;
+    end
+    if (VHCWR1IW.TO-DATE-YR < VHCWR1IW.FROM-DATE-YR ||
+     (VHCWR1IW.TO-DATE-YR == VHCWR1IW.FROM-DATE-YR &&
+     VHCWR1IW.TO-DATE-MON < VHCWR1IW.FROM-DATE-MON) ||
+     (VHCWR1IW.TO-DATE-YR == VHCWR1IW.FROM-DATE-YR &&
+     VHCWR1IW.TO-DATE-MON == VHCWR1IW.FROM-DATE-MON &&
+     VHCWR1IW.TO-DATE-DAY < VHCWR1IW.FROM-DATE-DAY))
+        FROM-LESS-TO = "Y";
+        return;
+    end
+    VHCWR1A_CRIT.YARD = VHCWR1IW.YARD;
+    VHCWR1A_CRIT.FROM-DATE = VHCWR1IW.FROM-DATE;
+    VHCWR1A_CRIT.TO-DATE = VHCWR1IW.TO-DATE;
+    try
+        call "MRSVehicleQueries.VHCWR1A"(XDCONTROL, VHCWR1A_CRIT, VHCWR1A_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHCWR1IW.CAR-COUNT = XDCONTROL.UROWCNT;
+        if (VHCWR1IW.CAR-COUNT == 500)
+            DISPLAY-FOOTER = "Y";
+        else
+            HIDE-FOOTER = "Y";
+        end
+        LOAD-CAR = "Y";
+    else
+        if (XDCONTROL.URC == 100)
+            set VHCWR1A_DATA empty;
+            LOAD-CAR = "Y";
+            HIDE-FOOTER = "Y";
+            NO-CARS-FOUND = "Y";
+        else
+            set VHCWR1A_DATA empty;
+            LOAD-CAR = "Y";
+            HIDE-FOOTER = "Y";
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHCWR1IW-CLEAR () 
+    VHCWR1IW.CAR-COUNT = 0;
+    VHCWR1IW.YARD = " ";
+    VHCWR1IW.FROM-DATE = " ";
+    VHCWR1IW.TO-DATE = " ";
+    set VHCWR1A_DATA empty;
+    LOAD-CAR = "Y";
+end 
+
+Function VHCWR2IS-PRINT () 
+    VHCWR2IW.CAR-COUNT = 0;
+    VHCWR2IW.SYSTEM-DATE = VGVar.currentFormattedGregorianDate;
+    if (VHCWR2IW.HOME-YRD == " ")
+        INVALID-YARD = "Y";
+        return;
+    else
+        if (VHCWR2IW.HOME-YRD != "CY" &&
+         VHCWR2IW.HOME-YRD != "DY" &&
+         VHCWR2IW.HOME-YRD != "HY" &&
+         VHCWR2IW.HOME-YRD != "RY")
+            INVALID-YARD = "Y";
+            return;
+        else
+            VHCWR2IW.REPORT-ID = "OVERDUE";
+            VHCWR2IW-TRIGGER.SUBMIT = "Y";
+        end
+    end
+end 
+
+Function VHCWR2IS-RET-DATA () 
+    VHCWR2IW.CAR-COUNT = 0;
+    VHCWR2IW.SYSTEM-DATE = VGVar.currentFormattedGregorianDate;
+    if (VHCWR2IW.HOME-YRD == " ")
+        INVALID-YARD = "Y";
+        return;
+    else
+        if (VHCWR2IW.HOME-YRD != "CY" &&
+         VHCWR2IW.HOME-YRD != "DY" &&
+         VHCWR2IW.HOME-YRD != "HY" &&
+         VHCWR2IW.HOME-YRD != "RY")
+            INVALID-YARD = "Y";
+            return;
+        end
+    end
+    VHCWR2A_CRIT.HOME-YRD = VHCWR2IW.HOME-YRD;
+    try
+        call "MRSVehicleQueries.VHCWR2A"(XDCONTROL, VHCWR2A_CRIT, VHCWR2A_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHCWR2IW.CAR-COUNT = XDCONTROL.UROWCNT;
+        if (VHCWR2IW.CAR-COUNT == 500)
+            DISPLAY-FOOTER = "Y";
+        else
+            HIDE-FOOTER = "Y";
+        end
+        LOAD-CAR = "Y";
+    else
+        if (XDCONTROL.URC == 100)
+            set VHCWR2A_DATA empty;
+            LOAD-CAR = "Y";
+            HIDE-FOOTER = "Y";
+            NO-CARS-FOUND = "Y";
+        else
+            set VHCWR2A_DATA empty;
+            LOAD-CAR = "Y";
+            HIDE-FOOTER = "Y";
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHCWR2IW-CLEAR () 
+    VHCWR2IW.CAR-COUNT = 0;
+    VHCWR2IW.HOME-YRD = " ";
+    set VHCWR2A_DATA empty;
+    LOAD-CAR = "Y";
+end

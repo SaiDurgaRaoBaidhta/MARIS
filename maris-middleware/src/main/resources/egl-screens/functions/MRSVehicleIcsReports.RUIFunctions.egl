@@ -1,0 +1,546 @@
+
+
+package MRSVehicleIcsReports;
+ 
+
+Function VHIC30IS-BEGIN ()
+  
+
+
+  
+  
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "WS100I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "WS70A01";
+
+    
+    try
+        call "WS70A01"(XDCONTROL, WS70A01_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHIC30IW.PRINTER-COUNT = XDCONTROL.UROWCNT;
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+  
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHIC30I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHIC30";
+
+    
+    try
+        call "VHIC30A"(XDCONTROL, VHIC30A_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+  
+  
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "WS100I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "WS70A01";
+
+    
+    try
+        call "MRSTableMaintenance.VHRT04A"(XDCONTROL, VHRT04A_CRIT, VHRT04A_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+  
+            VHIC30IW.YARD-COUNT = XDCONTROL.UROWCNT;
+  
+            ICT = 1;
+            while (ICT <= VHIC30IW.YARD-COUNT)
+                VHIC30IW.YRD[ICT] = VHRT04A_DATA.YRD[ICT];
+                VHIC30IW.DASH[ICT] = " - ";
+                VHIC30IW.YRD-DESC[ICT] = VHRT04A_DATA.YRD-DESC[ICT];
+                ICT = ICT + 1;
+            end
+            VHIC30IW.YRD[ICT] = "ALL";
+            VHIC30IW.DASH[ICT] = " - ";
+            VHIC30IW.YRD-DESC[ICT] = "ALL YARDS";
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+
+  
+  
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHIC30I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHIC30B";
+
+    
+    try
+        call "VHIC30B"(XDCONTROL, VHIC30B_CRIT, VHIC30B_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHIC30IW.LOC-COUNT = XDCONTROL.UROWCNT;
+  
+            JCT = 1;
+            while (JCT <= VHIC30IW.LOC-COUNT)
+                VHIC30IW.LOC[JCT] = VHIC30B_DATA.LOC-ICS[JCT];
+                VHIC30IW.LOC-DASH[JCT] = " - ";
+                VHIC30IW.LOC-DESC[JCT] = VHIC30B_DATA.LOC-ICS-DESC[JCT];
+                JCT = JCT + 1;
+            end
+            VHIC30IW.LOC[JCT] = "ALL";
+            VHIC30IW.LOC-DASH[JCT] = " - ";
+            VHIC30IW.LOC-DESC[JCT] = "ALL LOCATIONS";
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+
+  
+
+
+  
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHIC30I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHIC30C";
+
+    
+    try
+        call "VHIC30C"(XDCONTROL, VHIC30C_CRIT, VHIC30C_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHIC30IW.MSG-COUNT = XDCONTROL.UROWCNT;
+            VHIC30IW-TRIGGERS.LOAD-MSG-CODE = "Y";
+            KCT = 1;
+            while (KCT <= VHIC30IW.MSG-COUNT)
+                VHIC30IW.MSG-TRAN-CD[KCT] = VHIC30C_DATA.MSG-TRAN-CD[KCT];
+                VHIC30IW.MSG-DASH[KCT] = " - ";
+                VHIC30IW.MSG-TRAN-CD-DESC[KCT] = VHIC30C_DATA.MSG-TRAN-CD-DESC[KCT];
+                KCT = KCT + 1;
+            end
+            VHIC30IW.MSG-TRAN-CD[KCT] = "ALL";
+            VHIC30IW.MSG-DASH[KCT] = " - ";
+            VHIC30IW.MSG-TRAN-CD-DESC[KCT] = "ALL MESSAGES";
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+  
+    if (VHIC30IW.REPORT-INDEX > 0)
+        if (VHIC30IW.REPORT-INDEX == 1 || VHIC30IW.REPORT-INDEX == 2)
+   
+   
+   
+
+        end
+ 
+  
+    end
+end 
+
+Function VHIC30IS-DISPLAY ()
+   
+    VHIC30IW.WHICH-BUTTON = "D";
+end 
+
+Function VHIC30IS-HARD-COPY () 
+    if (PRINT-IDX > 0)
+        VHIC30IW-TRIGGERS.ENABLE-HARD = "Y";
+        VHIC30I-PASSVALUE.VTAM-NAME = WS70A01_DATA.VTAM-NAME[PRINT-IDX];
+    else
+        VHIC30IW-TRIGGERS.DISABLE-HARD = "Y";
+    end
+end 
+
+Function VHIC30IS-LOC-TYPE () 
+    if (VHIC30IW.LOC-INDEX == 1)
+        VHIC30IW-TRIGGERS.DISABLE-LOC = "Y";
+        VHIC30IW-TRIGGERS.ENABLE-YARD = "Y";
+    end
+    if (VHIC30IW.LOC-INDEX == 2)
+        VHIC30IW-TRIGGERS.ENABLE-LOC = "Y";
+        VHIC30IW-TRIGGERS.DISABLE-YARD = "Y";
+    end
+end 
+
+Function VHIC30IS-PRINT () 
+    VHIC30IW.WHICH-BUTTON = "P";
+end 
+
+Function VHIC30IS-RPT-TYPE () 
+    if (VHIC30IW.REPORT-INDEX == 1)
+        VHIC30I-PASSVALUE.FUNCTION-CD = "D";
+        VHIC30I-PASSVALUE.REPORT-TYPE = "D";
+        VHIC30IW-TRIGGERS.ENABLE-RADIO = "Y";
+        VHIC30IW-TRIGGERS.ENABLE-MSG-TRAN = "Y";
+  
+        VHIC30IW-TRIGGERS.ENABLE-YARD = "Y";
+        VHIC30IW-TRIGGERS.ENABLE-RADIO = "Y";
+    end
+    if (VHIC30IW.REPORT-INDEX == 2)
+        VHIC30I-PASSVALUE.FUNCTION-CD = "C";
+        VHIC30I-PASSVALUE.REPORT-TYPE = "C";
+        VHIC30IW-TRIGGERS.DISABLE-MSG-TRAN = "Y";
+   
+   
+        VHIC30IW-TRIGGERS.DISABLE-RADIO = "Y";
+    end
+end 
+
+Function VHIC30IS-SELECT ()
+
+
+  
+   
+    VHIC30IW.DATE-OK = "Y";
+    VHIC30IW.FROM-DATE = VHIC30IW.REV-DATE; 
+    XXDATEW.VAGen_FUNCTION = "YMD";
+    XXDATEW.DATE-MM-DD-YYYY = VHIC30IW.REV-DATE;
+    MRSCommonCode.XXDATES-CONVERT();
+    VHIC30I-PASSVALUE.REV-DATE-DB2 = XXDATEW.DATE-YYYY-MM-DD;
+    VHIC30IW.TODAY-YYMMDD = VGVar.currentGregorianDate;
+
+  
+    if (VHIC30I-PASSVALUE.REV-DATE-DB2 > VHIC30IW.TODAY-YYMMDD)
+        VHIC30IW.DATE-OK = "N";
+        VHIC30IW-TRIGGERS.BAD-DATE = "Y";
+    end
+
+  
+  
+    if (VHIC30IW.FROM-MONTH < 1 || VHIC30IW.FROM-MONTH > 12 || VHIC30IW.FROM-DAY < 1 || VHIC30IW.FROM-DAY > 31 || VHIC30IW.FROM-YEAR < 2001)
+        VHIC30IW.DATE-OK = "N";
+    end
+    if (VHIC30IW.DATE-OK == "Y")
+
+
+  
+  
+        if (VHIC30IW.MSG-TRAN-CD-SELECT == "AL") 
+            VHIC30I-PASSVALUE.BEG-MSG-TRAN-CD = "  ";
+            VHIC30I-PASSVALUE.END-MSG-TRAN-CD = "99";
+        else
+            VHIC30I-PASSVALUE.BEG-MSG-TRAN-CD = VHIC30IW.MSG-TRAN-CD-SELECT;
+            VHIC30I-PASSVALUE.END-MSG-TRAN-CD = VHIC30IW.MSG-TRAN-CD-SELECT;
+        end
+        if (VHIC30IW.LOC-SELECT == "ALL")
+            VHIC30I-PASSVALUE.BEG-CON-CURR-LOC = "    ";
+            VHIC30I-PASSVALUE.END-CON-CURR-LOC = "999";
+        else
+            VHIC30I-PASSVALUE.BEG-CON-CURR-LOC = VHIC30IW.LOC-SELECT;
+            VHIC30I-PASSVALUE.END-CON-CURR-LOC = VHIC30IW.LOC-SELECT;
+        end
+        if (VHIC30IW.YRD-SELECT == "ALL")
+            VHIC30I-PASSVALUE.BEG-YRD-TRKG = "    ";
+            VHIC30I-PASSVALUE.END-YRD-TRKG = "999";
+        else
+            VHIC30I-PASSVALUE.BEG-YRD-TRKG = VHIC30IW.YRD-SELECT;
+            VHIC30I-PASSVALUE.END-YRD-TRKG = VHIC30IW.YRD-SELECT;
+        end
+
+  
+        if (VHIC30IW.LOC-INDEX == 1)
+            VHIC30I-PASSVALUE.REPORT-ORDER = "Y";
+             
+        end
+        if (VHIC30IW.LOC-INDEX == 2)
+            VHIC30I-PASSVALUE.REPORT-ORDER = "L";
+             
+        end
+    end 
+    if (VHIC30IW.DATE-OK == "Y" && VHIC30IW.WHICH-BUTTON == "D")
+        VHIC30IW-TRIGGERS.RUN-VHIC31I = "Y";
+    end
+    if (VHIC30IW.DATE-OK == "Y" && VHIC30IW.WHICH-BUTTON == "P")
+        VHIC30IW-TRIGGERS.RUN-SUBMIT = "Y";
+    end
+end 
+
+Function VHIC30IS-SUBMIT ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    VHIC30E_CRIT.REPORT-TYPE = VHIC30I-PASSVALUE.REPORT-TYPE;
+    VHIC30E_CRIT.FUNCTION-CODE = VHIC30I-PASSVALUE.REPORT-TYPE;
+    VHIC30E_CRIT.DATE-FROM = VHIC30I-PASSVALUE.REV-DATE;
+    VHIC30E_CRIT.DATE-TO = VHIC30I-PASSVALUE.REV-DATE;
+    if (VHIC30I-PASSVALUE.BEG-YRD-TRKG == VHIC30I-PASSVALUE.END-YRD-TRKG) 
+        VHIC30E_CRIT.YRD-TRKG-YRD = VHIC30I-PASSVALUE.BEG-YRD-TRKG;
+    else
+        VHIC30E_CRIT.YRD-TRKG-YRD = "   ";
+         
+    end
+    if (VHIC30I-PASSVALUE.BEG-CON-CURR-LOC == VHIC30I-PASSVALUE.END-CON-CURR-LOC) 
+        VHIC30E_CRIT.CURR-LOC = VHIC30I-PASSVALUE.BEG-CON-CURR-LOC;
+    else
+        VHIC30E_CRIT.CURR-LOC = "   ";
+         
+    end
+    if (VHIC30I-PASSVALUE.BEG-MSG-TRAN-CD == VHIC30I-PASSVALUE.END-MSG-TRAN-CD) 
+        VHIC30E_CRIT.TRAN-CD = VHIC30I-PASSVALUE.BEG-MSG-TRAN-CD;
+    else
+        VHIC30E_CRIT.TRAN-CD = "   ";
+         
+    end
+    VHIC30E_CRIT.VTAM-NAME = VHIC30I-PASSVALUE.VTAM-NAME;
+
+
+    
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHIC30I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHIC30E";
+    try
+        call "VHIC30E"(XDCONTROL, VHIC30E_CRIT, VHIC30E_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+
+      
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        
+       
+            VHIC30IW-TRIGGERS.PICKUP-REPORT = "Y";
+        else
+
+        
+
+
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+    VHIC30IW-TRIGGERS.PICKUP-REPORT = "Y";
+end 
+
+Function VHIC30IS-TEST ()
+   
+    VHIC30IW-TRIGGERS.RUN-VHIC31I = "Y";
+end 
+
+Function VHIC31IS-GET-DATA ()
+  
+  
+  
+  
+  
+  
+  
+   
+    set VHIC31A_CRIT empty;
+    set VHIC31A_DATA empty;
+    set VHIC31IW_DISPLAY empty;
+
+  
+  
+    VHIC31A_CRIT.REV-DATE = VHIC31W_PASSVALUE.REV-DATE-DB2;
+    VHIC31A_CRIT.REPORT-TYPE = VHIC31W_PASSVALUE.REPORT-TYPE;
+    VHIC31A_CRIT.REPORT-ORDER = VHIC31W_PASSVALUE.REPORT-ORDER;
+    VHIC31A_CRIT.BEG-MSG-TRAN-CD = VHIC31W_PASSVALUE.BEG-MSG-TRAN-CD;
+    VHIC31A_CRIT.END-MSG-TRAN-CD = VHIC31W_PASSVALUE.END-MSG-TRAN-CD;
+    VHIC31A_CRIT.BEG-CON-CURR-LOC = VHIC31W_PASSVALUE.BEG-CON-CURR-LOC;
+    VHIC31A_CRIT.END-CON-CURR-LOC = VHIC31W_PASSVALUE.END-CON-CURR-LOC;
+    VHIC31A_CRIT.BEG-YRD-TRKG = VHIC31W_PASSVALUE.BEG-YRD-TRKG;
+    VHIC31A_CRIT.END-YRD-TRKG = VHIC31W_PASSVALUE.END-YRD-TRKG;
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHIC31A";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHIC31I";
+    set VHIC31A_DATA empty;
+
+    
+    try
+        call "VHIC31A"(XDCONTROL, VHIC31A_CRIT, VHIC31A_DATA, VHIC31AZ_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+  
+            VHIC31IW.NUMCOUNT = XDCONTROL.UROWCNT;
+  
+            VHIC31IW-TRIGGERS.PUSH-DATA = "Y";
+        else
+
+  
+        
+        
+  
+            if (XDCONTROL.URC == 100)
+
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end 
+    end
+
+  
+    ICOUNT = 1;
+    while (ICOUNT <= VHIC31IW.NUMCOUNT)
+        VHIC31A_DATA.DASH-NO-N[ICOUNT] = VHIC31A_DATA.DASH-NO[ICOUNT];
+        VHIC31A_DATA.DASH-NO-TO-N[ICOUNT] = VHIC31A_DATA.DASH-NO-TO[ICOUNT];
+
+  
+        if (VHIC31A_DATA.DASH-NO-C[ICOUNT] == "00")
+            VHIC31A_DATA.DASH-NO-C[ICOUNT] = "  ";
+        end
+        if (VHIC31A_DATA.DASH-NO-TO-C[ICOUNT] == "00")
+            VHIC31A_DATA.DASH-NO-TO-C[ICOUNT] = "  ";
+        end
+        ICOUNT = ICOUNT + 1;
+    end
+
+
+  
+    if (VHIC31IW.NUMCOUNT >= 150)
+        VHIC31IW-TRIGGERS.SHOW-MSG = "Y";
+    end
+end 
+
+Function VHYT31IS-INITIAL ()
+   
+    VHIC31IW.RUN-TIME = VGVar.currentFormattedTime;
+    VHIC31IW.RUN-DATE = VGVar.currentFormattedGregorianDate;
+
+  
+    if (VHIC31W_PASSVALUE.REPORT-TYPE == "C")
+        VHIC31IW.REPORT-TYPE = "CONSIST ORDER";
+    end
+    if (VHIC31W_PASSVALUE.REPORT-TYPE == "D")
+        VHIC31IW.REPORT-TYPE = "DATE / TIME ORDER";
+    end
+    VHIC31IW.REV-DATE-REPT = VHIC31W_PASSVALUE.REV-DATE;
+    if (VHIC31W_PASSVALUE.BEG-MSG-TRAN-CD == VHIC31W_PASSVALUE.END-MSG-TRAN-CD)
+        VHIC31IW.TRAN-CODE-REPT = VHIC31W_PASSVALUE.END-MSG-TRAN-CD;
+         
+    else
+        VHIC31IW.TRAN-CODE-REPT = "ALL";
+    end
+    if (VHIC31W_PASSVALUE.BEG-CON-CURR-LOC == VHIC31W_PASSVALUE.END-CON-CURR-LOC)
+        VHIC31IW.LOC-REPT = VHIC31W_PASSVALUE.END-CON-CURR-LOC;
+         
+    else
+        VHIC31IW.LOC-REPT = "ALL";
+    end
+    if (VHIC31W_PASSVALUE.BEG-YRD-TRKG == VHIC31W_PASSVALUE.END-YRD-TRKG)
+        VHIC31IW.YRD-REPT = VHIC31W_PASSVALUE.END-YRD-TRKG;
+         
+    else
+        VHIC31IW.YRD-REPT = "ALL";
+    end
+    VHIC31IW-TRIGGERS.HIDE-MSG = "Y";
+end

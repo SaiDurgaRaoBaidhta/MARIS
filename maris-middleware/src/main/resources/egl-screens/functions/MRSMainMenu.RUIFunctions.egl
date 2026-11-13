@@ -1,0 +1,469 @@
+
+
+package MRSMainMenu;
+ 
+
+Function MRS00IS-CHK_ACCESS () 
+    set XXREQUEST empty;
+
+  
+
+  
+    if ("hsAfcmenu" in AFCX6A_DATA.PART-NAME)
+        if (AFCX6A_DATA.ACCESS-ALLOWED[sysVar.arrayIndex] == "N")
+  
+            MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+        else
+  
+            MRS00IW-TRIGGERS.EN-AFCMENU = "Y";
+        end
+    end
+
+  
+    if ("hsWaysidemenu" in AFCX6A_DATA.PART-NAME)
+        if (AFCX6A_DATA.ACCESS-ALLOWED[sysVar.arrayIndex] == "N")
+  
+            MRS00IW-TRIGGERS.DIS-WAYSIDE = "Y";
+        else
+  
+            MRS00IW-TRIGGERS.EN-WAYSIDE = "Y";
+        end
+    end
+
+  
+    if ("hsDbmaint" in AFCX6A_DATA.PART-NAME)
+        if (AFCX6A_DATA.ACCESS-ALLOWED[sysVar.arrayIndex] == "N")
+  
+            MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+        else
+  
+            MRS00IW-TRIGGERS.EN-DBMAINT = "Y";
+        end
+    end
+    if ("hsVhshop" in AFCX6A_DATA.PART-NAME)
+        if (AFCX6A_DATA.ACCESS-ALLOWED[sysVar.arrayIndex] == "N")
+            MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+        else
+            MRS00IW-TRIGGERS.EN-VHSHOP = "Y";
+        end
+    end
+
+  
+    if ("hsTdesk" in AFCX6A_DATA.PART-NAME)
+        if (AFCX6A_DATA.ACCESS-ALLOWED[sysVar.arrayIndex] == "N")
+            MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+        else
+            MRS00IW-TRIGGERS.EN-VEH-TROUBLE = "Y";
+        end
+    end
+  
+    if ("hsVsuper" in AFCX6A_DATA.PART-NAME)
+        if (AFCX6A_DATA.ACCESS-ALLOWED[sysVar.arrayIndex] == "N")
+            MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+        else
+            MRS00IW-TRIGGERS.EN-VEH-TROUBLE = "Y";
+        end
+    end
+
+
+  
+    if ("hsTower" in AFCX6A_DATA.PART-NAME)
+        if (AFCX6A_DATA.ACCESS-ALLOWED[sysVar.arrayIndex] == "N")
+            MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+        else
+            MRS00IW-TRIGGERS.EN-TOWER = "Y";
+        end
+    end
+  
+    if ("hsCentral" in AFCX6A_DATA.PART-NAME)
+        if (AFCX6A_DATA.ACCESS-ALLOWED[sysVar.arrayIndex] == "N")
+            MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+        else
+            MRS00IW-TRIGGERS.EN-TOWER = "Y";
+        end
+    end
+  
+    if ("hsTmgt" in AFCX6A_DATA.PART-NAME)
+        if (AFCX6A_DATA.ACCESS-ALLOWED[sysVar.arrayIndex] == "N")
+            MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+        else
+            MRS00IW-TRIGGERS.EN-TOWER = "Y";
+        end
+    end
+  
+    if ("hsVme" in AFCX6A_DATA.PART-NAME)
+        if (AFCX6A_DATA.ACCESS-ALLOWED[sysVar.arrayIndex] == "N")
+            MRS00IW-TRIGGERS.DIS-VME = "Y";
+        else
+            MRS00IW-TRIGGERS.EN-VME = "Y";
+        end
+    end
+    if ("pbtChangeIncident" in AFCX6A_DATA.PART-NAME)
+        if (AFCX6A_DATA.ACCESS-ALLOWED[sysVar.arrayIndex] == "N")
+            MRS00I-PASSVALUE.DIS-CI = "Y";
+        else
+            MRS00I-PASSVALUE.EN-CI = "Y";
+        end
+    end
+    if ("pbtPmSchedule" in AFCX6A_DATA.PART-NAME)
+        if (AFCX6A_DATA.ACCESS-ALLOWED[sysVar.arrayIndex] == "N")
+            MRS00I-PASSVALUE.DIS-PM = "Y";
+        else
+            MRS00I-PASSVALUE.EN-PM = "Y";
+        end
+    end
+    if ("pbtChangeYard" in AFCX6A_DATA.PART-NAME)
+        if (AFCX6A_DATA.ACCESS-ALLOWED[sysVar.arrayIndex] == "N")
+            MRS00I-PASSVALUE.DIS-CY = "Y";
+        else
+            MRS00I-PASSVALUE.EN-CY = "Y";
+        end
+    end
+end 
+
+Function MRS00IS-MAIN_GUI () 
+    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "AFC01I")
+        MRS00IW-TRIGGERS.CLICK-AFC = "Y";
+        MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+        MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+        MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+        MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+        MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+    end
+    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "WS01I")
+        MRS00IW-TRIGGERS.CLICK-PILOT = "Y";
+        MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+        MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+        MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+        MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+        MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+    end
+    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "AFC03I")
+        MRS00IW-TRIGGERS.CLICK-MNGTMENU = "Y";
+        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+    end
+    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "AFC02I")
+        MRS00IW-TRIGGERS.CLICK-AFCMGNT = "Y";
+        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+    end
+    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "AFC06I")
+        MRS00IW-TRIGGERS.CLICK-GENERAL = "Y";
+        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+    end
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "MRS10I")
+        MRS00IW-TRIGGERS.CLICK-TBLMAINT = "Y";
+        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+    end
+    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHMVSI")
+        MRS00IW-TRIGGERS.CLICK-VH-SHOP = "Y";
+        MRS00IW-TRIGGERS.DIS-WAYSIDE = "Y";
+        MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+        MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+        MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+        MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+    end
+    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHMTOI")
+        MRS00IW-TRIGGERS.CLICK-TOWER = "Y";
+        MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+        MRS00IW-TRIGGERS.DIS-WAYSIDE = "Y";
+        MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+        MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+        MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+        MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+    end
+    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHMSHI")
+        MRS00IW-TRIGGERS.CLICK-SHOP-SCH = "Y";
+        MRS00IW-TRIGGERS.DIS-WAYSIDE = "Y";
+        MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+        MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+        MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+        MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+    end
+    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VH001I")
+        MRS00IW-TRIGGERS.CLICK-VEH-TROUBLE = "Y";
+        MRS00IW-TRIGGERS.DIS-WAYSIDE = "Y";
+        MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+        MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+        MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+        MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+    end
+    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "WS04I")
+        MRS00IW-TRIGGERS.CLICK-PWR-MECH = "Y";
+        MRS00IW-TRIGGERS.DIS-WAYSIDE = "Y";
+        MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+        MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+        MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+        MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+        MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+        MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+    end
+    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "WS05I")
+        MRS00IW-TRIGGERS.CLICK-PWR-WAY = "Y";
+        MRS00IW-TRIGGERS.DIS-WAYSIDE = "Y";
+        MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+        MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+        MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+        MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+        MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+        MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+    end
+    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "WS06I")
+        MRS00IW-TRIGGERS.CLICK-COM-FACIL = "Y";
+        MRS00IW-TRIGGERS.DIS-WAYSIDE = "Y";
+        MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+        MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+        MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+        MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+        MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+        MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+    end
+    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHMENI")
+        MRS00IW-TRIGGERS.CLICK-VME = "Y";
+        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+    end
+    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "MRS01I")
+        MRS00IW-TRIGGERS.EN-WAYSIDE = "Y";
+        MRS00IW-TRIGGERS.EN-AFCMENU = "Y";
+        MRS00IW-TRIGGERS.EN-DBMAINT = "Y";
+        MRS00IW-TRIGGERS.EN-VEH-TROUBLE = "Y";
+        MRS00IW-TRIGGERS.EN-VHSHOP = "Y";
+        MRS00IW-TRIGGERS.EN-TOWER = "Y";
+    end
+    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHMSRI")
+        MRS00IW-TRIGGERS.CLICK-SR = "Y";
+        MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+        MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+        MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+        MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+        MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+    end
+    if ((MRS02IW-PASSVALUE.USER-TYPE == "SHOP" ||
+     MRS02IW-PASSVALUE.USER-TYPE == "YARD" ||
+     MRS02IW-PASSVALUE.USER-TYPE == "ALL") &&
+     (MRS02IW-PASSVALUE.YRD-TRKG-YRD == "HY" ||
+     MRS02IW-PASSVALUE.YRD-TRKG-YRD == "DPX" ||
+     MRS02IW-PASSVALUE.YRD-TRKG-YRD == "PBX" ||
+     MRS02IW-PASSVALUE.YRD-TRKG-YRD == "CY" ||
+     MRS02IW-PASSVALUE.YRD-TRKG-YRD == "RY" ||
+     MRS02IW-PASSVALUE.YRD-TRKG-YRD == "DY" ||
+     MRS02IW-PASSVALUE.YRD-TRKG-YRD == "MBX" ||
+     MRS02IW-PASSVALUE.YRD-TRKG-YRD == "SVB" ||
+     MRS02IW-PASSVALUE.YRD-TRKG-YRD == "ALL"))
+        if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHYT05")
+            MRS00IW-TRIGGERS.CLICK-YRD-TRK = "Y";
+            MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+            MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+            MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+            MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+            MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+            MRS00IW-TRIGGERS.DIS-MENU = "Y";
+        else
+            if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHYT10")
+                MRS00IW-TRIGGERS.CLICK-SHOP-TRK = "Y";
+                MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+                MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+                MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+                MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+                MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+                MRS00IW-TRIGGERS.DIS-MENU = "Y";
+            else
+                if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHYT41")
+                    MRS00IW-TRIGGERS.CLICK-DUBLIN = "Y";
+                    MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+                    MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+                    MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+                    MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+                    MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+                    MRS00IW-TRIGGERS.DIS-MENU = "Y";
+                else
+                    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHYT51")
+                        MRS00IW-TRIGGERS.CLICK-PITTSBURG = "Y";
+                        MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+                        MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+                        MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+                        MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+                        MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+                        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+                    else
+                        if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHYT71")
+                            MRS00IW-TRIGGERS.CLICK-CONCORD-YRD = "Y";
+                            MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+                            MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+                            MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+                            MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+                            MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+                            MRS00IW-TRIGGERS.DIS-MENU = "Y";
+                        else
+                            if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHYT61")
+                                MRS00IW-TRIGGERS.CLICK-CONCORD-SHP = "Y";
+                                MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+                                MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+                                MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+                                MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+                                MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+                                MRS00IW-TRIGGERS.DIS-MENU = "Y";
+                            else
+                                if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHYT91")
+                                    MRS00IW-TRIGGERS.CLICK-RICHMOND-YRD = "Y";
+                                    MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+                                    MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+                                    MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+                                    MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+                                    MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+                                    MRS00IW-TRIGGERS.DIS-MENU = "Y";
+                                else
+                                    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHYT95")
+                                        MRS00IW-TRIGGERS.CLICK-RICHMOND-SHP = "Y";
+                                        MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+                                        MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+                                        MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+                                        MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+                                        MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+                                        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+                                    else
+                                        if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHY101")
+                                            MRS00IW-TRIGGERS.CLICK-DALYCITY-SHP = "Y";
+                                            MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+                                            MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+                                            MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+                                            MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+                                            MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+                                            MRS00IW-TRIGGERS.DIS-MENU = "Y";
+                                        else
+                                            if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHY106")
+                                                MRS00IW-TRIGGERS.CLICK-DALYCITY-YRD = "Y";
+                                                MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+                                                MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+                                                MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+                                                MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+                                                MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+                                                MRS00IW-TRIGGERS.DIS-MENU = "Y";
+                                            else
+                                                if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHYT81")
+                                                    MRS00IW-TRIGGERS.CLICK-MILLBRAE = "Y";
+                                                    MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+                                                    MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+                                                    MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+                                                    MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+                                                    MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+                                                    MRS00IW-TRIGGERS.DIS-MENU = "Y";
+                                                else
+                                                    if (MRS02IW-PASSVALUE.MAIN-GUI-NAME == "VHIC02")
+                                                        MRS00IW-TRIGGERS.CLICK-FREMONT-STA = "Y";
+                                                        MRS00IW-TRIGGERS.DIS-AFCMENU = "Y";
+                                                        MRS00IW-TRIGGERS.DIS-DBMAINT = "Y";
+                                                        MRS00IW-TRIGGERS.DIS-VEH-TROUBLE = "Y";
+                                                        MRS00IW-TRIGGERS.DIS-VHSHOP = "Y";
+                                                        MRS00IW-TRIGGERS.DIS-TOWER = "Y";
+                                                        MRS00IW-TRIGGERS.DIS-MENU = "Y";
+                                                    end
+                                                end
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end 
+
+
+
+Function MRS02IS-CHECK_ID ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+     
+    XXEXT_CALL_Level77Items.UEXTNAM = "MRS02I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "MRS02A";
+
+    
+    try
+        call "MRS02A"(XDCONTROL, MRS02A_CRIT, MRS02A_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            if (MRS02A_DATA.USER_GRP_EXISTS == "Y")
+                if (MRS02A_DATA.SIGNON_IS_VALID == "Y")
+
+          
+                    WS00IW_Level77Items.SIGNON_GOOD = "Y";
+                    if (MRS02A_DATA.MENU_GUI_NAME == "AFC01")
+                        MRS02IW-TRIGGER.RUN-AFC01I = "Y";
+                    end
+                    if (MRS02A_DATA.MENU_GUI_NAME == "WS01")
+                        MRS02IW-TRIGGER.RUN-WS01I = "Y";
+                    end
+                    if (MRS02A_DATA.MENU_GUI_NAME == "MRS00")
+                        MRS02IW-TRIGGER.RUN-MRS00I = "Y";
+                    end
+                    
+          
+          
+          
+                else
+
+          
+                    WS00IW_Level77Items.SIGNON_FAILED = "Y";
+                    XXMESSAGE.UMSGCODE = "WS00I002";
+                    XXMESSAGE.UMSGINS[1] = MRS02A_CRIT.USER_GRP;
+                end
+            else
+
+        
+                WS00IW_Level77Items.SIGNON_INVALID = "Y";
+                XXMESSAGE.UMSGCODE = "WS00I003";
+                XXMESSAGE.UMSGINS[1] = MRS02A_CRIT.USER_GRP;
+            end
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+end

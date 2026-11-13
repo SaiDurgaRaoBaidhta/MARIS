@@ -1,0 +1,2239 @@
+
+
+package MRSConfigurTrackQuery;
+ 
+
+Function VHCF16I-CLEAR () 
+    set VHCF16IW-MSG empty;
+    set VHCF16IW empty;
+    set VHCF16A_DATA empty;
+    set VHCF16A_CRIT empty;
+    VHCF16IW.ROW-COUNT = 0;
+    VHCF16IW-TRIGGERS.LOAD-DATA = "Y";
+end 
+
+Function VHCF16I-GET-DATA () 
+    VHCF16IW.ROW-COUNT = 0;
+    VHCF16IW-MSG.MSG = " ";
+    set VHCF16A_DATA empty;
+    set VHCF16A_CRIT empty;
+
+
+  
+    if (VHCF16IW.HOME-YRD == " " || (VHCF16IW.HOME-YRD != " " && VHCF16IW.STOCK-DISPLAY != " "))
+
+
+  
+
+  
+        VHCF16A_CRIT.CMPNT-EQUIP-TYPE = VHCF16IW.CMPNT-EQUIP-TYPE;
+        VHCF16A_CRIT.DATA-LIMIT-FLAG = "N";
+
+  
+        VHCF14IW-STOCK.WHICH = "S";
+        VHCF14IW-STOCK.FULL-STOCK-NO = VHCF16IW.STOCK-NO-L2;
+        VHCF14IS-STK-DASH();
+        VHCF16A_CRIT.STOCK-NO = VHCF14IW-STOCK.STOCK-NO;
+        VHCF16A_CRIT.CMPNT-SERIAL-NO = VHCF16IW.CMPNT-SERIAL-NO;
+        VHCF16A_CRIT.SERIAL-STAT = VHCF16IW.SERIAL-STAT;
+        VHCF16A_CRIT.HOME-YRD = VHCF16IW.HOME-YRD;
+        if (VHCF16IW.SORT == 1)
+            VHCF16A_CRIT.SORT-INDEX = "1";
+        end
+        if (VHCF16IW.SORT == 2)
+            VHCF16A_CRIT.SORT-INDEX = "2";
+        end
+        try
+            call "VHCF16A"(XDCONTROL, VHCF16A_CRIT, VHCF16A_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF16IW.ROW-COUNT = XDCONTROL.UROWCNT;
+            VHCF16IW-TRIGGERS.LOAD-DATA = "Y";
+            if (VHCF16A_CRIT.DATA-LIMIT-FLAG == "Y")
+                VHCF16IW-MSG.MSG = "DATA LIMIT OF 213 ITEMS HAS BEEN REACHED, REFINE CRITERIA";
+            end
+        else
+            VHCF16IW-MSG.MSG = "No Data Available For the Selected Criteria";
+            VHCF16IW.ROW-COUNT = XDCONTROL.UROWCNT;
+            VHCF16IW-TRIGGERS.LOAD-DATA = "Y"; 
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+        
+  
+    else
+        VHCF16IW-MSG.MSG = "IF YOU ENTER A HOME YARD YOU MUST ALSO ENTER A STOCK NUMBER";
+    end
+end 
+
+Function VHCF16I-PRINT ()
+   
+    VHCF16-25I.REPORT-NAME = "COMPONENT";
+    VHCF16-25I.CMPNT-SERIAL-NO = VHCF16IW.CMPNT-SERIAL-NO;
+    VHCF16-25I.HOME-YRD = VHCF16IW.HOME-YRD;
+    if (VHCF16IW.SORT == 1)
+        VHCF16-25I.SORT-ORDER = "1";
+    end
+    if (VHCF16IW.SORT == 2)
+        VHCF16-25I.SORT-ORDER = "2";
+    end
+
+
+  
+    VHCF14IW-STOCK.WHICH = "S";
+    VHCF14IW-STOCK.FULL-STOCK-NO = VHCF16IW.STOCK-NO-L2;
+    VHCF14IS-STK-DASH();
+    VHCF16-25I.STOCK-NO = VHCF14IW-STOCK.STOCK-NO;
+
+  
+    VHCF16IW-TRIGGERS.RUN-VHCF25I = "Y";
+end 
+
+Function VHCF16IS-INITIAL () 
+    set VHCF16B_DATA empty;
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHCF16B";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHCF16B";
+    set VHCF16B_DATA empty;
+
+    
+    try
+        call "VHCF16B"(XDCONTROL, VHCF16B_CRIT, VHCF16B_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+  
+        
+        
+  
+            if (XDCONTROL.URC == 100)
+
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end 
+
+  
+    end
+
+
+  
+    set VHCF16C_DATA empty;
+    set VHCF16C_DATA2 empty;
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHCF16B";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHCF16C";
+
+    
+    try
+        call "VHCF16C"(XDCONTROL, VHCF16C_CRIT, VHCF16C_DATA, VHCF16C_DATA2);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+  
+        
+        
+  
+            if (XDCONTROL.URC == 100)
+
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end 
+
+  
+    end
+
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHCF16D";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHCF16C";
+
+    
+    try
+        call "VHCF16D"(XDCONTROL, VHCF16D_CRIT, VHCF16D_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+  
+        
+        
+  
+            if (XDCONTROL.URC == 100)
+
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end 
+
+  
+    end
+end 
+
+Function VHCF21-TRACK-CD ()
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHCF21I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHCF21E";
+    set VHCF21E_DATA empty;
+    VHCF21E_CRIT.STOCK-NO = VHCF21D_DATA.STOCK-NO[ICT];
+    VHCF21E_CRIT.CMPNT-EQUIP-TYPE = VHCF21IW.CMPNT-EQUIP-TYPE;
+    
+    try
+        call "VHCF21E"(XDCONTROL, VHCF21E_CRIT, VHCF21E_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            if (VHCF21E_DATA.CMPNT-TRACKING-CD == "T")
+                VHCF21D_DATA.CMPNT-TRACKING-CD[ICT] = "TIM";
+            end
+            if (VHCF21E_DATA.CMPNT-TRACKING-CD == "W")
+                VHCF21D_DATA.CMPNT-TRACKING-CD[ICT] = "WAR";
+                if (VHCF21E_DATA.CMPNT-TRACKING-CD == " ") 
+                    VHCF21D_DATA.CMPNT-TRACKING-CD[ICT] = "TIM";
+                end
+            end
+        else
+
+        end 
+    end
+end 
+
+Function VHCF21I-ADD () 
+    if (VHCF21IW.CMPNT-EQUIP-TYPE == "BEARING")
+        VHCF21IW.BAD-BEARING-YEAR = "N";
+        
+  
+  
+  
+  
+    end
+    if (VHCF21IW.CMPNT-EQUIP-TYPE != "BEARING" || (VHCF21IW.CMPNT-EQUIP-TYPE == "BEARING" && VHCF21IW.BAD-BEARING-YEAR == "N"))
+
+  
+        set VHCF21D_CRIT empty;
+        set VHCF21D_DATA empty;
+        ICT = 1;
+        XXDATEW.VAGen_FUNCTION = "YMD";
+        XXDATEW.DATE-MM-DD-YYYY = VHCF21IW.DATE-BUY-REBUILT;
+        MRSCommonCode.XXDATES-CONVERT();
+        VHCF21D_DATA.DATE-BUY-REBUILT[ICT] = XXDATEW.DATE-YYYY-MM-DD;
+        VHCF14IW-STOCK.WHICH = "S";
+        VHCF14IW-STOCK.FULL-STOCK-NO = VHCF21IW.STOCK-NO-L;
+        VHCF14IS-STK-DASH();
+        VHCF21D_DATA.STOCK-NO[ICT] = VHCF14IW-STOCK.STOCK-NO;
+        VHCF21D_DATA.CMPNT-STOCK-NO[ICT] = VHCF14IW-STOCK.STOCK-NO;
+        VHCF21D_DATA.CMPNT-SERIAL-NO[ICT] = VHCF21IW.CMPNT-SERIAL-NO;
+        VHCF21D_DATA.SERIAL-STAT = "STO";
+        VHCF21D_DATA.CMPNT-EQUIP-TYPE[ICT] = VHCF21IW.CMPNT-EQUIP-TYPE;
+        VHCF21D_DATA.SERIAL-CONFIGD-IND[ICT] = "N";
+        VHCF21D_DATA.HIST-ACTION-CD[ICT] = "INV";
+        VHCF21D_DATA.SERIAL-STAT[ICT] = "STO";
+        VHCF21D_DATA.TERM-LAST-UPD[ICT] = VHCF21I-PASS-VALUE.TERM-ID;
+        VHCF21D_CRIT.TERM-LAST-UPD = VHCF21I-PASS-VALUE.TERM-ID;
+        
+
+  
+        VHCF21-TRACK-CD();
+
+
+  
+        XXEXT_CALL_Level77Items.UEXTNAM = "VHCF21D";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "VHCF21D";
+
+    
+        try
+            call "VHCF21D"(XDCONTROL, VHCF21D_CRIT, VHCF21D_DATA);
+        
+        end
+        
+
+    
+        MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+        if (XXEXT_CALL_Level77Items.URC == 0)
+  
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                VHCF21IW-MSG.MSG = "THE COMPONENT ACTION WAS SUCCESSFULLY PERFORMED";
+            else
+                VHCF21IW-MSG.MSG = "THERE WAS A PROBLEM PERFORMING THE ACTION YOU REQUESTED";
+  
+        
+        
+  
+                if (XDCONTROL.URC == 100)
+
+                else
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end
+            end 
+
+  
+        end
+    end
+end 
+
+Function VHCF21I-CLEAR () 
+    set VHCF21IW empty;
+    set VHCF21IW-MSG empty;
+    VHCF21IW.DATE-BUY-REBUILT = VGVar.currentFormattedGregorianDate;
+end 
+
+Function VHCF21I-GET-STOCK ()
+   
+    set VHCF21B_DATA empty;
+    set VHCF21B_CRIT empty;
+    VHCF21B_CRIT.CMPNT-EQUIP-TYPE = VHCF21IW.CMPNT-EQUIP-TYPE;
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHCF21B";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHCF21B";
+    set VHCF21B_DATA empty;
+
+    
+    try
+        call "VHCF21B"(XDCONTROL, VHCF21B_CRIT, VHCF21B_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF21IW-TRIGGERS.LOAD-STOCK = "Y";
+            VHCF21IW.NUM-STOCK = XDCONTROL.UROWCNT;
+        else
+
+  
+        
+        
+  
+            if (XDCONTROL.URC == 100)
+
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end 
+
+  
+    end
+end 
+
+Function VHCF21I-INITIAL ()
+   
+    set VHCF21A_DATA empty;
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHCF21A";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHCF21A";
+    set VHCF21A_DATA empty;
+
+    
+    try
+        call "VHCF21A"(XDCONTROL, VHCF21A_CRIT, VHCF21A_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF21IW-TRIGGERS.LOAD-TYPE = "Y";
+        else
+
+  
+        
+        
+  
+            if (XDCONTROL.URC == 100)
+
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end 
+
+  
+    end
+    VHCF21IW.DATE-BUY-REBUILT = VGVar.currentFormattedGregorianDate;
+end 
+
+Function VHCF21I-UPDATE ()
+  
+   
+    VHCF21IW.VAGen_EXISTS = "N";
+
+  
+    VHCF14IW-STOCK.WHICH = "S";
+    VHCF14IW-STOCK.FULL-STOCK-NO = VHCF21IW.STOCK-NO-L;
+    VHCF14IS-STK-DASH();
+    VHCF21C_CRIT.STOCK-NO = VHCF14IW-STOCK.STOCK-NO;
+    VHCF21C_CRIT.CMPNT-EQUIP-TYPE = VHCF21IW.CMPNT-EQUIP-TYPE;
+    VHCF21C_CRIT.CMPNT-SERIAL-NO = VHCF21IW.CMPNT-SERIAL-NO;
+  
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHCF21C";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHCF21C";
+    set VHCF21C_DATA empty;
+
+    
+    try
+        call "VHCF21C"(XDCONTROL, VHCF21C_CRIT, VHCF21C_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF21IW.VAGen_EXISTS = "Y";
+            VHCF21IW-MSG.MSG = "YOU CANNOT ADD THIS SERIAL NUMBER, IT ALREADY EXIST FOR THAT COMPONENT TYPE";
+        else
+
+  
+        
+        
+  
+            if (XDCONTROL.URC == 100)
+
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end 
+
+  
+    end
+    if (VHCF21IW.VAGen_EXISTS == "N")
+        VHCF21IW-TRIGGERS.RUN-ADD = "Y";
+    end
+end 
+
+Function VHCF21I-VALID-DATE ()
+   
+    VHCF21IW.VALID-DATE = "Y";
+    VHCF21IW-MSG.MSG = " ";
+    VHCF20IW-DATE.CURRENT-DATE = VGVar.currentGregorianDate;
+    VHCF20IW-DATE.COMPARE-YEAR = VHCF20IW-DATE.HOLD-DATE-YEAR;
+    VHCF20IW-DATE.COMPARE-MONTH = VHCF20IW-DATE.HOLD-DATE-MM;
+    VHCF20IW-DATE.COMPARE-DAY = VHCF20IW-DATE.HOLD-DATE-DD;
+    if (VHCF20IW-DATE.COMPARE-DATE > VHCF20IW-DATE.CURRENT-DATE)
+        VHCF21IW-MSG.MSG = "INVALID DATE, FUTURE DATES ARE NOT ALLOWED";
+        VHCF21IW.VALID-DATE = "N";
+    end
+    if (VHCF20IW-DATE.COMPARE-YEAR-NUM < 1990)
+        VHCF21IW-MSG.MSG = "INVALID DATE, YEAR CANNOT BE EARLIER THAN 1990";
+        VHCF21IW.VALID-DATE = "N";
+    end
+    if (VHCF20IW-DATE.COMPARE-MONTH-NUM < 1 || VHCF20IW-DATE.COMPARE-MONTH-NUM > 12 || VHCF20IW-DATE.COMPARE-DAY-NUM < 1 || VHCF20IW-DATE.COMPARE-DAY-NUM > 31)
+        VHCF21IW-MSG.MSG = "INVALID DATE";
+        VHCF21IW.VALID-DATE = "N";
+    end
+
+  
+    if (VHCF21IW.CMPNT-SERIAL-NO == " ")
+        VHCF21IW-MSG.MSG = "MISSING DATA SERIAL NUMBER";
+        VHCF21IW.VALID-DATE = "N";
+    end
+    if (VHCF21IW.STOCK-NO-L == " ")
+        VHCF21IW-MSG.MSG = "MISSING DATA, STOCK NUMBER NOT SELECTED";
+        VHCF21IW.VALID-DATE = "N";
+    end
+    if (VHCF21IW.CMPNT-EQUIP-TYPE == " ")
+        VHCF21IW-MSG.MSG = "MISSING DATA EQUIPMENT TYPE";
+        VHCF21IW.VALID-DATE = "N";
+    end
+    if (VHCF21IW.VALID-DATE == "Y")
+        VHCF21IW-TRIGGERS.RUN-UPDATE = "Y";
+    end
+end 
+
+Function VHCF21I-VBEARING ()
+   
+    VHCF21IW.BAD-BEARING-YEAR = "N";
+    VHCF20IW-DATE.COMPARE-DATE = VGVar.currentGregorianDate;
+    VHCF21IW.VALID-BEARING = VHCF21IW.CMPNT-SERIAL-NO;
+    VHCF21IW.HIGH-YEAR = VHCF20IW-DATE.COMPARE-YEAR-NUM;
+    VHCF21IW.LOW-YEAR = VHCF20IW-DATE.COMPARE-YEAR-NUM - 4;
+
+  
+    VHCF21IW.BEARING-YEAR-NNNN = VHCF21IW.NUM-2 + 2000;
+    if (VHCF21IW.BEARING-YEAR-NNNN >= VHCF21IW.LOW-YEAR && VHCF21IW.BEARING-YEAR-NNNN <= VHCF21IW.HIGH-YEAR)
+  
+
+    else
+        VHCF21IW.BAD-BEARING-YEAR = "Y";
+        VHCF21IW-MSG.MSG = "THE BEARING YEAR PREFIX IS NOT VALID (CURRENT YEAR TO CURRENT YEAR - 4)";
+    end
+end 
+
+Function VHCF35IS-ADD ()
+  
+   
+    VHCF35IS-FND-TRUCK();
+    set VHCF35G_CRIT empty;
+    set VHCF35G_DATA empty;
+    VHCF35IW-SAVE.CMPNT-SERIAL-NO = VHCF35IW.CMPNT-SERIAL-NO;
+
+  
+    VHCF35G_CRIT.PARENT-STOCK-NO = VHCF35IW.TRUCK-STOCK-NO;
+    VHCF35G_CRIT.PARENT-SERIAL-NO = VHCF35IW.TRUCK-SERIAL-NO;
+    VHCF35G_CRIT.PARENT-POSN-CD = " ";
+    VHCF35G_CRIT.PARENT-EQUIP-TYPE = "TRUCK";
+    VHCF35G_CRIT.HIST-ACTION-CD = "ADD";
+    VHCF35G_CRIT.TERM-LAST-UPD = VHCF35IW-TERM-ID.TERM-ID;
+
+  
+    VHCF35IW.YCOUNT = 0;
+
+  
+    if (VHCF35IW-HOLD-TRCK.AXLE1 != " ")
+        YCOUNT = YCOUNT + 1;
+        VHCF35G_DATA.STOCK-NO[YCOUNT] = VHCF35IW-HOLD-TRCK.AXLE1-STOCK-NO;
+        VHCF35G_DATA.CMPNT-SERIAL-NO[YCOUNT] = VHCF35IW-HOLD-TRCK.AXLE1;
+        VHCF35G_DATA.CMPNT-EQUIP-TYPE[YCOUNT] = "AXLE";
+        if (VHCF35D_DATA.PREV-TRK-POS-CD == "X")
+            VHCF35G_DATA.POSN-CD[YCOUNT] = "1";
+        else
+            if (VHCF35D_DATA.PREV-TRK-POS-CD == "Y")
+                VHCF35G_DATA.POSN-CD[YCOUNT] = "3";
+            end
+        end
+    end
+
+  
+    if (VHCF35IW-HOLD-TRCK.AXLE2 != " ")
+        YCOUNT = YCOUNT + 1;
+        VHCF35G_DATA.STOCK-NO[YCOUNT] = VHCF35IW-HOLD-TRCK.AXLE2-STOCK-NO;
+        VHCF35G_DATA.CMPNT-SERIAL-NO[YCOUNT] = VHCF35IW-HOLD-TRCK.AXLE2;
+        VHCF35G_DATA.CMPNT-EQUIP-TYPE[YCOUNT] = "AXLE";
+        if (VHCF35D_DATA.PREV-TRK-POS-CD == "X")
+            VHCF35G_DATA.POSN-CD[YCOUNT] = "2";
+        else
+            if (VHCF35D_DATA.PREV-TRK-POS-CD == "Y")
+                VHCF35G_DATA.POSN-CD[YCOUNT] = "4";
+            end
+        end
+    end
+
+  
+    if (VHCF35IW-HOLD-TRCK.TM-1 != " ")
+        YCOUNT = YCOUNT + 1;
+        VHCF35G_DATA.STOCK-NO[YCOUNT] = VHCF35IW-HOLD-TRCK.TM-1-STOCK-NO;
+        VHCF35G_DATA.CMPNT-SERIAL-NO[YCOUNT] = VHCF35IW-HOLD-TRCK.TM-1;
+        VHCF35G_DATA.CMPNT-EQUIP-TYPE[YCOUNT] = "TRACTION MOTOR";
+        if (VHCF35D_DATA.PREV-TRK-POS-CD == "X")
+            VHCF35G_DATA.POSN-CD[YCOUNT] = "1";
+        else
+            if (VHCF35D_DATA.PREV-TRK-POS-CD == "Y")
+                VHCF35G_DATA.POSN-CD[YCOUNT] = "3";
+            end
+        end
+    end
+
+  
+    if (VHCF35IW-HOLD-TRCK.TM-2 != " ")
+        YCOUNT = YCOUNT + 1;
+        VHCF35G_DATA.STOCK-NO[YCOUNT] = VHCF35IW-HOLD-TRCK.TM-2-STOCK-NO;
+        VHCF35G_DATA.CMPNT-SERIAL-NO[YCOUNT] = VHCF35IW-HOLD-TRCK.TM-2;
+        VHCF35G_DATA.CMPNT-EQUIP-TYPE[YCOUNT] = "TRACTION MOTOR";
+        if (VHCF35D_DATA.PREV-TRK-POS-CD == "X")
+            VHCF35G_DATA.POSN-CD[YCOUNT] = "2";
+        else
+            if (VHCF35D_DATA.PREV-TRK-POS-CD == "Y")
+                VHCF35G_DATA.POSN-CD[YCOUNT] = "4";
+            end
+        end
+    end
+
+  
+    if (VHCF35IW-HOLD-TRCK.BRAKE-DISC-1 != " ")
+        YCOUNT = YCOUNT + 1;
+        VHCF35G_DATA.STOCK-NO[YCOUNT] = VHCF35IW-HOLD-TRCK.BRAKE-DISC-1-STOCK-NO;
+        VHCF35G_DATA.CMPNT-SERIAL-NO[YCOUNT] = VHCF35IW-HOLD-TRCK.BRAKE-DISC-1;
+        VHCF35G_DATA.CMPNT-EQUIP-TYPE[YCOUNT] = "BRAKE DISC";
+        if (VHCF35D_DATA.PREV-TRK-POS-CD == "X")
+            VHCF35G_DATA.POSN-CD[YCOUNT] = "1";
+        else
+            if (VHCF35D_DATA.PREV-TRK-POS-CD == "Y")
+                VHCF35G_DATA.POSN-CD[YCOUNT] = "3";
+            end
+        end
+    end
+
+  
+    if (VHCF35IW-HOLD-TRCK.BRAKE-DISC-2 != " ")
+        YCOUNT = YCOUNT + 1;
+        VHCF35G_DATA.STOCK-NO[YCOUNT] = VHCF35IW-HOLD-TRCK.BRAKE-DISC-2-STOCK-NO;
+        VHCF35G_DATA.CMPNT-SERIAL-NO[YCOUNT] = VHCF35IW-HOLD-TRCK.BRAKE-DISC-2;
+        VHCF35G_DATA.CMPNT-EQUIP-TYPE[YCOUNT] = "BRAKE DISC";
+        if (VHCF35D_DATA.PREV-TRK-POS-CD == "X")
+            VHCF35G_DATA.POSN-CD[YCOUNT] = "2";
+        else
+            if (VHCF35D_DATA.PREV-TRK-POS-CD == "Y")
+                VHCF35G_DATA.POSN-CD[YCOUNT] = "4";
+            end
+        end
+    end
+    VHCF35G_DATA.COMMENTS = VHCF35IW-HOLD-TRCK.COMMENTS;
+    VHCF35G_DATA.TRUCK-STAT = VHCF35IW-HOLD-TRCK.TRUCK-STAT;
+    VHCF35G_CRIT.SHOP-LOC = VHCF35IW-HOLD-TRCK.LOC;
+    VHCF35G_CRIT.ITEM-COUNT = YCOUNT;
+    VHCF35IW-MSG.MSG = " ";
+    VHCF35G_CRIT.TERM-LAST-UPD = VH01A01_DATA.TERM-ID;
+    try
+        call "VHCF35G"(XDCONTROL, VHCF35G_CRIT, VHCF35G_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHCF35IW-MSG.MSG = "ALL COMPONENTS WERE ADDED CORRECTLY";
+        VHCF35IW-PASSVALUE.DISABLE-UPDATE = "Y";
+        
+  
+    else
+        VHCF35IW-MSG.MSG = "THERE WAS A PROBLEM ADDING COMPONENTS TO SERIAL HIST OR SERIAL NUMBER TABLES";
+        
+        
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+    end
+end 
+
+Function VHCF35IS-AXLE1 ()
+  
+  
+
+  
+  
+
+   
+    if (VHCF35IW-HOLD-TRCK.AXLE1 != " ")
+        VHCF35IW-MSG.MSG = " ";
+        VHCF35IW.FOUND-CMPNTS = "N";
+        VHCF35F_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.AXLE1;
+        VHCF35F_CRIT.AXLE-NEW-OLD = "NEW";
+        try
+            call "VHCF37F"(XDCONTROL, VHCF35F_CRIT, VHCF35F_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF35IS-VAL-AXLE();
+            if (VHCF35F_CRIT.AXLE-ON-CAR != "Y" &&
+             VHCF35F_CRIT.INVALID-AXLE != "Y")
+                VHCF35IW.AXLE-CMP-COUNT = XDCONTROL.UROWCNT;
+            end
+        else
+            VHCF35IW-MSG.MSG = "NO COMPONENTS ARE CURRENTLY ASSOCIATED WITH THAT AXLE SERIAL NUMBER";
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+  
+
+  
+  
+        YCOUNT = 1;
+        while (YCOUNT <= VHCF35IW.AXLE-CMP-COUNT)
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "WHEEL")
+                if (VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "1" || VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "3" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "B")
+                    VHCF35IW-HOLD-AXLE.WHEEL1 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+                if (VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "2" || VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "4" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "N")
+                    VHCF35IW-HOLD-AXLE.WHEEL2 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+            end
+  
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "BEARING")
+                if (VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "1" || VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "3" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "B")
+                    VHCF35IW-HOLD-AXLE.B-BEARING1 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+                if (VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "2" || VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "4" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "N")
+                    VHCF35IW-HOLD-AXLE.N-BEARING1 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+            end
+  
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "GEAR BOX")
+                VHCF35IW-HOLD-AXLE.GEAR-BOX1 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+            end
+  
+            YCOUNT = YCOUNT + 1;
+        end
+    end
+end 
+
+Function VHCF35IS-AXLE2 ()
+  
+  
+
+  
+  
+
+   
+    if (VHCF35IW-HOLD-TRCK.AXLE2 != " ")
+        set VHCF35F_CRIT empty;
+        set VHCF35F_DATA empty;
+        VHCF35IW-MSG.MSG = " ";
+        VHCF35IW.FOUND-CMPNTS = "N";
+        VHCF35F_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.AXLE2;
+        VHCF35F_CRIT.AXLE-NEW-OLD = "NEW";
+        try
+            call "VHCF37F"(XDCONTROL, VHCF35F_CRIT, VHCF35F_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF35IS-VAL-AXLE();
+            if (VHCF35F_CRIT.AXLE-ON-CAR != "Y" &&
+             VHCF35F_CRIT.INVALID-AXLE != "Y")
+                VHCF35IW.AXLE-CMP-COUNT = XDCONTROL.UROWCNT;
+            end
+        else
+            VHCF35IW-MSG.MSG = "NO COMPONENTS ARE CURRENTLY ASSOCIATED WITH THAT AXLE SERIAL NUMBER";
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+  
+
+  
+  
+        YCOUNT = 1;
+        while (YCOUNT <= VHCF35IW.AXLE-CMP-COUNT)
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "WHEEL")
+                if (VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "5" || VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "7" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "B")
+                    VHCF35IW-HOLD-AXLE.WHEEL3 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+                if (VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "6" || VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "8" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "N")
+                    VHCF35IW-HOLD-AXLE.WHEEL4 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+            end
+  
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "BEARING")
+                if (VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "5" || VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "7" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "B")
+                    VHCF35IW-HOLD-AXLE.B-BEARING2 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+                if (VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "6" || VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "8" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "N")
+                    VHCF35IW-HOLD-AXLE.N-BEARING2 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+            end
+  
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "GEAR BOX")
+                VHCF35IW-HOLD-AXLE.GEAR-BOX2 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+            end
+  
+            YCOUNT = YCOUNT + 1;
+        end
+    end
+end 
+
+Function VHCF35IS-CLEAR () 
+    set VHCF35B_CRIT empty;
+    set VHCF35B_DATA empty;
+    set VHCF35F_CRIT empty;
+    set VHCF35F_DATA empty;
+    set VHCF35G_CRIT empty;
+    set VHCF35G_DATA empty;
+    set VHCF35IW-MSG empty;
+    set VHCF35IW-HOLD-AXLE empty;
+    set VHCF35IW-HOLD-TRCK empty;
+    VHCF35IW.CMPNT-SERIAL-NO = " ";
+
+  
+  
+  
+  
+  
+  
+    VHCF35IW-PASSVALUE.DISABLE-UPDATE = "Y";
+    AXLE1-COLOR = "WHITE";
+    AXLE2-COLOR = "WHITE";
+    DISC1-COLOR = "WHITE";
+    DISC2-COLOR = "WHITE";
+    TM1-COLOR = "WHITE";
+    TM2-COLOR = "WHITE";
+end 
+
+Function VHCF35IS-CLEAR-ADD () 
+    set VHCF35B_CRIT empty;
+    set VHCF35B_DATA empty;
+    set VHCF35F_CRIT empty;
+    set VHCF35F_DATA empty;
+    set VHCF35G_CRIT empty;
+    set VHCF35G_DATA empty;
+    set VHCF35IW-HOLD-AXLE empty;
+    set VHCF35IW-HOLD-TRCK empty;
+    VHCF35IW.CMPNT-SERIAL-NO = " ";
+    VHCF35IW-ENABLE.ENABLE-AXLE1 = "Y";
+    VHCF35IW-ENABLE.ENABLE-AXLE2 = "Y";
+    VHCF35IW-ENABLE.ENABLE-TM1 = "Y";
+    VHCF35IW-ENABLE.ENABLE-TM2 = "Y";
+    VHCF35IW-ENABLE.ENABLE-BRAKE1 = "Y";
+    VHCF35IW-ENABLE.ENABLE-BRAKE2 = "Y";
+end 
+
+Function VHCF35IS-CLICK () 
+    if (SER-PARM == "AXLE1" && VHCF35IW-HOLD-TRCK.AXLE1 != " ")
+        if (AXLE1-CLICK == 1)
+            AXLE1-CLICK = 2;
+            AXLE1-COLOR = "WHITE";
+        else
+            AXLE1-CLICK = 1;
+            AXLE1-COLOR = "YELLOW";
+        end
+    end
+    if (SER-PARM == "AXLE2" && VHCF35IW-HOLD-TRCK.AXLE2 != " ")
+        if (AXLE2-CLICK == 1)
+            AXLE2-CLICK = 2;
+            AXLE2-COLOR = "WHITE";
+        else
+            AXLE2-CLICK = 1;
+            AXLE2-COLOR = "YELLOW";
+        end
+    end
+    if (SER-PARM == "DISC1" && VHCF35IW-HOLD-TRCK.BRAKE-DISC-1 != " ")
+        if (DISC1-CLICK == 1)
+            DISC1-CLICK = 2;
+            DISC1-COLOR = "WHITE";
+        else
+            DISC1-CLICK = 1;
+            DISC1-COLOR = "YELLOW";
+        end
+    end
+    if (SER-PARM == "DISC2" && VHCF35IW-HOLD-TRCK.BRAKE-DISC-2 != " ")
+        if (DISC2-CLICK == 1)
+            DISC2-CLICK = 2;
+            DISC2-COLOR = "WHITE";
+        else
+            DISC2-CLICK = 1;
+            DISC2-COLOR = "YELLOW";
+        end
+    end
+    if (SER-PARM == "TM1" && VHCF35IW-HOLD-TRCK.TM-1 != " ")
+        if (TM1-CLICK == 1)
+            TM1-CLICK = 2;
+            TM1-COLOR = "WHITE";
+        else
+            TM1-CLICK = 1;
+            TM1-COLOR = "YELLOW";
+        end
+    end
+    if (SER-PARM == "TM2" && VHCF35IW-HOLD-TRCK.TM-2 != " ")
+        if (TM2-CLICK == 1)
+            TM2-COLOR = "WHITE";
+            TM2-CLICK = 2;
+        else
+            TM2-CLICK = 1;
+            TM2-COLOR = "YELLOW";
+        end
+    end
+end 
+
+Function VHCF35IS-FND-TRUCK () 
+    if (VHCF35D_DATA.PREV-TRK-POS-CD == " ")
+        if (VHCF35IW.STOCK-NO-L2 == "17-35-88515" ||
+         VHCF35IW.STOCK-NO-L2 == "17-35-88525" ||
+         VHCF35IW.STOCK-NO-L2 == "19-35-88618" ||
+         VHCF35IW.STOCK-NO-L2 == "20-35-88611")
+            VHCF35D_DATA.PREV-TRK-POS-CD = "Y";
+        else
+            if (VHCF35IW.STOCK-NO-L2 == "17-35-88520" ||
+             VHCF35IW.STOCK-NO-L2 == "19-35-88603" ||
+             VHCF35IW.STOCK-NO-L2 == "20-35-88610")
+                VHCF35D_DATA.PREV-TRK-POS-CD = "X";
+            end
+        end
+    end
+end 
+
+Function VHCF35IS-INITIAL () 
+    AXLE1-COLOR = "WHITE";
+    AXLE2-COLOR = "WHITE";
+    DISC1-COLOR = "WHITE";
+    DISC2-COLOR = "WHITE";
+    TM1-COLOR = "WHITE";
+    TM2-COLOR = "WHITE";
+    set VHCF35C_DATA empty;
+    set VHCF35C_DATA2 empty;
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHCF16B";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHCF35C";
+
+    
+    try
+        call "VHCF35C"(XDCONTROL, VHCF35C_CRIT, VHCF35C_DATA, VHCF35C_DATA2);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+  
+        
+        
+  
+            if (XDCONTROL.URC == 100)
+
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end 
+
+  
+    end
+end 
+
+Function VHCF35IS-MOVE ()
+  
+  
+
+  
+
+  
+  
+   
+    VHCF35IW.FOUND-AXLE1 = "N";
+    VHCF35IW.FOUND-AXLE2 = "N";
+    VHCF35IW.FOUND-TM1 = "N";
+    VHCF35IW.FOUND-TM2 = "N";
+    VHCF35IW.FOUND-DISC1 = "N";
+    VHCF35IW.FOUND-DISC2 = "N";
+    VHCF35IW.FOUND-AXLE-1 = "N";
+    VHCF35IW.FOUND-AXLE-2 = "N";
+    XCOUNT = 1;
+    while (XCOUNT <= VHCF35IW.TRUCK-CMP-COUNT)
+
+  
+        if (VHCF35B_DATA.CMPNT-EQUIP-TYPE[XCOUNT] == "AXLE")
+  
+  
+  
+  
+            if ((VHCF35B_DATA.POSN-CD[XCOUNT] == "1" || VHCF35B_DATA.POSN-CD[XCOUNT] == "3"))
+                VHCF35IW-HOLD-TRCK.AXLE1 = VHCF35B_DATA.CMPNT-SERIAL-NO[XCOUNT];
+                VHCF35IW-HOLD-TRCK.AXLE1-POSN-CD = VHCF35B_DATA.POSN-CD[XCOUNT];
+                VHCF35IW-HOLD-TRCK.AXLE1-STOCK-NO = VHCF35B_DATA.STOCK-NO[XCOUNT];
+                VHCF35IW.FOUND-AXLE1 = "Y";
+                VHCF35IW-HOLD-TRCK.AXLE1-NEW = "N";
+                if (VHCF35B_DATA.POSN-CD[XCOUNT] != " ")
+                    VHCF35IW.FOUND-AXLE-1 = "Y";
+                end
+                
+  
+            end
+  
+  
+  
+            if ((VHCF35B_DATA.POSN-CD[XCOUNT] == "2" || VHCF35B_DATA.POSN-CD[XCOUNT] == "4"))
+                VHCF35IW-HOLD-TRCK.AXLE2 = VHCF35B_DATA.CMPNT-SERIAL-NO[XCOUNT];
+                VHCF35IW-SAVE.AXLE-2-SAVE = VHCF35B_DATA.CMPNT-SERIAL-NO[XCOUNT];
+                VHCF35IW-HOLD-TRCK.AXLE2-POSN-CD = VHCF35B_DATA.POSN-CD[XCOUNT];
+                VHCF35IW-HOLD-TRCK.AXLE2-STOCK-NO = VHCF35B_DATA.STOCK-NO[XCOUNT];
+                VHCF35IW.FOUND-AXLE2 = "Y";
+                VHCF35IW-HOLD-TRCK.AXLE2-NEW = "N";
+  
+                if (VHCF35B_DATA.POSN-CD[XCOUNT] != " ")
+                    VHCF35IW.FOUND-AXLE-2 = "Y";
+                end
+            end
+        end
+  
+        if (VHCF35B_DATA.CMPNT-EQUIP-TYPE[XCOUNT] == "TRACTION MOTOR")
+  
+            if ((VHCF35B_DATA.POSN-CD[XCOUNT] == "1" || VHCF35B_DATA.POSN-CD[XCOUNT] == "3"))
+                VHCF35IW-HOLD-TRCK.TM-1 = VHCF35B_DATA.CMPNT-SERIAL-NO[XCOUNT];
+                VHCF35IW-HOLD-TRCK.TM-1-POSN-CD = VHCF35B_DATA.POSN-CD[XCOUNT];
+                VHCF35IW-HOLD-TRCK.TM-1-STOCK-NO = VHCF35B_DATA.STOCK-NO[XCOUNT];
+                VHCF35IW-HOLD-TRCK.TM-1-NEW = "N";
+                if (VHCF35B_DATA.POSN-CD[XCOUNT] != " ")
+                    VHCF35IW.FOUND-TM1 = "Y";
+                end
+                
+   
+            end
+  
+            if (VHCF35B_DATA.POSN-CD[XCOUNT] == "2" || VHCF35B_DATA.POSN-CD[XCOUNT] == "4")
+                VHCF35IW-HOLD-TRCK.TM-2 = VHCF35B_DATA.CMPNT-SERIAL-NO[XCOUNT];
+                VHCF35IW-HOLD-TRCK.TM-2-POSN-CD = VHCF35B_DATA.POSN-CD[XCOUNT];
+                VHCF35IW-HOLD-TRCK.TM-2-STOCK-NO = VHCF35B_DATA.STOCK-NO[XCOUNT];
+                VHCF35IW-HOLD-TRCK.TM-2-NEW = "N";
+                if (VHCF35B_DATA.POSN-CD[XCOUNT] != " ")
+                    VHCF35IW.FOUND-TM2 = "Y";
+                end
+                
+  
+            end
+        end
+  
+        if (VHCF35B_DATA.CMPNT-EQUIP-TYPE[XCOUNT] == "BRAKE DISC")
+  
+            if (VHCF35B_DATA.POSN-CD[XCOUNT] == "1" || VHCF35B_DATA.POSN-CD[XCOUNT] == "3")
+                VHCF35IW-HOLD-TRCK.BRAKE-DISC-1 = VHCF35B_DATA.CMPNT-SERIAL-NO[XCOUNT];
+                VHCF35IW-HOLD-TRCK.BRAKE-DISC-1-POSN-CD = VHCF35B_DATA.POSN-CD[XCOUNT];
+                VHCF35IW-HOLD-TRCK.BRAKE-DISC-1-STOCK-NO = VHCF35B_DATA.STOCK-NO[XCOUNT];
+                VHCF35IW-HOLD-TRCK.BRAKE-DISC-1-NEW = "N";
+  
+                if (VHCF35B_DATA.POSN-CD[XCOUNT] != " ")
+                    VHCF35IW.FOUND-DISC1 = "Y";
+                end
+            end
+  
+            if (VHCF35B_DATA.POSN-CD[XCOUNT] == "2" || VHCF35B_DATA.POSN-CD[XCOUNT] == "4")
+                VHCF35IW-HOLD-TRCK.BRAKE-DISC-2 = VHCF35B_DATA.CMPNT-SERIAL-NO[XCOUNT];
+                VHCF35IW-HOLD-TRCK.BRAKE-DISC-2-POSN-CD = VHCF35B_DATA.POSN-CD[XCOUNT];
+                VHCF35IW-HOLD-TRCK.BRAKE-DISC-2-STOCK-NO = VHCF35B_DATA.STOCK-NO[XCOUNT];
+                VHCF35IW-HOLD-TRCK.BRAKE-DISC-2-NEW = "N";
+                if (VHCF35B_DATA.POSN-CD[XCOUNT] != " ")
+                    VHCF35IW.FOUND-DISC2 = "Y";
+                end
+                
+  
+            end
+        end
+  
+        XCOUNT = XCOUNT + 1;
+    end
+
+  
+  
+  
+    if (VHCF35IW.FOUND-AXLE1 == "Y")
+        VHCF37IS-OLD-AXLE1();
+    end
+    if (VHCF35IW.FOUND-AXLE2 == "Y")
+        VHCF37IS-OLD-AXLE2();
+    end
+end 
+
+Function VHCF35IS-NEW-AX1 ()
+   
+    if (VHCF35IW-HOLD-TRCK.AXLE1-NEW == "Y" && VHCF35IW-HOLD-TRCK.AXLE1 != " ")
+        set VHCF35D_DATA empty;
+        set VHCF35D_CRIT empty;
+        MSG-1B = "AXLE 1";
+        VHCF35D_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.AXLE1;
+        VHCF35D_CRIT.CMPNT-EQUIP-TYPE = "AXLE";
+        VHCF35IW.RUN-VALID-SER = "Y";
+    end
+end 
+
+Function VHCF35IS-NEW-AX2 ()
+   
+    if (VHCF35IW-HOLD-TRCK.AXLE2-NEW == "Y" && VHCF35IW-HOLD-TRCK.AXLE2 != " ")
+        set VHCF35D_DATA empty;
+        set VHCF35D_CRIT empty;
+        MSG-1B = "AXLE 2";
+        VHCF35D_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.AXLE2;
+        VHCF35D_CRIT.CMPNT-EQUIP-TYPE = "AXLE";
+        VHCF35IW.RUN-VALID-SER = "Y";
+    end
+end 
+
+Function VHCF35IS-NEW-BD1 () 
+    if (VHCF35IW-HOLD-TRCK.BRAKE-DISC-1-NEW == "Y" && VHCF35IW-HOLD-TRCK.BRAKE-DISC-1 != " ")
+        set VHCF35D_DATA empty;
+        set VHCF35D_CRIT empty;
+        MSG-1B = "BRAKE DISC 1";
+        VHCF35D_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.BRAKE-DISC-1;
+        VHCF35D_CRIT.CMPNT-EQUIP-TYPE = "BRAKE DISC";
+        VHCF35IW.RUN-VALID-SER = "Y";
+    end
+end 
+
+Function VHCF35IS-NEW-BD2 () 
+    if (VHCF35IW-HOLD-TRCK.BRAKE-DISC-2-NEW == "Y" && VHCF35IW-HOLD-TRCK.BRAKE-DISC-2 != " ")
+        set VHCF35D_DATA empty;
+        set VHCF35D_CRIT empty;
+        MSG-1B = "BRAKE DISC 2";
+        VHCF35D_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.BRAKE-DISC-2;
+        VHCF35D_CRIT.CMPNT-EQUIP-TYPE = "BRAKE DISC";
+        VHCF35IW.RUN-VALID-SER = "Y";
+    end
+end 
+
+Function VHCF35IS-NEW-TM1 () 
+    if (VHCF35IW-HOLD-TRCK.TM-1-NEW == "Y")
+        set VHCF35D_DATA empty;
+        set VHCF35D_CRIT empty;
+        MSG-1B = "TRACTION MOTOR 1";
+        VHCF35D_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.TM-1;
+        VHCF35D_CRIT.CMPNT-EQUIP-TYPE = "TRACTION MOTOR";
+        VHCF35IW.RUN-VALID-SER = "Y";
+    end
+end 
+
+Function VHCF35IS-NEW-TM2 () 
+    if (VHCF35IW-HOLD-TRCK.TM-2-NEW == "Y" && VHCF35IW-HOLD-TRCK.TM-2 != " ")
+        set VHCF35D_DATA empty;
+        set VHCF35D_CRIT empty;
+        MSG-1B = "TRACTION MOTOR 2";
+        VHCF35D_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.TM-2;
+        VHCF35D_CRIT.CMPNT-EQUIP-TYPE = "TRACTION MOTOR";
+        VHCF35IW.RUN-VALID-SER = "Y";
+    end
+end 
+
+Function VHCF35IS-OLD-AXLE1 ()
+  
+  
+
+  
+  
+
+   
+    if (VHCF35IW-HOLD-TRCK.AXLE1 != " ")
+        VHCF35IW-MSG.MSG = " ";
+        VHCF35IW.FOUND-CMPNTS = "N";
+        VHCF35F_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.AXLE1;
+        VHCF35F_CRIT.TRUCK-SERIAL-NO = VHCF35IW.CMPNT-SERIAL-NO;
+        VHCF35F_CRIT.AXLE-NEW-OLD = "OLD";
+        try
+            call "VHCF37F"(XDCONTROL, VHCF35F_CRIT, VHCF35F_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF35IW.AXLE-CMP-COUNT = XDCONTROL.UROWCNT;
+        else
+            VHCF35IW-MSG.MSG = "NO COMPONENTS ARE CURRENTLY ASSOCIATED WITH THAT AXLE SERIAL NUMBER";
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+  
+
+  
+  
+        YCOUNT = 1;
+        while (YCOUNT <= VHCF35IW.AXLE-CMP-COUNT)
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "WHEEL")
+                if (VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "1" || VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "3" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "B")
+                    VHCF35IW-HOLD-AXLE.WHEEL1 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+                if (VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "2" || VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "4" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "N")
+                    VHCF35IW-HOLD-AXLE.WHEEL2 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+            end
+  
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "BEARING")
+                if (VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "1" || VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "3" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "B")
+                    VHCF35IW-HOLD-AXLE.B-BEARING1 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+                if (VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "2" || VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "4" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "N")
+                    VHCF35IW-HOLD-AXLE.N-BEARING1 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+            end
+  
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "GEAR BOX")
+                VHCF35IW-HOLD-AXLE.GEAR-BOX1 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+            end
+  
+            YCOUNT = YCOUNT + 1;
+        end
+    end
+end 
+
+Function VHCF35IS-OLD-AXLE2 ()
+  
+  
+
+  
+  
+
+   
+    if (VHCF35IW-HOLD-TRCK.AXLE2 != " ")
+        set VHCF35F_CRIT empty;
+        set VHCF35F_DATA empty;
+        VHCF35IW-MSG.MSG = " ";
+        VHCF35IW.FOUND-CMPNTS = "N";
+        VHCF35F_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.AXLE2;
+        VHCF35F_CRIT.TRUCK-SERIAL-NO = VHCF35IW.CMPNT-SERIAL-NO;
+        VHCF35F_CRIT.AXLE-NEW-OLD = "OLD";
+        try
+            call "VHCF37F"(XDCONTROL, VHCF35F_CRIT, VHCF35F_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF35IW.AXLE-CMP-COUNT = XDCONTROL.UROWCNT;
+        else
+            VHCF35IW-MSG.MSG = "NO COMPONENTS ARE CURRENTLY ASSOCIATED WITH THAT AXLE SERIAL NUMBER";
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+  
+
+  
+  
+        YCOUNT = 1;
+        while (YCOUNT <= VHCF35IW.AXLE-CMP-COUNT)
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "WHEEL")
+                if (VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "5" || VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "7" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "B")
+                    VHCF35IW-HOLD-AXLE.WHEEL3 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+                if (VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "6" || VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "8" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "N")
+                    VHCF35IW-HOLD-AXLE.WHEEL4 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+            end
+  
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "BEARING")
+                if (VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "5" || VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "7" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "B")
+                    VHCF35IW-HOLD-AXLE.B-BEARING2 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+                if (VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "6" || VHCF35F_DATA.PREV-POSN-CD[YCOUNT] == "8" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "N")
+                    VHCF35IW-HOLD-AXLE.N-BEARING2 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+            end
+  
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "GEAR BOX")
+                VHCF35IW-HOLD-AXLE.GEAR-BOX2 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+            end
+  
+            YCOUNT = YCOUNT + 1;
+        end
+    end
+end 
+
+Function VHCF35IS-PRE-ADD ()
+  
+   
+    set VHCF35IW-MSG empty;
+    VHCF35IW.A2COMPONENT-FLAG = "N";
+    VHCF35IW.A1COMPONENT-FLAG = "N";
+    VHCF35IW.TCOMPONENT-FLAG = "N";
+
+  
+
+  
+    if (VHCF35IW-HOLD-AXLE.WHEEL1 != " " &&
+     VHCF35IW-HOLD-AXLE.WHEEL2 != " " &&
+     VHCF35IW-HOLD-AXLE.B-BEARING1 != " " &&
+     VHCF35IW-HOLD-AXLE.N-BEARING1 != " " &&
+     VHCF35IW-HOLD-AXLE.GEAR-BOX1 != " ")
+        VHCF35IW.A1COMPONENT-FLAG = "Y";
+    end
+
+  
+    if (VHCF35IW-HOLD-AXLE.WHEEL3 != " " &&
+     VHCF35IW-HOLD-AXLE.WHEEL4 != " " &&
+     VHCF35IW-HOLD-AXLE.B-BEARING2 != " " &&
+     VHCF35IW-HOLD-AXLE.N-BEARING2 != " " &&
+     VHCF35IW-HOLD-AXLE.GEAR-BOX2 != " ")
+        VHCF35IW.A2COMPONENT-FLAG = "Y";
+    end
+
+  
+    if (VHCF35IW-HOLD-TRCK.AXLE1 != " " &&
+     VHCF35IW-HOLD-TRCK.AXLE2 != " " &&
+     VHCF35IW-HOLD-TRCK.TM-1 != " " &&
+     VHCF35IW-HOLD-TRCK.TM-2 != " " &&
+     VHCF35IW-HOLD-TRCK.BRAKE-DISC-1 != " " &&
+     VHCF35IW-HOLD-TRCK.BRAKE-DISC-1 != " ")
+        VHCF35IW.TCOMPONENT-FLAG = "Y";
+    end
+    if (VHCF35IW.TCOMPONENT-FLAG == "Y" && VHCF35IW.A1COMPONENT-FLAG == "Y" && VHCF35IW.A2COMPONENT-FLAG == "Y")
+        VHCF35IW.RUN-VALIDATE = "Y";
+    end
+    if (VHCF35IW.TCOMPONENT-FLAG == "N")
+        VHCF35IW-MSG.MSG = "YOU CANNOT ADD PARTS, THE TRUCK IS MISSING COMPONENTS";
+    end
+    if (VHCF35IW.A1COMPONENT-FLAG == "N")
+        VHCF35IW-PASSVALUE.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.AXLE1;
+        VHCF35IW-MSG.MSG = "AXLE 1 IS MISSING COMPONENTS, USE THE AXLE GUI TO FIX";
+    end
+    if (VHCF35IW.A2COMPONENT-FLAG == "N")
+        VHCF35IW-PASSVALUE.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.AXLE2;
+        VHCF35IW-MSG.MSG = "AXLE 1 IS MISSING COMPONENTS, USE THE AXLE GUI TO FIX";
+    end
+end 
+
+Function VHCF35IS-PRE-AXLE2 () 
+    if (VHCF35IW-HOLD-TRCK.AXLE2 != VHCF35IW-SAVE.AXLE-2-SAVE)
+        VHCF35IW-SAVE.AXLE-2-SAVE = VHCF35IW-HOLD-TRCK.AXLE2;
+        
+  
+    end
+    VHCF35IS-AXLE2();
+end 
+
+Function VHCF35IS-PRE-VALID () 
+    if (AXLE1-COLOR == "YELLOW" ||
+     AXLE2-COLOR == "YELLOW" ||
+     DISC1-COLOR == "YELLOW" ||
+     DISC2-COLOR == "YELLOW" ||
+     TM1-COLOR == "YELLOW" ||
+     TM2-COLOR == "YELLOW")
+        VHCF35IS-SER-OFF();
+    else
+        if (VHCF35IW-HOLD-TRCK.AXLE1 == " " &&
+         VHCF35IW-HOLD-TRCK.AXLE2 == " " &&
+         VHCF35IW-HOLD-TRCK.TM-1 == " " &&
+         VHCF35IW-HOLD-TRCK.TM-2 == " " &&
+         VHCF35IW-HOLD-TRCK.BRAKE-DISC-1 == " " &&
+         VHCF35IW-HOLD-TRCK.BRAKE-DISC-1 == " ")
+            VHCF35IW-MSG.MSG = "Please enter serial no. on the parts";
+        else
+            VHCF35IS-AXLE1();
+            VHCF35IS-PRE-AXLE2();
+            if (VHCF35IW.VALID-SERIALS != "N")
+                VHCF35IS-VALIDATE();
+            end
+        end
+    end
+end 
+
+Function VHCF35IS-SER-OFF () 
+    VHCF35H_CRIT.TERM-LAST-UPD = VH01A01_DATA.TERM-ID;
+    if (VHCF35IW-COLOR.AXLE1-COLOR == "YELLOW")
+        VHCF35H_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.AXLE1;
+        try
+            call "VHCF35H"(XDCONTROL, VHCF35H_CRIT, VHCF35H_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF35IW-MSG.MSG = "THE HIGH LIGHTED SERIAL NUMBER IS SUCCESSFULLY OFF FROM TRUCK";
+        end
+    end
+    if (VHCF35IW-COLOR.AXLE2-COLOR == "YELLOW")
+        VHCF35H_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.AXLE2;
+        try
+            call "VHCF35H"(XDCONTROL, VHCF35H_CRIT, VHCF35H_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF35IW-MSG.MSG = "THE HIGH LIGHTED SERIAL NUMBER IS SUCCESSFULLY OFF FROM TRUCK";
+        end
+    end
+    if (VHCF35IW-COLOR.TM1-COLOR == "YELLOW")
+        VHCF35H_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.TM-1;
+        try
+            call "VHCF35H"(XDCONTROL, VHCF35H_CRIT, VHCF35H_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF35IW-MSG.MSG = "THE HIGH LIGHTED SERIAL NUMBER IS SUCCESSFULLY OFF FROM TRUCK";
+        end
+    end
+    if (VHCF35IW-COLOR.TM2-COLOR == "YELLOW")
+        VHCF35H_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.TM-2;
+        try
+            call "VHCF35H"(XDCONTROL, VHCF35H_CRIT, VHCF35H_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF35IW-MSG.MSG = "THE HIGH LIGHTED SERIAL NUMBER IS SUCCESSFULLY OFF FROM TRUCK";
+        end
+    end
+    if (VHCF35IW-COLOR.DISC1-COLOR == "YELLOW")
+        VHCF35H_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.BRAKE-DISC-1;
+        try
+            call "VHCF35H"(XDCONTROL, VHCF35H_CRIT, VHCF35H_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF35IW-MSG.MSG = "THE HIGH LIGHTED SERIAL NUMBER IS SUCCESSFULLY OFF FROM TRUCK";
+        end
+    end
+    if (VHCF35IW-COLOR.DISC2-COLOR == "YELLOW")
+        VHCF35H_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.BRAKE-DISC-2;
+        try
+            call "VHCF35H"(XDCONTROL, VHCF35H_CRIT, VHCF35H_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF35IW-MSG.MSG = "THE HIGH LIGHTED SERIAL NUMBER IS SUCCESSFULLY OFF FROM TRUCK";
+        end
+    end
+    VHCF35IW-SAVE.RUN-RETRIEVE = "Y";
+end 
+
+Function VHCF35IS-TRK-SAVE () 
+
+end 
+
+Function VHCF35IS-TRUCK ()
+  
+  
+
+   
+    VHCF35IW-MSG.MSG = " ";
+    VHCF35IW.FOUND-CMPNTS = "N";
+
+  
+  
+    VHCF35IW-HOLD-TRCK.AXLE1-NEW = "Y";
+    VHCF35IW-HOLD-TRCK.AXLE2-NEW = "Y";
+    VHCF35IW-HOLD-TRCK.TM-1-NEW = "Y";
+    VHCF35IW-HOLD-TRCK.TM-2-NEW = "Y";
+    VHCF35IW-HOLD-TRCK.BRAKE-DISC-1-NEW = "Y";
+    VHCF35IW-HOLD-TRCK.BRAKE-DISC-2-NEW = "Y";
+    set VHCF35B_CRIT empty;
+    set VHCF35B_DATA empty;
+    VHCF35B_CRIT.STOCK-NO = VHCF35D_CRIT.STOCK-NO;
+    VHCF35B_CRIT.CMPNT-SERIAL-NO = VHCF35D_CRIT.CMPNT-SERIAL-NO;
+    try
+        call "VHCF35B"(XDCONTROL, VHCF35B_CRIT, VHCF35B_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHCF35IW.TRUCK-CMP-COUNT = XDCONTROL.UROWCNT;
+        if (XDCONTROL.UROWCNT > 1)
+            VHCF35IW.FOUND-CMPNTS = "Y";
+        end
+    else
+        VHCF35IW-MSG.MSG = "NO COMPONENTS ARE CURRENTLY ASSOCIATED WITH THAT TRUCK SERIAL NUMBER";
+        
+        
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+    end
+  
+
+  
+  
+    if (VHCF35IW.FOUND-CMPNTS == "Y")
+        VHCF35IS-MOVE();
+    end
+    if (VHCF35IW.FOUND-AXLE-1 == "Y" &&
+     VHCF35IW.FOUND-AXLE-2 == "Y" &&
+     VHCF35IW.FOUND-TM1 == "Y" &&
+     VHCF35IW.FOUND-TM2 == "Y" &&
+     VHCF35IW.FOUND-DISC1 == "Y" &&
+     VHCF35IW.FOUND-DISC2 == "Y")
+        VHCF35IW-MSG.MSG-1A = "THIS TRUCK ALREADY BUILT ";
+    end
+end 
+
+Function VHCF35IS-TRUCK-SEL () 
+    if (VHCF35IW.STOCK-NO-L2 == "17-35-88520" ||
+     VHCF35IW.STOCK-NO-L2 == "19-35-88603" ||
+     VHCF35IW.STOCK-NO-L2 == "20-35-88610")
+        VHCF35IW-PASSVALUE.AXLE-1-NAME = "AXLE1";
+        VHCF35IW-PASSVALUE.AXLE-2-NAME = "AXLE2";
+        VHCF35IW-PASSVALUE.TM-1-NAME = "Traction Motor 1";
+        VHCF35IW-PASSVALUE.TM-2-NAME = "Traction Motor 2";
+        VHCF35IW-PASSVALUE.BD-1-NAME = "Brake Disc 1";
+        VHCF35IW-PASSVALUE.BD-2-NAME = "Brake Disc 2";
+        VHCF35IW-PASSVALUE.WHEEL-1-NAME = "Wheel 1";
+        VHCF35IW-PASSVALUE.WHEEL-2-NAME = "Wheel 2";
+        VHCF35IW-PASSVALUE.WHEEL-3-NAME = "Wheel 3";
+        VHCF35IW-PASSVALUE.WHEEL-4-NAME = "Wheel 4";
+    else
+        VHCF35IW-PASSVALUE.AXLE-1-NAME = "AXLE3";
+        VHCF35IW-PASSVALUE.AXLE-2-NAME = "AXLE4";
+        VHCF35IW-PASSVALUE.TM-1-NAME = "Traction Motor 3";
+        VHCF35IW-PASSVALUE.TM-2-NAME = "Traction Motor 4";
+        VHCF35IW-PASSVALUE.BD-1-NAME = "Brake Disc 3";
+        VHCF35IW-PASSVALUE.BD-2-NAME = "Brake Disc 4";
+        VHCF35IW-PASSVALUE.WHEEL-1-NAME = "Wheel 5";
+        VHCF35IW-PASSVALUE.WHEEL-2-NAME = "Wheel 6";
+        VHCF35IW-PASSVALUE.WHEEL-3-NAME = "Wheel 7";
+        VHCF35IW-PASSVALUE.WHEEL-4-NAME = "Wheel 8";
+    end
+end 
+
+Function VHCF35IS-VAL-AXLE () 
+    if (VHCF35F_CRIT.AXLE-ON-CAR == "Y")
+        VHCF35IW-MSG.MSG = "AXLE on Car, please use serial off to remove it";
+        VHCF35IW.VALID-SERIALS = "N";
+    end
+    if (VHCF35F_CRIT.INVALID-AXLE == "Y")
+        VHCF35IW-MSG.MSG = "invalid axle serial no";
+        VHCF35IW.VALID-SERIALS = "N";
+    end
+end 
+
+Function VHCF35IS-VALID-SER ()
+  
+  
+
+
+   
+    XXEXT_CALL_Level77Items.UEXTNAM = "VHCF35D";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VHCF35D";
+
+
+  
+  
+  
+    VHCF35D_CRIT.AXLE = "Y";
+
+    
+    try
+        call "VHCF35D"(XDCONTROL, VHCF35D_CRIT, VHCF35D_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF35IW-MSG.MSG-1B = " ";
+        else
+            VHCF35IW-MSG.MSG-1A = "THE SERIAL NUMBER  ENTERED IS NOT VALID FOR THIS COMPONENT: ";
+            VHCF35IW.VALID-SERIALS = "N";
+  
+  
+        
+        
+  
+            if (XDCONTROL.URC == 100)
+
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end 
+
+  
+    end
+end 
+
+Function VHCF35IS-VALID-TR ()
+  
+  
+  
+   
+    VHCF35IW.ROW-COUNT = 0;
+    VHCF35IW-MSG.MSG = " ";
+    VHCF35IW.VALID-TRUCK = "N";
+    set VHCF35D_CRIT empty;
+    set VHCF35D_DATA empty;
+    set VHCF35IW-HOLD-AXLE empty;
+    set VHCF35IW-HOLD-TRCK empty;
+    AXLE1-COLOR = "WHITE";
+    AXLE2-COLOR = "WHITE";
+    DISC1-COLOR = "WHITE";
+    DISC2-COLOR = "WHITE";
+    TM1-COLOR = "WHITE";
+    TM2-COLOR = "WHITE";
+
+  
+  
+  
+
+  
+    VHCF14IW-STOCK.WHICH = "S";
+    VHCF14IW-STOCK.FULL-STOCK-NO = VHCF35IW.STOCK-NO-L2;
+    VHCF14IS-STK-DASH();
+    VHCF35D_CRIT.STOCK-NO = VHCF14IW-STOCK.STOCK-NO;
+    VHCF35D_CRIT.CMPNT-SERIAL-NO = VHCF35IW.CMPNT-SERIAL-NO;
+
+  
+  
+  
+    VHCF35D_CRIT.AXLE = "N"; 
+    try
+        call "VHCF35D"(XDCONTROL, VHCF35D_CRIT, VHCF35D_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        if (VHCF35D_DATA.CAR-NO == " ")
+            VHCF35IW.ROW-COUNT = XDCONTROL.UROWCNT;
+            VHCF35IW.VALID-TRUCK = "Y";
+            VHCF35IW.TRUCK-SERIAL-NO = VHCF35D_DATA.CMPNT-SERIAL-NO;
+            VHCF35IW.TRUCK-STOCK-NO = VHCF35D_CRIT.STOCK-NO;
+            VHCF35IW-HOLD-TRCK.COMMENTS = VHCF35D_DATA.COMMENTS;
+            VHCF35IW-HOLD-TRCK.TRUCK-STAT = VHCF35D_DATA.TRUCK-STAT;
+            VHCF35IW-HOLD-TRCK.LOC = VHCF35D_DATA.SHOP-LOC;
+            VHCF35IW-PASSVALUE.ENABLE-UPDATE = "Y";
+        else
+            VHCF35IW-MSG.MSG-1A = "THE TRUCK SERIAL NUMBER YOU ENTERED IS CURRENTLY ON CAR ";
+            VHCF35IW-MSG.MSG-1B = VHCF35D_DATA.CAR-NO;
+            VHCF35IW-PASSVALUE.DISABLE-UPDATE = "Y";
+        end
+    else
+        VHCF35IW-MSG.MSG = "THE TRUCK SERIAL NUMBER YOU ENTERED IS CURRENTLY ON CAR OR NOT VALID";
+        VHCF35IW-PASSVALUE.DISABLE-UPDATE = "Y";
+        
+        
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+    end
+  
+
+  
+  
+    if (VHCF35IW.VALID-TRUCK == "Y")
+        VHCF35IW-PASSVALUE.ENABLE-UPDATE = "Y";
+        VHCF35IS-TRUCK();
+    else
+        VHCF35IW-PASSVALUE.DISABLE-UPDATE = "Y";
+    end
+end 
+
+Function VHCF35IS-VALIDATE ()
+  
+  
+
+   
+    VHCF35IW.VALID-SERIALS = "Y ";
+    if (VHCF35IW-HOLD-TRCK.AXLE1 != " ")
+        if (VHCF35IW-HOLD-TRCK.AXLE1-NEW == "Y")
+            set VHCF35D_DATA empty;
+            set VHCF35D_CRIT empty;
+            MSG-1B = "AXLE 1";
+            VHCF35D_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.AXLE1;
+            VHCF35D_CRIT.CMPNT-EQUIP-TYPE = "AXLE";
+            VHCF35IS-VALID-SER();
+            if (VHCF35IW.VALID-SERIALS == "N ")
+                return;
+            else
+                VHCF35IW-HOLD-TRCK.AXLE1-STOCK-NO = VHCF35D_DATA.STOCK-NO;
+                VHCF35IS-AXLE1(); 
+            end
+        end
+    end
+    if (VHCF35IW-HOLD-TRCK.AXLE2 != " ")
+        if (VHCF35IW-HOLD-TRCK.AXLE2-NEW == "Y")
+            set VHCF35D_DATA empty;
+            set VHCF35D_CRIT empty;
+            MSG-1B = "AXLE 2";
+            VHCF35D_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.AXLE2;
+            VHCF35D_CRIT.CMPNT-EQUIP-TYPE = "AXLE";
+            VHCF35IS-VALID-SER();
+            if (VHCF35IW.VALID-SERIALS == "N ") 
+                return;
+            else
+                VHCF35IW-HOLD-TRCK.AXLE2-STOCK-NO = VHCF35D_DATA.STOCK-NO;
+                VHCF35IS-AXLE2();
+            end
+        end
+    end
+    if (VHCF35IW-HOLD-TRCK.TM-1 != " ")
+        if (VHCF35IW-HOLD-TRCK.TM-1-NEW == "Y")
+            set VHCF35D_DATA empty;
+            set VHCF35D_CRIT empty;
+            MSG-1B = "TRACTION MOTOR 1";
+            VHCF35D_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.TM-1;
+            VHCF35D_CRIT.CMPNT-EQUIP-TYPE = "TRACTION MOTOR";
+            if (VHCF35IW.STOCK-NO-L2 == "17-35-88515" ||
+             VHCF35IW.STOCK-NO-L2 == "17-35-88520" ||
+             VHCF35IW.STOCK-NO-L2 == "17-35-88525")
+                VHCF35D_CRIT.STOCK-NO = "173155448";
+            else
+                VHCF35D_CRIT.STOCK-NO = "183155300";
+            end
+            VHCF35IS-VALID-SER();
+            if (VHCF35IW.VALID-SERIALS == "N ")
+                return;
+            else
+                VHCF35IW-HOLD-TRCK.TM-1-STOCK-NO = VHCF35D_DATA.STOCK-NO;
+            end
+        end
+    end
+    if (VHCF35IW-HOLD-TRCK.TM-2 != " ")
+        if (VHCF35IW-HOLD-TRCK.TM-2-NEW == "Y")
+            set VHCF35D_DATA empty;
+            set VHCF35D_CRIT empty;
+            MSG-1B = "TRACTION MOTOR 2";
+            VHCF35D_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.TM-2;
+            VHCF35D_CRIT.CMPNT-EQUIP-TYPE = "TRACTION MOTOR";
+            if (VHCF35IW.STOCK-NO-L2 == "17-35-88515" ||
+             VHCF35IW.STOCK-NO-L2 == "17-35-88520" ||
+             VHCF35IW.STOCK-NO-L2 == "17-35-88525")
+                VHCF35D_CRIT.STOCK-NO = "173155448";
+            else
+                VHCF35D_CRIT.STOCK-NO = "183155300";
+            end
+            VHCF35IS-VALID-SER();
+            if (VHCF35IW.VALID-SERIALS == "N ")
+                return;
+            else
+                VHCF35IW-HOLD-TRCK.TM-2-STOCK-NO = VHCF35D_DATA.STOCK-NO;
+            end
+        end
+    end
+    if (VHCF35IW-HOLD-TRCK.BRAKE-DISC-1 != " ")
+        if (VHCF35IW-HOLD-TRCK.BRAKE-DISC-1-NEW == "Y")
+            set VHCF35D_DATA empty;
+            set VHCF35D_CRIT empty;
+            MSG-1B = "BRAKE DISC 1";
+            VHCF35D_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.BRAKE-DISC-1;
+            VHCF35D_CRIT.CMPNT-EQUIP-TYPE = "BRAKE DISC";
+            VHCF35IS-VALID-SER();
+            if (VHCF35IW.VALID-SERIALS == "N ")
+                return;
+            else
+                VHCF35IW-HOLD-TRCK.BRAKE-DISC-1-STOCK-NO = VHCF35D_DATA.STOCK-NO;
+            end
+        end
+    end
+    if (VHCF35IW-HOLD-TRCK.BRAKE-DISC-2 != " ")
+        if (VHCF35IW-HOLD-TRCK.BRAKE-DISC-2-NEW == "Y")
+            set VHCF35D_DATA empty;
+            set VHCF35D_CRIT empty;
+            MSG-1B = "BRAKE DISC 2";
+            VHCF35D_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.BRAKE-DISC-2;
+            VHCF35D_CRIT.CMPNT-EQUIP-TYPE = "BRAKE DISC";
+            VHCF35IS-VALID-SER();
+            if (VHCF35IW.VALID-SERIALS == "N ")
+                return;
+            else
+                VHCF35IW-HOLD-TRCK.BRAKE-DISC-2-STOCK-NO = VHCF35D_DATA.STOCK-NO;
+            end
+        end
+    end
+
+
+  
+  
+  
+  
+    set VHCF35IW-MSG empty;
+    VHCF35IW.A2COMPONENT-FLAG = "N";
+    VHCF35IW.A1COMPONENT-FLAG = "N";
+    VHCF35IW.TCOMPONENT-FLAG = "N";
+    
+
+  
+
+  
+    if (VHCF35IW-HOLD-AXLE.WHEEL1 != " " &&
+     VHCF35IW-HOLD-AXLE.WHEEL2 != " " &&
+     VHCF35IW-HOLD-AXLE.B-BEARING1 != " " &&
+     VHCF35IW-HOLD-AXLE.N-BEARING1 != " " &&
+     VHCF35IW-HOLD-AXLE.GEAR-BOX1 != " ")
+        VHCF35IW.A1COMPONENT-FLAG = "Y";
+    end
+
+  
+    if (VHCF35IW-HOLD-AXLE.WHEEL3 != " " &&
+     VHCF35IW-HOLD-AXLE.WHEEL4 != " " &&
+     VHCF35IW-HOLD-AXLE.B-BEARING2 != " " &&
+     VHCF35IW-HOLD-AXLE.N-BEARING2 != " " &&
+     VHCF35IW-HOLD-AXLE.GEAR-BOX2 != " ")
+        VHCF35IW.A2COMPONENT-FLAG = "Y";
+    end
+
+  
+    if (VHCF35IW-HOLD-TRCK.AXLE1 != " " &&
+     VHCF35IW-HOLD-TRCK.AXLE2 != " " &&
+     VHCF35IW-HOLD-TRCK.TM-1 != " " &&
+     VHCF35IW-HOLD-TRCK.TM-2 != " " &&
+     VHCF35IW-HOLD-TRCK.BRAKE-DISC-1 != " " &&
+     VHCF35IW-HOLD-TRCK.BRAKE-DISC-1 != " ")
+        VHCF35IW.TCOMPONENT-FLAG = "Y";
+    end
+
+  
+    VHCF35IW.RUN-ADD = "Y";
+end 
+
+Function VHCF37IS-AXLE1 ()
+  
+  
+
+  
+  
+
+   
+    if (VHCF35IW-HOLD-TRCK.AXLE1 != " ")
+        VHCF35IW-MSG.MSG = " ";
+        VHCF35IW.FOUND-CMPNTS = "N";
+        VHCF35F_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.AXLE1;
+        VHCF35F_CRIT.AXLE-NEW-OLD = "NEW";
+        try
+            call "VHCF37F"(XDCONTROL, VHCF35F_CRIT, VHCF35F_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF35IS-VAL-AXLE();
+            if (VHCF35F_CRIT.AXLE-ON-CAR != "Y" &&
+             VHCF35F_CRIT.INVALID-AXLE != "Y")
+                VHCF35IW.AXLE-CMP-COUNT = XDCONTROL.UROWCNT;
+            end
+        else
+            VHCF35IW-MSG.MSG = "NO COMPONENTS ARE CURRENTLY ASSOCIATED WITH THAT AXLE SERIAL NUMBER";
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+  
+
+  
+  
+        YCOUNT = 1;
+        while (YCOUNT <= VHCF35IW.AXLE-CMP-COUNT)
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "WHEEL")
+  
+                if (VHCF35F_DATA.POSN-CD[YCOUNT] == "1" || VHCF35F_DATA.POSN-CD[YCOUNT] == "5" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "B")
+                    VHCF35IW-HOLD-AXLE.WHEEL1 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+  
+                if (VHCF35F_DATA.POSN-CD[YCOUNT] == "2" || VHCF35F_DATA.POSN-CD[YCOUNT] == "6" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "N")
+                    VHCF35IW-HOLD-AXLE.WHEEL2 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+            end
+  
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "BEARING")
+  
+                if (VHCF35F_DATA.POSN-CD[YCOUNT] == "1" || VHCF35F_DATA.POSN-CD[YCOUNT] == "5" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "B")
+                    VHCF35IW-HOLD-AXLE.B-BEARING1 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+  
+                if (VHCF35F_DATA.POSN-CD[YCOUNT] == "2" || VHCF35F_DATA.POSN-CD[YCOUNT] == "6" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "N")
+                    VHCF35IW-HOLD-AXLE.N-BEARING1 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+            end
+  
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "GEAR BOX")
+                VHCF35IW-HOLD-AXLE.GEAR-BOX1 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+            end
+  
+            YCOUNT = YCOUNT + 1;
+        end
+    end
+end 
+
+Function VHCF37IS-AXLE2 ()
+  
+  
+
+  
+  
+
+   
+    if (VHCF35IW-HOLD-TRCK.AXLE2 != " ")
+        set VHCF35F_CRIT empty;
+        set VHCF35F_DATA empty;
+        VHCF35IW-MSG.MSG = " ";
+        VHCF35IW.FOUND-CMPNTS = "N";
+        VHCF35F_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.AXLE2;
+        VHCF35F_CRIT.AXLE-NEW-OLD = "NEW";
+        try
+            call "VHCF37F"(XDCONTROL, VHCF35F_CRIT, VHCF35F_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF35IS-VAL-AXLE();
+            if (VHCF35F_CRIT.AXLE-ON-CAR != "Y" &&
+             VHCF35F_CRIT.INVALID-AXLE != "Y")
+                VHCF35IW.AXLE-CMP-COUNT = XDCONTROL.UROWCNT;
+            end
+        else
+            VHCF35IW-MSG.MSG = "NO COMPONENTS ARE CURRENTLY ASSOCIATED WITH THAT AXLE SERIAL NUMBER";
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+  
+
+  
+  
+        YCOUNT = 1;
+        while (YCOUNT <= VHCF35IW.AXLE-CMP-COUNT)
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "WHEEL")
+  
+                if (VHCF35F_DATA.POSN-CD[YCOUNT] == "3" || VHCF35F_DATA.POSN-CD[YCOUNT] == "7" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "B")
+                    VHCF35IW-HOLD-AXLE.WHEEL3 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+  
+                if (VHCF35F_DATA.POSN-CD[YCOUNT] == "4" || VHCF35F_DATA.POSN-CD[YCOUNT] == "8" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "N")
+                    VHCF35IW-HOLD-AXLE.WHEEL4 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+            end
+  
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "BEARING")
+  
+                if (VHCF35F_DATA.POSN-CD[YCOUNT] == "3" || VHCF35F_DATA.POSN-CD[YCOUNT] == "7" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "B")
+                    VHCF35IW-HOLD-AXLE.B-BEARING2 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+  
+                if (VHCF35F_DATA.POSN-CD[YCOUNT] == "4" || VHCF35F_DATA.POSN-CD[YCOUNT] == "8" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "N")
+                    VHCF35IW-HOLD-AXLE.N-BEARING2 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+            end
+  
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "GEAR BOX")
+                VHCF35IW-HOLD-AXLE.GEAR-BOX2 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+            end
+  
+            YCOUNT = YCOUNT + 1;
+        end
+    end
+end 
+
+Function VHCF37IS-OLD-AXLE1 ()
+  
+  
+
+  
+  
+
+   
+    if (VHCF35IW-HOLD-TRCK.AXLE1 != " ")
+        VHCF35IW-MSG.MSG = " ";
+        VHCF35IW.FOUND-CMPNTS = "N";
+        VHCF35F_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.AXLE1;
+        VHCF35F_CRIT.TRUCK-SERIAL-NO = VHCF35IW.CMPNT-SERIAL-NO;
+        VHCF35F_CRIT.AXLE-NEW-OLD = "OLD";
+        try
+            call "VHCF37F"(XDCONTROL, VHCF35F_CRIT, VHCF35F_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF35IW.AXLE-CMP-COUNT = XDCONTROL.UROWCNT;
+        else
+            VHCF35IW-MSG.MSG = "NO COMPONENTS ARE CURRENTLY ASSOCIATED WITH THAT AXLE SERIAL NUMBER";
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+  
+
+  
+  
+        YCOUNT = 1;
+        while (YCOUNT <= VHCF35IW.AXLE-CMP-COUNT)
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "WHEEL")
+  
+                if (VHCF35F_DATA.POSN-CD[YCOUNT] == "1" || VHCF35F_DATA.POSN-CD[YCOUNT] == "5" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "B")
+                    VHCF35IW-HOLD-AXLE.WHEEL1 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+  
+                if (VHCF35F_DATA.POSN-CD[YCOUNT] == "2" || VHCF35F_DATA.POSN-CD[YCOUNT] == "6" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "N")
+                    VHCF35IW-HOLD-AXLE.WHEEL2 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+            end
+  
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "BEARING")
+  
+                if (VHCF35F_DATA.POSN-CD[YCOUNT] == "1" || VHCF35F_DATA.POSN-CD[YCOUNT] == "5" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "B")
+                    VHCF35IW-HOLD-AXLE.B-BEARING1 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+  
+                if (VHCF35F_DATA.POSN-CD[YCOUNT] == "2" || VHCF35F_DATA.POSN-CD[YCOUNT] == "6" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "N")
+                    VHCF35IW-HOLD-AXLE.N-BEARING1 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+            end
+  
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "GEAR BOX")
+                VHCF35IW-HOLD-AXLE.GEAR-BOX1 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+            end
+  
+            YCOUNT = YCOUNT + 1;
+        end
+    end
+end 
+
+Function VHCF37IS-OLD-AXLE2 ()
+  
+  
+
+  
+  
+
+   
+    if (VHCF35IW-HOLD-TRCK.AXLE2 != " ")
+        set VHCF35F_CRIT empty;
+        set VHCF35F_DATA empty;
+        VHCF35IW-MSG.MSG = " ";
+        VHCF35IW.FOUND-CMPNTS = "N";
+        VHCF35F_CRIT.CMPNT-SERIAL-NO = VHCF35IW-HOLD-TRCK.AXLE2;
+        VHCF35F_CRIT.TRUCK-SERIAL-NO = VHCF35IW.CMPNT-SERIAL-NO;
+        VHCF35F_CRIT.AXLE-NEW-OLD = "OLD";
+        try
+            call "VHCF37F"(XDCONTROL, VHCF35F_CRIT, VHCF35F_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHCF35IW.AXLE-CMP-COUNT = XDCONTROL.UROWCNT;
+        else
+            VHCF35IW-MSG.MSG = "NO COMPONENTS ARE CURRENTLY ASSOCIATED WITH THAT AXLE SERIAL NUMBER";
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+  
+
+  
+  
+        YCOUNT = 1;
+        while (YCOUNT <= VHCF35IW.AXLE-CMP-COUNT)
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "WHEEL")
+  
+                if (VHCF35F_DATA.POSN-CD[YCOUNT] == "3" || VHCF35F_DATA.POSN-CD[YCOUNT] == "7" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "B")
+                    VHCF35IW-HOLD-AXLE.WHEEL3 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+  
+                if (VHCF35F_DATA.POSN-CD[YCOUNT] == "4" || VHCF35F_DATA.POSN-CD[YCOUNT] == "8" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "N")
+                    VHCF35IW-HOLD-AXLE.WHEEL4 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+            end
+  
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "BEARING")
+  
+                if (VHCF35F_DATA.POSN-CD[YCOUNT] == "3" || VHCF35F_DATA.POSN-CD[YCOUNT] == "7" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "B")
+                    VHCF35IW-HOLD-AXLE.B-BEARING2 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+  
+                if (VHCF35F_DATA.POSN-CD[YCOUNT] == "4" || VHCF35F_DATA.POSN-CD[YCOUNT] == "8" ||
+                 VHCF35F_DATA.POSN-CD[YCOUNT] == "N")
+                    VHCF35IW-HOLD-AXLE.N-BEARING2 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+                end
+            end
+  
+   
+            if (VHCF35F_DATA.CMPNT-EQUIP-TYPE[YCOUNT] == "GEAR BOX")
+                VHCF35IW-HOLD-AXLE.GEAR-BOX2 = VHCF35F_DATA.CMPNT-SERIAL-NO[YCOUNT];
+            end
+  
+            YCOUNT = YCOUNT + 1;
+        end
+    end
+end 
+
+Function VHCF37IS-VALID-TR ()
+  
+  
+  
+   
+    VHCF35IW.ROW-COUNT = 0;
+    VHCF35IW-MSG.MSG = " ";
+    VHCF35IW.VALID-TRUCK = "N";
+    set VHCF35D_CRIT empty;
+    set VHCF35D_DATA empty;
+    set VHCF35IW-HOLD-AXLE empty;
+    set VHCF35IW-HOLD-TRCK empty;
+    AXLE1-COLOR = "WHITE";
+    AXLE2-COLOR = "WHITE";
+    DISC1-COLOR = "WHITE";
+    DISC2-COLOR = "WHITE";
+    TM1-COLOR = "WHITE";
+    TM2-COLOR = "WHITE";
+
+  
+  
+  
+
+  
+    VHCF14IW-STOCK.WHICH = "S";
+    VHCF14IW-STOCK.FULL-STOCK-NO = VHCF35IW.STOCK-NO-L2;
+    VHCF14IS-STK-DASH();
+    VHCF35D_CRIT.STOCK-NO = VHCF14IW-STOCK.STOCK-NO;
+    VHCF35D_CRIT.CMPNT-SERIAL-NO = VHCF35IW.CMPNT-SERIAL-NO;
+
+  
+  
+  
+    VHCF35D_CRIT.AXLE = "N"; 
+    try
+        call "VHCF35D"(XDCONTROL, VHCF35D_CRIT, VHCF35D_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+  
+        VHCF35IW.ROW-COUNT = XDCONTROL.UROWCNT;
+        VHCF35IW.VALID-TRUCK = "Y";
+        VHCF35IW.TRUCK-SERIAL-NO = VHCF35D_DATA.CMPNT-SERIAL-NO;
+        VHCF35IW.TRUCK-STOCK-NO = VHCF35D_CRIT.STOCK-NO;
+        VHCF35IW-HOLD-TRCK.COMMENTS = VHCF35D_DATA.COMMENTS;
+        VHCF35IW-HOLD-TRCK.TRUCK-STAT = VHCF35D_DATA.TRUCK-STAT;
+        VHCF35IW-HOLD-TRCK.LOC = VHCF35D_DATA.SHOP-LOC;
+        VHCF35IW-PASSVALUE.ENABLE-UPDATE = "Y";
+        
+  
+  
+  
+  
+  
+    else
+        VHCF35IW-MSG.MSG = "THE TRUCK SERIAL NUMBER YOU ENTERED IS NOT VALID";
+        VHCF35IW-PASSVALUE.DISABLE-UPDATE = "Y";
+        
+        
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+    end
+  
+
+  
+  
+    if (VHCF35IW.VALID-TRUCK == "Y")
+        VHCF35IW-PASSVALUE.ENABLE-UPDATE = "Y";
+        VHCF35IS-TRUCK();
+    else
+        VHCF35IW-PASSVALUE.DISABLE-UPDATE = "Y";
+    end
+end

@@ -1,0 +1,686 @@
+
+
+package MRSWaysideMaintenance;
+
+
+Function WS13IS-ADDNARR ()
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+   
+    if (WS13IW-PASSVALUE.CURRENT-NARR != " ")
+
+  
+  
+  
+        if (WS13IW-PASSVALUE.REPR-DOC-NO != 0)
+            WS13A07_DATA.INCD-NO = WS13IW-PASSVALUE.INCD-NO;
+            WS13A07_DATA.NARR-NO = WS13IW-PASSVALUE.MAX-ROWS + 1;
+            WS13A07_DATA.NARR = WS13IW-PASSVALUE.CURRENT-NARR;
+            WS13A07_DATA.USER-GRP = XXCODES_DATA.USER-GROUP;
+            WS13A07_DATA.REPR-DOC-NO = WS13IW-PASSVALUE.REPR-DOC-NO;
+            WS13A07_DATA.TERM-NARR = XXCODES_DATA.TERM-ID;
+
+  
+            XXEXT_CALL_Level77Items.UEXTNAM = "WS13I";
+            XXEXT_CALL_Level77Items.UAPPLNAM = "WS13A07";
+
+    
+            try
+                call "MRSWaysideIncident.WS13A07"(XDCONTROL, WS13A07_DATA);
+            
+            end
+            
+
+    
+            MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+            if (XXEXT_CALL_Level77Items.URC == 0)
+  
+                if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                    WS13IW-PASSVALUE.MAX-ROWS = WS13A07_DATA.NARR-NO;
+                    WS13IW-PASSVALUE.CURRENT-NARR = " ";
+                    WS13IS-RETR-REPAIR();
+                else
+
+        
+        
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end 
+            end
+        end
+
+  
+  
+  
+        if (WS13IW-PASSVALUE.INCD-NO != " " && WS13IW-PASSVALUE.REPR-DOC-NO == 0)
+            WS13A04_DATA.INCD-NO = WS13IW-PASSVALUE.INCD-NO;
+            WS13A04_DATA.NARR-NO = WS13IW-PASSVALUE.MAX-ROWS + 1;
+            WS13A04_DATA.NARR = WS13IW-PASSVALUE.CURRENT-NARR;
+            WS13A04_DATA.USER-GRP = XXCODES_DATA.USER-GROUP;
+            WS13A04_DATA.TERM-NARR = XXCODES_DATA.TERM-ID;
+            XXEXT_CALL_Level77Items.UEXTNAM = "WS13I";
+            XXEXT_CALL_Level77Items.UAPPLNAM = "WS13A04";
+
+    
+            try
+                call "MRSWaysideIncident.WS13A04"(XDCONTROL, WS13A04_DATA);
+            
+            end
+            
+
+    
+            MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+            if (XXEXT_CALL_Level77Items.URC == 0)
+  
+                if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                    WS13IW-PASSVALUE.MAX-ROWS = WS13A04_DATA.NARR-NO;
+                    WS13IW-PASSVALUE.CURRENT-NARR = " ";
+                    WS13IS-RETR-INCD();
+                else
+
+        
+        
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end 
+            end
+        end
+
+  
+  
+  
+        if (WS13IW-PASSVALUE.PM-DEPT-CD != " " && WS13IW-PASSVALUE.INCD-NO == " ")
+            WS13A05_DATA.PM-DEPT-CD = WS13IW-PASSVALUE.PM-DEPT-CD;
+            WS13A05_DATA.PM-EQUIP-ID = WS13IW-PASSVALUE.PM-EQUIP-ID;
+            WS13A05_DATA.PM-LOC = WS13IW-PASSVALUE.PM-LOC;
+            WS13A05_DATA.PM-CYCLE-CD = WS13IW-PASSVALUE.PM-CYCLE-CD;
+            WS13A05_DATA.DATE-PM-SCHD = WS13IW-PASSVALUE.DATE-PM-SCHD;
+            WS13A05_DATA.USER-GRP = XXCODES_DATA.USER-GROUP;
+            WS13A05_DATA.TERM-NARR = XXCODES_DATA.TERM-ID;
+            WS13A05_DATA.NARR-NO = WS13IW-PASSVALUE.MAX-ROWS + 1;
+            WS13A05_DATA.NARR = WS13IW-PASSVALUE.CURRENT-NARR;
+            XXEXT_CALL_Level77Items.UEXTNAM = "WS13I";
+            XXEXT_CALL_Level77Items.UAPPLNAM = "WS13A05";
+
+    
+            try
+                call "MRSWaysideIncident.WS13A05"(XDCONTROL, WS13A05_DATA);
+            
+            end
+            
+
+
+    
+            MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+            if (XXEXT_CALL_Level77Items.URC == 0)
+  
+                if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                    WS13IW-PASSVALUE.MAX-ROWS = WS13A05_DATA.NARR-NO;
+                    WS13IW-PASSVALUE.CURRENT-NARR = " ";
+                    WS13IS-RETR-PM();
+                else
+
+        
+        
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end 
+            end
+        end
+        WS13IW-PASSVALUE.REFRESH-GUI = "Y";
+    end
+end 
+
+Function WS13IS-CHK_ACCESS ()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   
+    set XXREQUEST empty;
+    if ("pbtAddNarrative" in WSX6A_DATA.PART-NAME)
+        XXREQUEST.URQINDX = XXREQUEST.URQINDX + 1;
+        XXREQUEST.UPART_NAME[URQINDX] = "pbtAddNarrative";
+        if (WSX6A_DATA.ACCESS-ALLOWED[sysVar.arrayIndex] == "Y")
+            XXREQUEST.UACTION[URQINDX] = "enable";
+        else
+            XXREQUEST.UACTION[URQINDX] = "disable";
+        end
+    end
+end 
+
+Function WS13IS-GET-NARR ()
+  
+  
+   
+    WS13A01_CRIT.CURRENT-ROW = WS13IW-PASSVALUE.CURRENT-ROW;
+    WS13A01_CRIT.MAX-ROWS = WS13IW-PASSVALUE.MAX-ROWS;
+    WS13A01_CRIT.PM-DEPT-CD = WS13IW-PASSVALUE.PM-DEPT-CD;
+    WS13A01_CRIT.PM-EQUIP-ID = WS13IW-PASSVALUE.PM-EQUIP-ID;
+    WS13A01_CRIT.PM-LOC = WS13IW-PASSVALUE.PM-LOC;
+    WS13A01_CRIT.PM-CYCLE-CD = WS13IW-PASSVALUE.PM-CYCLE-CD;
+    WS13A01_CRIT.DATE-PM-SCHD = WS13IW-PASSVALUE.DATE-PM-SCHD;
+    WS13A02_CRIT.CURRENT-ROW = WS13IW-PASSVALUE.CURRENT-ROW;
+    WS13A02_CRIT.MAX-ROWS = WS13IW-PASSVALUE.MAX-ROWS;
+    WS13A02_CRIT.INCD-NO = WS13IW-PASSVALUE.INCD-NO;
+    WS13A06_CRIT.CURRENT-ROW = WS13IW-PASSVALUE.CURRENT-ROW;
+    WS13A06_CRIT.MAX-ROWS = WS13IW-PASSVALUE.MAX-ROWS;
+    WS13A06_CRIT.INCD-NO = WS13IW-PASSVALUE.INCD-NO;
+    WS13A06_CRIT.REPR-DOC-NO = WS13IW-PASSVALUE.REPR-DOC-NO;
+
+
+  
+  
+  
+    if (WS13IW-PASSVALUE.REPR-DOC-NO != 0)
+        if (WS13A01_CRIT.VAGen_FUNCTION == "UPNARR")
+            WS13A06_CRIT.CURRENT-ROW = WS13A06_CRIT.CURRENT-ROW - 1;
+            if (WS13A06_CRIT.CURRENT-ROW <= 1)
+                WS13A06_CRIT.CURRENT-ROW = 1;
+            end
+        end
+    end
+
+  
+    if (WS13IW-PASSVALUE.INCD-NO != " " &&
+     WS13IW-PASSVALUE.REPR-DOC-NO == 0)
+        WS13IW-PASSVALUE.PM-DEPT-CD = " ";
+        if (WS13A01_CRIT.VAGen_FUNCTION == "UPNARR")
+            WS13A02_CRIT.CURRENT-ROW = WS13A02_CRIT.CURRENT-ROW - 1;
+            if (WS13A02_CRIT.CURRENT-ROW <= 1)
+                WS13A02_CRIT.CURRENT-ROW = 1;
+            end
+        end
+    end
+    if (WS13IW-PASSVALUE.PM-DEPT-CD != " ")
+        if (WS13A01_CRIT.VAGen_FUNCTION == "UPNARR")
+            WS13A01_CRIT.CURRENT-ROW = WS13A01_CRIT.CURRENT-ROW - 1;
+  
+  
+            if (WS13A01_CRIT.CURRENT-ROW <= 1)
+                WS13A01_CRIT.CURRENT-ROW = 1;
+            end
+        end
+    end
+    if (WS13IW-PASSVALUE.REPR-DOC-NO != 0)
+        if (WS13A01_CRIT.VAGen_FUNCTION == "DOWNNARR")
+            WS13A06_CRIT.CURRENT-ROW = WS13A06_CRIT.CURRENT-ROW + 1;
+            if (WS13A06_CRIT.CURRENT-ROW >= WS13A06_CRIT.MAX-ROWS)
+                WS13A06_CRIT.CURRENT-ROW = WS13A06_CRIT.MAX-ROWS;
+            end
+        end
+    end
+    if (WS13IW-PASSVALUE.PM-DEPT-CD != " ")
+        if (WS13A01_CRIT.VAGen_FUNCTION == "DOWNNARR")
+            WS13A01_CRIT.CURRENT-ROW = WS13A01_CRIT.CURRENT-ROW + 1;
+  
+            if (WS13A01_CRIT.CURRENT-ROW >= WS13A01_CRIT.MAX-ROWS)
+      
+                WS13A01_CRIT.CURRENT-ROW = WS13A01_CRIT.MAX-ROWS;
+            end
+        end
+    end
+    if (WS13IW-PASSVALUE.INCD-NO != " " && WS13IW-PASSVALUE.REPR-DOC-NO == 0)
+        if (WS13A01_CRIT.VAGen_FUNCTION == "DOWNNARR")
+            WS13A02_CRIT.CURRENT-ROW = WS13A02_CRIT.CURRENT-ROW + 1;
+            if (WS13A02_CRIT.CURRENT-ROW >= WS13A02_CRIT.MAX-ROWS)
+                WS13A02_CRIT.CURRENT-ROW = WS13A02_CRIT.MAX-ROWS;
+            end
+        end
+    end
+    WS13A01_CRIT.NARR-NO = WS13A01_CRIT.CURRENT-ROW;
+    WS13A02_CRIT.NARR-NO = WS13A02_CRIT.CURRENT-ROW;
+    WS13A06_CRIT.NARR-NO = WS13A06_CRIT.CURRENT-ROW;
+
+  
+
+  
+    if (WS13IW-PASSVALUE.REPR-DOC-NO != 0)
+        XXEXT_CALL_Level77Items.UEXTNAM = "WS13I";
+        XXEXT_CALL_Level77Items.UAPPLNAM = "WS13A06";
+        try
+            call "MRSWaysideIncident.WS13A06"(XDCONTROL, WS13A06_CRIT, WS13A06_DATA);
+        
+        end
+        WS13IW-PASSVALUE.USER-GRP = WS13A06_DATA.USER-GRP;
+        WS13IW-PASSVALUE.TIME-NARR = WS13A06_DATA.TIME-NARR;
+        WS13IW-PASSVALUE.DATE-NARR = WS13A06_DATA.DATE-NARR;
+        WS13IW-PASSVALUE.NARR = WS13A06_DATA.NARR;
+        WS13IW-PASSVALUE.CURRENT-ROW = WS13A06_DATA.NARR-NO;
+    else
+
+  
+        if (WS13IW-PASSVALUE.INCD-NO != " " &&
+         WS13IW-PASSVALUE.REPR-DOC-NO == 0)
+            XXEXT_CALL_Level77Items.UEXTNAM = "WS13I";
+            XXEXT_CALL_Level77Items.UAPPLNAM = "WS13A02";
+            try
+                call "MRSWaysideIncident.WS13A02"(XDCONTROL, WS13A02_CRIT, WS13A02_DATA);
+            
+            end
+            WS13IW-PASSVALUE.USER-GRP = WS13A02_DATA.USER-GRP;
+            WS13IW-PASSVALUE.TIME-NARR = WS13A02_DATA.TIME-NARR;
+            WS13IW-PASSVALUE.DATE-NARR = WS13A02_DATA.DATE-NARR;
+            WS13IW-PASSVALUE.NARR = WS13A02_DATA.NARR;
+            WS13IW-PASSVALUE.CURRENT-ROW = WS13A02_DATA.NARR-NO;
+        else
+
+  
+            if (WS13IW-PASSVALUE.PM-DEPT-CD != " ")
+                XXEXT_CALL_Level77Items.UEXTNAM = "WS13I";
+                XXEXT_CALL_Level77Items.UAPPLNAM = "WS13A01";
+                try
+                    call "MRSWaysideIncident.WS13A01"(XDCONTROL, WS13A01_CRIT, WS13A01_DATA);
+                
+                end
+                WS13IW-PASSVALUE.USER-GRP = WS13A01_DATA.USER-GRP;
+                WS13IW-PASSVALUE.DATE-NARR = WS13A01_DATA.DATE-NARR;
+                WS13IW-PASSVALUE.TIME-NARR = WS13A01_DATA.TIME-NARR;
+                WS13IW-PASSVALUE.NARR = WS13A01_DATA.NARR;
+                WS13IW-PASSVALUE.CURRENT-ROW = WS13A01_DATA.NARR-NO;
+            end
+        end
+    end
+     
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+
+  
+  
+  
+    if (WS13IW-PASSVALUE.REPR-DOC-NO != 0)
+        if (WS13IW-PASSVALUE.MAX-ROWS == 1)
+            WS13IW-TRIGGER.DISABLE-UP = "Y";
+            WS13IW-TRIGGER.DISABLE-DOWN = "Y";
+        end
+        if (WS13IW-PASSVALUE.CURRENT-ROW > 1 &&
+         WS13IW-PASSVALUE.CURRENT-ROW < WS13IW-PASSVALUE.MAX-ROWS)
+            WS13IW-TRIGGER.ENABLE-UP = "Y";
+            WS13IW-TRIGGER.ENABLE-DOWN = "Y";
+        end
+        if (WS13IW-PASSVALUE.CURRENT-ROW > 1 &&
+         WS13IW-PASSVALUE.CURRENT-ROW == WS13IW-PASSVALUE.MAX-ROWS)
+            WS13IW-TRIGGER.ENABLE-UP = "Y";
+            WS13IW-TRIGGER.DISABLE-DOWN = "Y";
+        end
+        if (WS13IW-PASSVALUE.CURRENT-ROW == 1 &&
+         WS13IW-PASSVALUE.CURRENT-ROW < WS13IW-PASSVALUE.MAX-ROWS)
+            WS13IW-TRIGGER.DISABLE-UP = "Y";
+            WS13IW-TRIGGER.ENABLE-DOWN = "Y";
+        end
+    end
+    if (WS13IW-PASSVALUE.INCD-NO != " " &&
+     WS13IW-PASSVALUE.REPR-DOC-NO == 0)
+        if (WS13IW-PASSVALUE.MAX-ROWS == 1)
+            WS13IW-TRIGGER.DISABLE-UP = "Y";
+            WS13IW-TRIGGER.DISABLE-DOWN = "Y";
+        end
+        if (WS13IW-PASSVALUE.CURRENT-ROW > 1 &&
+         WS13IW-PASSVALUE.CURRENT-ROW < WS13IW-PASSVALUE.MAX-ROWS)
+            WS13IW-TRIGGER.ENABLE-UP = "Y";
+            WS13IW-TRIGGER.ENABLE-DOWN = "Y";
+        end
+        if (WS13IW-PASSVALUE.CURRENT-ROW > 1 &&
+         WS13IW-PASSVALUE.CURRENT-ROW == WS13IW-PASSVALUE.MAX-ROWS)
+            WS13IW-TRIGGER.ENABLE-UP = "Y";
+            WS13IW-TRIGGER.DISABLE-DOWN = "Y";
+        end
+        if (WS13IW-PASSVALUE.CURRENT-ROW == 1 &&
+         WS13IW-PASSVALUE.CURRENT-ROW < WS13IW-PASSVALUE.MAX-ROWS)
+            WS13IW-TRIGGER.DISABLE-UP = "Y";
+            WS13IW-TRIGGER.ENABLE-DOWN = "Y";
+        end
+    end
+    if (WS13IW-PASSVALUE.PM-DEPT-CD != " ")
+        if (WS13IW-PASSVALUE.MAX-ROWS == 1)
+            WS13IW-TRIGGER.DISABLE-UP = "Y";
+            WS13IW-TRIGGER.DISABLE-DOWN = "Y";
+        end
+        if (WS13IW-PASSVALUE.CURRENT-ROW > 1 &&
+         WS13IW-PASSVALUE.CURRENT-ROW < WS13IW-PASSVALUE.MAX-ROWS)
+            WS13IW-TRIGGER.ENABLE-UP = "Y";
+            WS13IW-TRIGGER.ENABLE-DOWN = "Y";
+        end
+        if (WS13IW-PASSVALUE.CURRENT-ROW > 1 &&
+         WS13IW-PASSVALUE.CURRENT-ROW == WS13IW-PASSVALUE.MAX-ROWS)
+            WS13IW-TRIGGER.ENABLE-UP = "Y";
+            WS13IW-TRIGGER.DISABLE-DOWN = "Y";
+        end
+        if (WS13IW-PASSVALUE.CURRENT-ROW == 1 &&
+         WS13IW-PASSVALUE.CURRENT-ROW < WS13IW-PASSVALUE.MAX-ROWS)
+            WS13IW-TRIGGER.DISABLE-UP = "Y";
+            WS13IW-TRIGGER.ENABLE-DOWN = "Y";
+        end
+    end
+end 
+
+Function WS13IS-RETR-INCD ()
+  
+  
+  
+  
+  
+  
+  
+   
+    WSX2A01_CRIT.INCD-NO = WS13IW-PASSVALUE.INCD-NO;
+    WSX2A01_CRIT.NARR-NO = 0;
+    WSX2A01_CRIT.VAGen_FUNCTION = "NARR";
+    XXEXT_CALL_Level77Items.UEXTNAM = "WS13I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "WSX2A01";
+
+    
+    try
+        call "WSX2A01"(XDCONTROL, WSX2A01_CRIT, WSX2A01_DATA);
+    
+    end
+    
+
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            WS13IW-PASSVALUE.USER-GRP = WSX2A01_DATA.USER-GRP;
+            WS13IW-PASSVALUE.DATE-NARR = WSX2A01_DATA.DATE-NARR;
+            WS13IW-PASSVALUE.TIME-NARR = WSX2A01_DATA.TIME-NARR;
+            WS13IW-PASSVALUE.NARR = WSX2A01_DATA.NARR;
+            WS13IW-PASSVALUE.NARR-NO = WSX2A01_DATA.MAX-ROWS;
+            WS13IW-PASSVALUE.CURRENT-ROW = WSX2A01_DATA.MAX-ROWS;
+            WS13IW-TRIGGER.ENABLE-UP = "Y";
+            WS13IW-TRIGGER.ENABLE-DOWN = "Y";
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+end 
+
+Function WS13IS-RETR-PM ()
+  
+  
+  
+  
+  
+  
+  
+   
+    WSX3A_CRIT.PM-DEPT-CD = WS13IW-PASSVALUE.PM-DEPT-CD;
+    WSX3A_CRIT.PM-EQUIP-ID = WS13IW-PASSVALUE.PM-EQUIP-ID;
+    WSX3A_CRIT.PM-LOC = WS13IW-PASSVALUE.PM-LOC;
+    WSX3A_CRIT.PM-CYCLE-CD = WS13IW-PASSVALUE.PM-CYCLE-CD;
+    WSX3A_CRIT.DATE-PM-SCHD = WS13IW-PASSVALUE.DATE-PM-SCHD;
+    WSX3A_CRIT.NARR-NO = 0;
+    WSX3A_CRIT.VAGen_FUNCTION = "NARR";
+    XXEXT_CALL_Level77Items.UEXTNAM = "WS13I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "WSX3A";
+
+    
+    try
+        call "WSX3A"(XDCONTROL, WSX3A_CRIT, WSX3A_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            WS13IW-PASSVALUE.USER-GRP = WSX3A_DATA.USER-GRP;
+            WS13IW-PASSVALUE.DATE-NARR = WSX3A_DATA.DATE-NARR;
+            WS13IW-PASSVALUE.TIME-NARR = WSX3A_DATA.TIME-NARR;
+            WS13IW-PASSVALUE.NARR = WSX3A_DATA.NARR;
+            WS13IW-PASSVALUE.NARR-NO = WSX3A_DATA.NARR-NO;
+            WS13IW-PASSVALUE.CURRENT-ROW = WSX3A_DATA.NARR-NO;
+            WS13IW-TRIGGER.ENABLE-UP = "Y";
+            WS13IW-TRIGGER.ENABLE-DOWN = "Y";
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+end 
+
+Function WS13IS-RETR-REPAIR ()
+  
+  
+  
+  
+  
+  
+  
+   
+    WS13A08_CRIT.INCD-NO = WS13IW-PASSVALUE.INCD-NO;
+    WS13A08_CRIT.REPR-DOC-NO = WS13IW-PASSVALUE.REPR-DOC-NO;
+    WS13A08_CRIT.NARR-NO = 0;
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "WS13I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "WS13A08";
+
+    
+    try
+        call "MRSWaysideIncident.WS13A08"(XDCONTROL, WS13A08_CRIT, WS13A08_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            WS13IW-PASSVALUE.USER-GRP = WS13A08_DATA.USER-GRP;
+            WS13IW-PASSVALUE.DATE-NARR = WS13A08_DATA.DATE-NARR;
+            WS13IW-PASSVALUE.TIME-NARR = WS13A08_DATA.TIME-NARR;
+            WS13IW-PASSVALUE.NARR = WS13A08_DATA.NARR;
+            WS13IW-PASSVALUE.NARR-NO = WS13A08_DATA.NARR-NO;
+            WS13IW-PASSVALUE.CURRENT-ROW = WS13A08_DATA.NARR-NO;
+            WS13IW-TRIGGER.ENABLE-UP = "Y";
+            WS13IW-TRIGGER.ENABLE-DOWN = "Y";
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end 
+    end
+end 
+
+Function WS17IS-CLEAR () 
+    WS17IW-PASSVALUE.STOCK-DESCRIPTION = "       ";
+    set WS17A05_DATA empty;
+    set XDCONTROL empty;
+    set WS17A05_CRIT empty;
+    XDCONTROL.UROWCNT = 0;
+    WS17IW-TRIGGER.HAS-LOADED = "Y";
+end 
+
+Function WS17IS-REFORMAT () 
+    WS17IW-TRIGGER.VAGen_INDEX = 10;
+    WS17IW-PASSVALUE.STOCK-DESC-2[1] = WS17IW-PASSVALUE.STOCK-DESCRIPTION-1;
+    WS17IW-PASSVALUE.STOCK-DESC-2[2] = WS17IW-PASSVALUE.STOCK-DESCRIPTION-2;
+    WS17IW-PASSVALUE.STOCK-DESC-2[3] = WS17IW-PASSVALUE.STOCK-DESCRIPTION-3;
+    WS17IW-PASSVALUE.STOCK-DESC-2[4] = WS17IW-PASSVALUE.STOCK-DESCRIPTION-4;
+    WS17IW-PASSVALUE.STOCK-DESC-2[5] = WS17IW-PASSVALUE.STOCK-DESCRIPTION-5;
+    WS17IW-PASSVALUE.STOCK-DESC-2[6] = WS17IW-PASSVALUE.STOCK-DESCRIPTION-6;
+    WS17IW-PASSVALUE.STOCK-DESC-2[7] = WS17IW-PASSVALUE.STOCK-DESCRIPTION-7;
+    WS17IW-PASSVALUE.STOCK-DESC-2[8] = WS17IW-PASSVALUE.STOCK-DESCRIPTION-8;
+    WS17IW-PASSVALUE.STOCK-DESC-2[9] = WS17IW-PASSVALUE.STOCK-DESCRIPTION-9;
+    WS17IW-PASSVALUE.STOCK-DESC-2[10] = WS17IW-PASSVALUE.STOCK-DESCRIPTION-10;
+    while ((WS17IW-TRIGGER.VAGen_INDEX <= 10 && WS17IW-TRIGGER.VAGen_INDEX > 0) && (WS17IW-PASSVALUE.STOCK-DESC-2[VAGen_INDEX] == " "))
+        if (WS17IW-PASSVALUE.STOCK-DESC-2[VAGen_INDEX] == " ")
+            WS17IW-PASSVALUE.STOCK-DESC-2[VAGen_INDEX] = "%";
+        end
+        WS17IW-TRIGGER.VAGen_INDEX = WS17IW-TRIGGER.VAGen_INDEX - 1;
+    end
+    WS17IW-PASSVALUE.STOCK-DESC-1 = "%";
+end 
+
+Function WS17IS-RETRIEVE ()
+  
+  
+  
+  
+  
+  
+  
+   
+    WS15A15_CRIT.DEPT-CD = WS17IW-PASSVALUE.DEPT-CD;
+    
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "WS17I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "WS15A15";
+    
+
+    
+    try
+        call "MRSWaysideRepair.WS15A15"(XDCONTROL, WS15A15_CRIT, WS15A15_DATA);
+    
+    end
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            return;
+        else
+            if (XDCONTROL.URC == 100)
+                XXMESSAGE.UMSGCODE = "REC NOT FND";
+                XXMESSAGE.UMSGINS[1] = "STOCK NO";
+            else
+
+        
+        
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end
+    end
+end 
+
+Function WS17IS-SEARCH ()
+  
+  
+  
+  
+  
+  
+  
+   
+    WS17A05_CRIT.STOCK-DESC = WS17IW-PASSVALUE.STOCK-DESC;
+    WS17A05_CRIT.DEPT-CD = WS17IW-PASSVALUE.DEPT-CD;
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "WS17I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "WS17A05";
+
+    
+    try
+        call "WS17A05"(XDCONTROL, WS17A05_CRIT, WS17A05_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            WS17IW-TRIGGER.HAS-LOADED = "Y";
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function WS17IS-SELECT () 
+    if (WS17IW-PASSVALUE.SELECT-INDEX > 0)
+        WS17IW-PASSVALUE.STOCK-NO = WS17A05_DATA.STOCK-NO[SELECT-INDEX];
+    end
+end

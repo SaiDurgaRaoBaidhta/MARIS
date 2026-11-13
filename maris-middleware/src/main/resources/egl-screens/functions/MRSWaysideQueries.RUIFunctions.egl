@@ -1,0 +1,8 @@
+
+
+package MRSWaysideQueries;
+ 
+
+Function WS100IS-CLEAR () 
+    set WS70A01_DATA empty;
+end

@@ -1,0 +1,1241 @@
+
+
+package MRSVehicleMenu;
+
+
+Function VH001IS-ACCE-CC () 
+    if ("pbtChangeConsist" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-CHANGE-CONSIST = "Y";
+            VH001IS-MESSAGE();
+        else
+            VH001IW-BUTTOM.ENABLE-CHANGE-CONSIST = "Y";
+            VH001IW-BUTTOM.OPEN-CHANGE-CONSIST = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-CHANGE-CONSIST = "Y";
+        VH001IW-BUTTOM.OPEN-CHANGE-CONSIST = "Y";
+    end
+end 
+
+Function VH001IS-ACCE-CT () 
+    if ("pbtClearTrain" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-CLEAR-TRAIN = "Y";
+            VH001IS-MESSAGE();
+        else
+            VH001IW-BUTTOM.ENABLE-CLEAR-TRAIN = "Y";
+            VH001IW-BUTTOM.OPEN-CLEAR-TRAIN = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-CLEAR-TRAIN = "Y";
+        VH001IW-BUTTOM.OPEN-CLEAR-TRAIN = "Y";
+    end
+end 
+
+Function VH001IS-ACCE-EV () 
+    if ("pbtEventLog" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-EVENT-LOG = "Y";
+            VH001IS-MESSAGE();
+        else
+            VH001IW-BUTTOM.ENABLE-EVENT-LOG = "Y";
+            VH001IW-BUTTOM.OPEN-EVENT-LOG = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-EVENT-LOG = "Y";
+        VH001IW-BUTTOM.OPEN-EVENT-LOG = "Y";
+    end
+end 
+
+Function VH001IS-ACCE-FC () 
+    if ("pbtForceClear" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-FORCE-CLOSE = "Y";
+            VH001IS-MESSAGE();
+        else
+            VH001IW-BUTTOM.ENABLE-FORCE-CLOSE = "Y";
+            VH001IW-BUTTOM.OPEN-FORCE-CLOSE = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-FORCE-CLOSE = "Y";
+        VH001IW-BUTTOM.OPEN-FORCE-CLOSE = "Y";
+    end
+end 
+
+Function VH001IS-ACCE-MT () 
+    if ("pbtMakeTrain" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-MAKE-TRAIN = "Y";
+            VH001IS-MESSAGE();
+        else
+            VH001IW-BUTTOM.ENABLE-MAKE-TRAIN = "Y";
+            VH001IW-BUTTOM.OPEN-MAKE-TRAIN = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-MAKE-TRAIN = "Y";
+        VH001IW-BUTTOM.OPEN-MAKE-TRAIN = "Y";
+    end
+    ;
+end 
+
+Function VH001IS-ACCE-PC () 
+    if ("pbtPseucoCorrection" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-CORRECTION = "Y";
+            VH001IS-MESSAGE();
+        else
+            VH001IW-BUTTOM.ENABLE-CORRECTION = "Y";
+            VH001IW-BUTTOM.OPEN-CORRECTION = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-CORRECTION = "Y";
+        VH001IW-BUTTOM.OPEN-CORRECTION = "Y";
+    end
+end 
+
+Function VH001IS-ACCE-RI () 
+    if ("pbtRevenueIncident" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-REV-INCIDENT = "Y";
+            VH001IS-MESSAGE();
+        else
+            VH001IW-BUTTOM.ENABLE-REV-INCIDENT = "Y";
+            VH001IW-BUTTOM.OPEN-REV-INCIDENT = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-REV-INCIDENT = "Y";
+        VH001IW-BUTTOM.OPEN-REV-INCIDENT = "Y";
+    end
+end 
+
+Function VH001IS-ACCE-RIF () 
+    if ("pbtRevenueFixIncident" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-REV-FIX-INCIDENT = "Y";
+            VH001IS-MESSAGE();
+        else
+            VH001IW-BUTTOM.ENABLE-REV-FIX-INCIDENT = "Y";
+            VH001IW-PASSVALUE.FIX-IND = "REV";
+            VH001IW-BUTTOM.OPEN-REV-FIX-INCIDENT = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-REV-FIX-INCIDENT = "Y";
+        VH001IW-PASSVALUE.FIX-IND = "REV";
+        VH001IW-BUTTOM.OPEN-REV-FIX-INCIDENT = "Y";
+    end
+end 
+
+Function VH001IS-ACCE-SC () 
+    if ("pbtSplitConsist" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-SPLIT-CONSIST = "Y";
+            VH001IS-MESSAGE();
+        else
+            VH001IW-BUTTOM.ENABLE-SPLIT-CONSIST = "Y";
+            VH001IW-BUTTOM.OPEN-SPLIT-CONSIST = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-SPLIT-CONSIST = "Y";
+        VH001IW-BUTTOM.OPEN-SPLIT-CONSIST = "Y";
+    end
+end 
+
+Function VH001IS-ACCE-TC () 
+    if ("pbtCombineTrain" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-COMBINE-TRAIN = "Y";
+            VH001IS-MESSAGE();
+        else
+            VH001IW-BUTTOM.ENABLE-COMBINE-TRAIN = "Y";
+            VH001IW-BUTTOM.OPEN-COMBINE-TRAIN = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-COMBINE-TRAIN = "Y";
+        VH001IW-BUTTOM.OPEN-COMBINE-TRAIN = "Y";
+    end
+end 
+
+Function VH001IS-ACCE-TI () 
+    if ("pbtTrainIncident" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-TRAIN-INCIDENT = "Y";
+            VH001IS-MESSAGE();
+        else
+            VH001IW-BUTTOM.ENABLE-TRAIN-INCIDENT = "Y";
+            VH001IW-BUTTOM.OPEN-TRAIN-INCIDENT = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-TRAIN-INCIDENT = "Y";
+        VH001IW-BUTTOM.OPEN-TRAIN-INCIDENT = "Y";
+    end
+end 
+
+Function VH001IS-ACCE-TS () 
+    if ("pbtTrainSwap" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-TRAIN-SWAP = "Y";
+            VH001IS-MESSAGE();
+        else
+            VH001IW-BUTTOM.ENABLE-TRAIN-SWAP = "Y";
+            VH001IW-BUTTOM.OPEN-TRAIN-SWAP = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-TRAIN-SWAP = "Y";
+        VH001IW-BUTTOM.OPEN-TRAIN-SWAP = "Y";
+    end
+end 
+
+Function VH001IS-CORRECT () 
+    VH001IW-PASSVALUE.WHICH-GUI = "VH001I";
+end 
+
+Function VH001IS-EVENT () 
+    VH001IW-PASSVALUE.EVENT-IND = "EVT";
+end 
+
+Function VH001IS-EXIT () 
+    if (VH001IW-PASS.EXIT-IND != " ")
+        VH001IW-PASS.EXIT-SHOP = "Y";
+    end
+end 
+
+Function VH001IS-FIX () 
+    VH001IW-PASSVALUE.FIX-IND = "REV";
+end 
+
+Function VH001IS-GRP-ACCES () 
+    if ("pbtMakeTrain" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-MAKE-TRAIN = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-MAKE-TRAIN = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-MAKE-TRAIN = "Y";
+    end
+    if ("pbtClearTrain" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-CLEAR-TRAIN = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-CLEAR-TRAIN = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-CLEAR-TRAIN = "Y";
+    end
+    if ("pbtTrainSwap" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-TRAIN-SWAP = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-TRAIN-SWAP = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-TRAIN-SWAP = "Y";
+    end
+    if ("pbtChangeConsist" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-CHANGE-CONSIST = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-CHANGE-CONSIST = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-CHANGE-CONSIST = "Y";
+    end
+    if ("pbtCombineTrain" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-COMBINE-TRAIN = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-COMBINE-TRAIN = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-COMBINE-TRAIN = "Y";
+    end
+    if ("pbtSplitConsist" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-SPLIT-CONSIST = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-SPLIT-CONSIST = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-SPLIT-CONSIST = "Y";
+    end
+    if ("pbtTrainIncident" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-TRAIN-INCIDENT = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-TRAIN-INCIDENT = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-TRAIN-INCIDENT = "Y";
+    end
+    if ("pbtEventLog" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-EVENT-LOG = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-EVENT-LOG = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-EVENT-LOG = "Y";
+    end
+    if ("pbtRevenueIncident" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-REV-INCIDENT = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-REV-INCIDENT = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-REV-INCIDENT = "Y";
+    end
+    if ("pbtRevenueFixIncident" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-REV-FIX-INCIDENT = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-REV-FIX-INCIDENT = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-REV-FIX-INCIDENT = "Y";
+    end
+    if ("pbtForceClear" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-FORCE-CLOSE = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-FORCE-CLOSE = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-FORCE-CLOSE = "Y";
+    end
+    if ("pbtPseudoCorrection" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-CORRECTION = "Y";
+            
+  
+        else
+            VH001IW-BUTTOM.ENABLE-CORRECTION = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-CORRECTION = "Y";
+    end
+end 
+
+Function VH001IS-GRP-ACCESX () 
+    if (VH001IW-BUTTOM.CLICK-MAKE-TRAIN == "Y")
+        if ("pbtMakeTrain" in VH01A02_DATA.PART-NAME)
+            if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+                VH001IW-BUTTOM.DISABLE-MAKE-TRAIN = "Y";
+            else
+                VH001IW-BUTTOM.ENABLE-MAKE-TRAIN = "Y";
+                VH001IW-BUTTOM.OPEN-MAKE-TRAIN = "Y";
+            end
+        else
+            VH001IW-BUTTOM.ENABLE-MAKE-TRAIN = "Y";
+            VH001IW-BUTTOM.OPEN-MAKE-TRAIN = "Y";
+        end
+    end
+    if ("pbtClearTrain" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-CLEAR-TRAIN = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-CLEAR-TRAIN = "Y";
+            VH001IW-BUTTOM.OPEN-CLEAR-TRAIN = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-CLEAR-TRAIN = "Y";
+        VH001IW-BUTTOM.OPEN-CLEAR-TRAIN = "Y";
+    end
+    if ("pbtTrainSwap" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-TRAIN-SWAP = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-TRAIN-SWAP = "Y";
+            VH001IW-BUTTOM.OPEN-TRAIN-SWAP = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-TRAIN-SWAP = "Y";
+        VH001IW-BUTTOM.OPEN-TRAIN-SWAP = "Y";
+    end
+    if ("pbtChangeConsist" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-CHANGE-CONSIST = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-CHANGE-CONSIST = "Y";
+            VH001IW-BUTTOM.OPEN-CHANGE-CONSIST = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-CHANGE-CONSIST = "Y";
+        VH001IW-BUTTOM.OPEN-CHANGE-CONSIST = "Y";
+    end
+    if ("pbtCombineTrain" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-COMBINE-TRAIN = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-COMBINE-TRAIN = "Y";
+            VH001IW-BUTTOM.OPEN-COMBINE-TRAIN = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-COMBINE-TRAIN = "Y";
+        VH001IW-BUTTOM.OPEN-COMBINE-TRAIN = "Y";
+    end
+    if ("pbtSplitConsist" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-SPLIT-CONSIST = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-SPLIT-CONSIST = "Y";
+            VH001IW-BUTTOM.OPEN-SPLIT-CONSIST = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-SPLIT-CONSIST = "Y";
+        VH001IW-BUTTOM.OPEN-SPLIT-CONSIST = "Y";
+    end
+    if ("pbtTrainIncident" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-TRAIN-INCIDENT = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-TRAIN-INCIDENT = "Y";
+            VH001IW-BUTTOM.OPEN-TRAIN-INCIDENT = "Y";
+        end
+    end
+    if ("pbtEventLog" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-EVENT-LOG = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-EVENT-LOG = "Y";
+            VH001IW-BUTTOM.OPEN-EVENT-LOG = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-EVENT-LOG = "Y";
+        VH001IW-BUTTOM.OPEN-EVENT-LOG = "Y";
+    end
+    if ("pbtRevenueIncident" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-REV-INCIDENT = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-REV-INCIDENT = "Y";
+            VH001IW-BUTTOM.OPEN-REV-INCIDENT = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-REV-INCIDENT = "Y";
+        VH001IW-BUTTOM.OPEN-REV-INCIDENT = "Y";
+    end
+    if ("pbtRevenueFixIncident" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-REV-FIX-INCIDENT = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-REV-FIX-INCIDENT = "Y";
+            VH001IW-PASSVALUE.FIX-IND = "REV";
+            VH001IW-BUTTOM.OPEN-REV-FIX-INCIDENT = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-REV-FIX-INCIDENT = "Y";
+        VH001IW-PASSVALUE.FIX-IND = "REV";
+        VH001IW-BUTTOM.OPEN-REV-FIX-INCIDENT = "Y";
+    end
+    if ("pbtForceClear" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-FORCE-CLOSE = "Y";
+        else
+            VH001IW-BUTTOM.ENABLE-FORCE-CLOSE = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-FORCE-CLOSE = "Y";
+    end
+    if ("pbtPseudoCorrection" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VH001IW-BUTTOM.DISABLE-CORRECTION = "Y";
+            
+  
+        else
+            VH001IW-BUTTOM.ENABLE-CORRECTION = "Y";
+            VH001IW-BUTTOM.OPEN-CORRECTION = "Y";
+        end
+    else
+        VH001IW-BUTTOM.ENABLE-CORRECTION = "Y";
+        VH001IW-BUTTOM.OPEN-CORRECTION = "Y";
+    end
+end 
+
+Function VH001IS-INIT () 
+    if (VHMVSIW-EXIT.TITLE-NAME == "YT")
+        VHMVSIW-EXIT.TITLE = "Return";
+    else
+        VHMVSIW-EXIT.TITLE = "Exit";
+    end
+    VH001IW-PASSVALUE.EVENT-IND = "EVT";
+    VH001IW-PASSVALUE.FIX-IND = "REV";
+    if (VH01A01_DATA.USER-GROUP == "VEHSUPR" || VH01A01_DATA.USER-GROUP == "TEST" || VH01A01_DATA.USER-GROUP == "DBMAINT")
+        VH001IW-TRIGGER.ENABLE-FORCE = "Y";
+    else
+        VH001IW-TRIGGER.DISABLE-FORCE = "Y";
+    end
+    VH001IW-PASSVALUE.WHICH-GUI = "VH001I";
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VH001I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VH01A01";
+    try
+        call "VH01A01"(XDCONTROL, VH01A01_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VH001IS-INIT-X () 
+    VH01A02_CRIT.USER-GRP = VH01A01_DATA.USER-GROUP;
+    VH01A02_CRIT.GUI-NAME = "VH001I";
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VH001I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VH01A02";
+    try
+        call "VH01A02"(XDCONTROL, VH01A02_CRIT, VH01A02_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VH001IS-INIT-Y () 
+    VH01A02_CRIT.USER-GRP = VH01A01_DATA.USER-GROUP;
+    VH01A02_CRIT.GUI-NAME = "VH001I";
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VH001I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VH01A02";
+    try
+        call "VH01A02"(XDCONTROL, VH01A02_CRIT, VH01A02_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4 || XDCONTROL.URC == 100)
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VH001IS-MESSAGE () 
+    VH001IW-MESSAGE.ERROR-MESSAGE = "Function not curently available.";
+end 
+
+Function VH001IS-MISC () 
+    VH001IW-PASSVALUE.EVENT-IND = "MSC";
+end 
+
+Function VH001IS-SHOP () 
+    VH001IW-PASSVALUE.EVENT-IND = "SHN";
+end 
+
+Function VH001IS-SHOP-NOGO () 
+    VH001IW-PASSVALUE.FIX-IND = "SHP";
+end 
+
+Function VH001IS-YARD () 
+    VH001IW-PASSVALUE.FIX-IND = "YRD";
+end 
+
+Function VHCF49I-INIT () 
+    VHCF49I-TRIGGER.OPEN-CF49 = "Y";
+end 
+
+Function VHCS38-RPT () 
+    VHMREIW-VHCF38I.REPORT-NAME = "ALL";
+    VHMREIW-VHCF38I.TERM-ID = VH01A01_DATA.TERM-ID;
+    VHMREIW-VHCF38I.USER-GRP = VH01A01_DATA.USER-GROUP;
+end 
+
+Function VHMCFI-DATE ()
+   
+    VHMCFI-PASSVALUE.REPORT-NAME = "COMPONENT DATE";
+end 
+
+Function VHMCFI-EVALUATION ()
+   
+    VHMCFI-PASSVALUE.REPORT-NAME = "SURVEY EVALUATION";
+end 
+
+Function VHMCFI-FLEETSTAT ()
+   
+    VHMCFI-PASSVALUE.REPORT-NAME = "BEARING OVERDUE";
+end 
+
+Function VHMCFI-GEO-AXLE ()
+   
+    VHMCFI-PASSVALUE.REPORT-NAME = "GEOMETRY AXLE";
+end 
+
+Function VHMCFI-GEO-OTHER ()
+   
+    VHMCFI-PASSVALUE.REPORT-NAME = "GEOMETRY OTHER";
+end 
+
+Function VHMCFI-GEO-WHEEL ()
+   
+    VHMCFI-PASSVALUE.REPORT-NAME = "GEOMETRY WHEEL";
+end 
+
+Function VHMCFI-HOURS ()
+   
+    VHMCFI-PASSVALUE.REPORT-NAME = "AXLE MISSING PARTS";
+end 
+
+Function VHMCFI-PM ()
+   
+    VHMCFI-PASSVALUE.REPORT-NAME = "CARS SURVEYED VS PM COMPLETED";
+end 
+
+Function VHMCFI-STATUS ()
+   
+    VHMCFI-PASSVALUE.REPORT-NAME = "SURVEY COMPLETION STATUS";
+end 
+
+Function VHMENIS-CONFIG () 
+    VHMENIW-PASSVALUE.VHMEN-MENU = "VHMEN";
+end 
+
+Function VHMENIS-CONFIGX () 
+    VHMENIW-PASSVALUE.VHMEN-MENU = "VHMEN";
+end 
+
+Function VHMENIS-INIT-X () 
+    VH01A02_CRIT.USER-GRP = VH01A01_DATA.USER-GROUP;
+    VH01A02_CRIT.GUI-NAME = "VHMENI";
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VH001I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VH01A02";
+    try
+        call "VH01A02"(XDCONTROL, VH01A02_CRIT, VH01A02_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHMENIS-INIT-Y () 
+    VH01A02_CRIT.USER-GRP = VH01A01_DATA.USER-GROUP;
+    VH01A02_CRIT.GUI-NAME = "VHMENI";
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VH001I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VH01A02";
+    try
+        call "VH01A02"(XDCONTROL, VH01A02_CRIT, VH01A02_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4 || XDCONTROL.URC == 100)
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHMMIS-MOVE-ID ()
+  
+  
+   
+    VH01A01_DATA.TERM-ID = VHVM04IW-ID.TERM-ID;
+end 
+
+Function VHMMMIS-CHRS () 
+    VHMMMIW.REPORT-NAME = "CHRS";
+    VHMMMIW.TERM-ID = VH01A01_DATA.TERM-ID;
+    VHMMMIW.USER-GRP = VH01A01_DATA.USER-GROUP;
+end 
+
+Function VHMMMIS-INIT () 
+    VH001IW-PASSVALUE.EVENT-IND = "EVT";
+    VH001IW-PASSVALUE.FIX-IND = "REV";
+
+  
+    VHVM04IW-ID.TERM-ID = VH01A01_DATA.TERM-ID;
+    VHVM04IW-ID.USER-GROUP = VH01A01_DATA.USER-GROUP;
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VH001I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VH01A01";
+    try
+        call "VH01A01"(XDCONTROL, VH01A01_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHMMMIS-OHRS () 
+    VHMMMIW.REPORT-NAME = "OHRS";
+    VHMMMIW.TERM-ID = VH01A01_DATA.TERM-ID;
+    VHMMMIW.USER-GRP = VH01A01_DATA.USER-GROUP;
+end 
+
+Function VHMMMIS-VHRS () 
+    VHMMMIW.REPORT-NAME = "VHRS";
+    VHMMMIW.TERM-ID = VH01A01_DATA.TERM-ID;
+    VHMMMIW.USER-GRP = VH01A01_DATA.USER-GROUP;
+end 
+
+Function VHMOTDIS-FIX () 
+    VHMOTDW-PASSVALUE.FIX-IND = "REV";
+end 
+
+Function VHMREI-RPT1 ()
+   
+    VHMREIW-VHCF26I.REPORT-NAME = "0400";
+    VHMREIW-VHCF26I.TERM-ID = VH01A01_DATA.TERM-ID;
+    VHMREIW-VHCF26I.USER-GRP = VH01A01_DATA.USER-GROUP;
+end 
+
+Function VHMREI-RPT2 () 
+    VHMREIW-VHCF26I.REPORT-NAME = "0830";
+    VHMREIW-VHCF26I.TERM-ID = VH01A01_DATA.TERM-ID;
+    VHMREIW-VHCF26I.USER-GRP = VH01A01_DATA.USER-GROUP;
+end 
+
+Function VHMREI-RPT3 () 
+    VHMREIW-VHCF26I.REPORT-NAME = "1300";
+    VHMREIW-VHCF26I.TERM-ID = VH01A01_DATA.TERM-ID;
+    VHMREIW-VHCF26I.USER-GRP = VH01A01_DATA.USER-GROUP;
+end 
+
+Function VHMREI-RPT4 () 
+    VHMREIW-VHCF26I.REPORT-NAME = "1800";
+    VHMREIW-VHCF26I.TERM-ID = VH01A01_DATA.TERM-ID;
+    VHMREIW-VHCF26I.USER-GRP = VH01A01_DATA.USER-GROUP;
+end 
+
+Function VHMREIS-CHRS () 
+    VHMREIW.REPORT-NAME = "CHRS";
+    VHMREIW.TERM-ID = VH01A01_DATA.TERM-ID;
+    VHMREIW.USER-GRP = VH01A01_DATA.USER-GROUP;
+end 
+
+Function VHMREIS-OHRS () 
+    VHMREIW.REPORT-NAME = "OHRS";
+    VHMREIW.TERM-ID = VH01A01_DATA.TERM-ID;
+    VHMREIW.USER-GRP = VH01A01_DATA.USER-GROUP;
+end 
+
+Function VHMREIS-VHRS () 
+    VHMREIW.REPORT-NAME = "VHRS";
+    VHMREIW.TERM-ID = VH01A01_DATA.TERM-ID;
+    VHMREIW.USER-GRP = VH01A01_DATA.USER-GROUP;
+end 
+
+Function VHMS01IS-EXIT () 
+    if (VHMSV01IW-PASS.EXIT-IND != " ")
+        VHMSV01IW-PASS.EXIT-SHOP = "Y";
+    end
+end 
+
+Function VHMSSIS-EXIT () 
+    if (VH001IW-PASS.EXIT-IND != " ")
+        VH001IW-PASS.EXIT-SHOP = "Y";
+    end
+end 
+
+Function VHMT01I-RPT1 ()
+   
+    VHMT01IW-VHCF26I.REPORT-NAME = "0400";
+    VHMT01IW-VHCF26I.TERM-ID = VH01A01_DATA.TERM-ID;
+    VHMT01IW-VHCF26I.USER-GRP = VH01A01_DATA.USER-GROUP;
+end 
+
+Function VHMT01I-RPT2 () 
+    VHMT01IW-VHCF26I.REPORT-NAME = "0830";
+    VHMT01IW-VHCF26I.TERM-ID = VH01A01_DATA.TERM-ID;
+    VHMT01IW-VHCF26I.USER-GRP = VH01A01_DATA.USER-GROUP;
+end 
+
+Function VHMT01I-RPT3 () 
+    VHMT01IW-VHCF26I.REPORT-NAME = "1300";
+    VHMT01IW-VHCF26I.TERM-ID = VH01A01_DATA.TERM-ID;
+    VHMT01IW-VHCF26I.USER-GRP = VH01A01_DATA.USER-GROUP;
+end 
+
+Function VHMT01I-RPT4 () 
+    VHMT01IW-VHCF26I.REPORT-NAME = "1800";
+    VHMT01IW-VHCF26I.TERM-ID = VH01A01_DATA.TERM-ID;
+    VHMT01IW-VHCF26I.USER-GRP = VH01A01_DATA.USER-GROUP;
+end 
+
+Function VHMTOIS-EXIT () 
+    if (VHMTOIW-PASS.EXIT-IND != " ")
+        VHMTOIW-PASS.EXIT-SHOP = "Y";
+    end
+end 
+
+Function VHMTOIS-GRP-ACCES () 
+    if ("pbt0400Car" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VHMTOIW-BUTTOM.DISABLE-0400-CAR = "Y";
+        else
+            VHMTOIW-BUTTOM.ENABLE-0400-CAR = "Y";
+        end
+    else
+        VHMTOIW-BUTTOM.ENABLE-0400-CAR = "Y";
+    end
+    if ("pbt0830Train" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VHMTOIW-BUTTOM.DISABLE-0830-TRAIN = "Y";
+        else
+            VHMTOIW-BUTTOM.ENABLE-0830-TRAIN = "Y";
+        end
+    else
+        VHMTOIW-BUTTOM.ENABLE-0830-TRAIN = "Y";
+    end
+    if ("pbt1300Car" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VHMTOIW-BUTTOM.DISABLE-1300-CAR = "Y";
+        else
+            VHMTOIW-BUTTOM.ENABLE-1300-CAR = "Y";
+        end
+    else
+        VHMTOIW-BUTTOM.ENABLE-1300-CAR = "Y";
+    end
+    if ("pbt1800Train" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VHMTOIW-BUTTOM.DISABLE-1800-TRAIN = "Y";
+        else
+            VHMTOIW-BUTTOM.ENABLE-1800-TRAIN = "Y";
+        end
+    else
+        VHMTOIW-BUTTOM.ENABLE-1800-TRAIN = "Y";
+    end
+end 
+
+Function VHMTOIS-INIT-X () 
+    VH01A02_CRIT.USER-GRP = VH01A01_DATA.USER-GROUP;
+    VH01A02_CRIT.GUI-NAME = "VHMTOI";
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VH001I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VH01A02";
+    try
+        call "VH01A02"(XDCONTROL, VH01A02_CRIT, VH01A02_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHMVSI-EVENT () 
+    VHMVSIW-INCTYPE.INCD-TYPE = "EVT";
+end 
+
+Function VHMVSI-MISC () 
+    VHMVSIW-INCTYPE.INCD-TYPE = "MSC";
+end 
+
+Function VHMVSI-NOGO () 
+    VHMVSIW-INCTYPE.INCD-TYPE = "SHP";
+end 
+
+Function VHMVSI-SHOP () 
+    VHMVSIW-INCTYPE.INCD-TYPE = "SHN";
+end 
+
+Function VHMVSI-YARD () 
+    VHMVSIW-INCTYPE.INCD-TYPE = "YRD";
+end 
+
+Function VHMVSIS-ACCE-ADD () 
+    if ("pbtAddCmpnt" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VHMVSIW-BUTTOM.DISABLE-ADDCMPNT = "Y";
+            VH001IS-MESSAGE();
+        else
+            VHMVSIW-BUTTOM.ENABLE-ADDCMPNT = "Y";
+            VHMVSIW-BUTTOM.OPEN-ADDCMPNT = "Y";
+        end
+    else
+        VHMVSIW-BUTTOM.ENABLE-ADDCMPNT = "Y";
+        VHMVSIW-BUTTOM.OPEN-ADDCMPNT = "Y";
+    end
+end 
+
+Function VHMVSIS-ACCE-EXCP () 
+    if ("pbtConfExcpt" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VHMVSIW-BUTTOM.DISABLE-CONGEXCPT = "Y";
+            VH001IS-MESSAGE();
+        else
+            VHMVSIW-BUTTOM.ENABLE-CONGEXCPT = "Y";
+            VHMVSIW-BUTTOM.OPEN-CONGEXCPT = "Y";
+        end
+    else
+        VHMVSIW-BUTTOM.ENABLE-CONGEXCPT = "Y";
+        VHMVSIW-BUTTOM.OPEN-CONGEXCPT = "Y";
+    end
+end 
+
+Function VHMVSIS-ACCE-INQ () 
+    if ("pbtConfInq" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VHMVSIW-BUTTOM.DISABLE-CONGINQ = "Y";
+            VH001IS-MESSAGE();
+        else
+            VHMVSIW-BUTTOM.ENABLE-CONGINQ = "Y";
+            VHMVSIW-BUTTOM.OPEN-CONGINQ = "Y";
+        end
+    else
+        VHMVSIW-BUTTOM.ENABLE-CONGINQ = "Y";
+        VHMVSIW-BUTTOM.OPEN-CONGINQ = "Y";
+    end
+end 
+
+Function VHMVSIS-ACCE-SUR () 
+    if ("pbtSurvey" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VHMVSIW-BUTTOM.DISABLE-SURVEY = "Y";
+            VH001IS-MESSAGE();
+        else
+            VHMVSIW-BUTTOM.ENABLE-SURVEY = "Y";
+            VHMVSIW-BUTTOM.OPEN-SURVEY = "Y";
+        end
+    else
+        VHMVSIW-BUTTOM.ENABLE-SURVEY = "Y";
+        VHMVSIW-BUTTOM.OPEN-SURVEY = "Y";
+    end
+end 
+
+Function VHMVSIS-GRP-ACCES () 
+    if ("pbtSurvey" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VHMVSIW-BUTTOM.DISABLE-SURVEY = "Y";
+        else
+            VHMVSIW-BUTTOM.ENABLE-SURVEY = "Y";
+        end
+    else
+        VHMVSIW-BUTTOM.ENABLE-SURVEY = "Y";
+    end
+    if ("pbtAddCmpnt" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VHMVSIW-BUTTOM.DISABLE-ADDCMPNT = "Y";
+        else
+            VHMVSIW-BUTTOM.ENABLE-ADDCMPNT = "Y";
+        end
+    else
+        VHMVSIW-BUTTOM.ENABLE-ADDCMPNT = "Y";
+    end
+    if ("pbtConfInq" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VHMVSIW-BUTTOM.DISABLE-CONGINQ = "Y";
+        else
+            VHMVSIW-BUTTOM.ENABLE-CONGINQ = "Y";
+        end
+    else
+        VHMVSIW-BUTTOM.ENABLE-CONGINQ = "Y";
+    end
+    if ("pbtConfExcpt" in VH01A02_DATA.PART-NAME)
+        if (VH01A02_DATA.ACCESS-ALLOW[sysVar.arrayIndex] == "N")
+            VHMVSIW-BUTTOM.DISABLE-CONGEXCPT = "Y";
+        else
+            VHMVSIW-BUTTOM.ENABLE-CONGEXCPT = "Y";
+        end
+    else
+        VHMVSIW-BUTTOM.ENABLE-CONGEXCPT = "Y";
+    end
+end 
+
+Function VHMVSIS-INIT-X () 
+    VH01A02_CRIT.USER-GRP = VH01A01_DATA.USER-GROUP;
+    VH01A02_CRIT.GUI-NAME = "VHMVSI";
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VH001I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VH01A02";
+    try
+        call "VH01A02"(XDCONTROL, VH01A02_CRIT, VH01A02_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHMVSIS-INIT-Y () 
+    VH01A02_CRIT.USER-GRP = VH01A01_DATA.USER-GROUP;
+    VH01A02_CRIT.GUI-NAME = "VHMVSI";
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+    XXEXT_CALL_Level77Items.UEXTNAM = "VH001I";
+    XXEXT_CALL_Level77Items.UAPPLNAM = "VH01A02";
+    try
+        call "VH01A02"(XDCONTROL, VH01A02_CRIT, VH01A02_DATA);
+    
+    end
+    
+
+    
+    MRSCommonCode.XXA0IS-CHECK_EXT();
+
+    
+    if (XXEXT_CALL_Level77Items.URC == 0)
+  
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4 || XDCONTROL.URC == 100)
+
+        else
+
+        
+        
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHMVSIS-TRUCK () 
+    if (VH01A01_DATA.USER-GROUP == "HYSHOP")
+        VHMVSIW-TRIGGER.CLICK-35I = "Y";
+    else
+        VHMVSIW-TRIGGER.CLICK-37I = "Y";
+    end
+end

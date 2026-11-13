@@ -1,0 +1,255 @@
+openapi: 3.1.0
+info:
+  title: MARIS middleware
+  version: 0.1.0
+  description: |
+    Contract between the MARIS UI and the middleware (UI -> middleware -> MARIS_Server EGL programs -> Oracle).
+    The middleware translates these JSON calls into EGL calls (XDCONTROL + *_CRIT + *_DATA records) and back.
+    Types for the UI are generated from this file: `npm run gen:api` -> src/api/generated/schema.ts.
+    Screen layouts and menus are part of the UI (static JSON), not of this API.
+    The middleware's own, complete description is served at /v3/api-docs (Swagger UI: /swagger-ui.html).
+
+    Session: cookie MARIS_SESSION. Every POST sends the XSRF-TOKEN cookie's value as header X-XSRF-TOKEN
+    (GET /auth/csrf sets the cookie). Errors are RFC 9457 problem details with `code`, `detail` and `requestId`.
+servers:
+  - url: /api/v1
+paths:
+  /auth/csrf:
+    get:
+      operationId: csrf
+      responses:
+        "200": { description: Sets the XSRF-TOKEN cookie }
+  /auth/signon:
+    post:
+      operationId: signOn
+      description: MARIS program MRS02A. Group ID and password are upper-cased, as on the old sign-on screen.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SignOnRequest" }
+      responses:
+        "200":
+          description: Signed on
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Session" }
+        "401": { description: Unknown group ID or wrong password (one message for both) }
+  /auth/signoff:
+    post:
+      operationId: signOff
+      responses:
+        "204": { description: Signed off }
+  /auth/me:
+    get:
+      operationId: me
+      description: The session the middleware holds (lets the UI restore it after a page reload).
+      responses:
+        "200":
+          description: Signed on
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Session" }
+        "401": { description: Not signed on }
+  /fleet:
+    get:
+      operationId: getFleet
+      description: Every yard with its tracks and the cars on them (MARIS program VHSW01A, MRS_YRD_TRKG + MRS_VEH).
+      responses:
+        "200":
+          description: The fleet
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Fleet" }
+  /screens/{screen}/actions/{control}:
+    post:
+      operationId: runAction
+      description: |
+        A push button on a screen that calls server programs (EGL `call "VHxxxxx"`). Only buttons whose EGL logic has
+        been translated into the middleware run; the others answer 501 with code NOT_MIGRATED.
+      parameters:
+        - { name: screen, in: path, required: true, schema: { type: string }, example: VHCF01I }
+        - { name: control, in: path, required: true, schema: { type: string }, example: Push_Button1 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ActionRequest" }
+      responses:
+        "200":
+          description: What the programs returned
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ActionResult" }
+        "501": { description: "The button is not connected to the MARIS system yet (code NOT_MIGRATED)" }
+  /ui/screens:
+    get:
+      summary: The old screens the middleware's screen engine can run
+      responses:
+        "200": { description: Screen codes, content: { application/json: { schema: { type: array, items: { type: string } } } } }
+  /ui/open:
+    post:
+      summary: Open a screen live (a fresh start, as from the menu). Its own open logic runs, backend calls included.
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [screen], properties: { screen: { type: string } } } } } }
+      responses:
+        "200": { description: Open windows and prompt, content: { application/json: { schema: { $ref: "#/components/schemas/LiveState" } } } }
+  /ui/windows/{window}/events:
+    post:
+      summary: What the user did on a window - field changes first, then one event (clicked, select, losingFocus)
+      parameters: [{ name: window, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                changes: { type: array, items: { type: object, properties: { widget: { type: string }, attr: { type: string }, value: {} } } }
+                widget: { type: string }
+                event: { type: string }
+                value: {}
+      responses:
+        "200": { description: Open windows and prompt, content: { application/json: { schema: { $ref: "#/components/schemas/LiveState" } } } }
+  /ui/dialogs/{dialog}:
+    post:
+      summary: Answer the open prompt
+      parameters: [{ name: dialog, in: path, required: true, schema: { type: integer } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { button: { type: string } } } } } }
+      responses:
+        "200": { description: Open windows and prompt, content: { application/json: { schema: { $ref: "#/components/schemas/LiveState" } } } }
+components:
+  schemas:
+    LiveState:
+      type: object
+      description: The open windows of the live screens (bottom to top), each with every widget's state by EGL name; the open prompt; the backend calls made.
+      required: [windows]
+      properties:
+        windows:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              screen: { type: string }
+              title: { type: string }
+              widgets: { type: object, additionalProperties: { type: object } }
+        dialog:
+          type: object
+          properties: { id: { type: integer }, title: { type: string }, message: { type: string }, icon: { type: integer }, buttons: { type: array, items: { type: string } } }
+        calls:
+          type: array
+          items: { type: object, properties: { program: { type: string }, screen: { type: string }, ms: { type: integer }, errorCode: { type: string } } }
+    Role:
+      type: string
+      enum: [VTD, TRANS, TOWER, SHOP, ADMIN]
+    SignOnRequest:
+      type: object
+      required: [groupId, password]
+      properties:
+        groupId: { type: string, maxLength: 8, example: TRBLDESK }
+        password: { type: string, maxLength: 6, format: password }
+    Session:
+      type: object
+      required: [user, role, group, update, signedAt]
+      properties:
+        user: { type: string }
+        role: { $ref: "#/components/schemas/Role" }
+        group: { type: string, example: Vehicle Trouble Desk Supervisor }
+        update: { type: boolean, description: Maps open editable (Update) rather than read-only (Inquiry). }
+        signedAt: { type: string, format: date-time }
+        menu: { type: string, description: "MARIS start menu of the group (MENU_GUI_NAME), e.g. VH001I" }
+        yard: { type: string, description: Yard of a yard or shop group (YRD_TRKG_YRD) }
+    Car:
+      type: object
+      required: [car, home, stat]
+      properties:
+        car: { type: string, example: 4117V }
+        home: { type: string, description: Home yard code, example: CY }
+        stat: { type: string, description: "GO, NO GO, AWPART, PM, MODHLD, ENGHLD, USABLE, TI …", example: GO }
+        from: { type: string }
+        reason: { type: string, description: Move reason code (MOVE_REASON_CD) }
+        consist: { type: string, description: Consist number (CON_NO) }
+    Track:
+      type: object
+      required: [id, cap, cars]
+      properties:
+        id: { type: string, example: ST-26 }
+        cap: { type: integer, description: "Car places on the track (from MARIS: the last occupied position)" }
+        cars:
+          type: array
+          description: One entry per place; null is an empty place.
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/Car"
+              - type: "null"
+    Yard:
+      type: object
+      required: [code, name, city, pseudo]
+      properties:
+        code: { type: string, example: HY }
+        name: { type: string, example: Hayward Yard }
+        city: { type: string }
+        pseudo: { type: string }
+        shop: { type: boolean }
+    Fleet:
+      type: object
+      required: [yards, mapYards, fleet]
+      properties:
+        capacityKnown:
+          type: boolean
+          description: "false: MARIS sent no track capacity, so Track.cap is only the last occupied place (absent = true)"
+        yards:
+          type: object
+          additionalProperties: { $ref: "#/components/schemas/Yard" }
+        mapYards:
+          type: array
+          items: { type: string }
+        fleet:
+          type: object
+          description: Yard code -> its tracks
+          additionalProperties:
+            type: array
+            items: { $ref: "#/components/schemas/Track" }
+    XdControl:
+      type: object
+      description: The EGL XDCONTROL record.
+      required: [URC, UMSGCODE, UMSGINS]
+      properties:
+        URC: { type: integer, description: Return code; not 0 is an error. }
+        UMSGCODE: { type: string }
+        UMSGINS: { type: string }
+        UUP: { type: string, description: Paging up flag }
+        UDOWN: { type: string, description: Paging down flag }
+    ActionRequest:
+      type: object
+      required: [screen, control, caption, programs, fields]
+      properties:
+        screen: { type: string, example: VHCF01I }
+        control: { type: string, example: Push_Button1 }
+        caption: { type: string, example: List / Refresh }
+        programs:
+          type: array
+          items: { type: string }
+          example: [VHCF01A, VHCF01B, VHCF01C]
+        fields:
+          type: object
+          description: EGL field name -> value
+          additionalProperties: { type: string }
+    ActionResult:
+      type: object
+      required: [control]
+      properties:
+        control: { $ref: "#/components/schemas/XdControl" }
+        fields:
+          type: object
+          description: Values to write back into the screen, by EGL field name
+          additionalProperties: { type: string }
+        rows:
+          type: object
+          description: List box name (data-w) -> rows, each row the list box's columns in order
+          additionalProperties:
+            type: array
+            items:
+              type: array
+              items: { type: string }
+        message: { type: string }

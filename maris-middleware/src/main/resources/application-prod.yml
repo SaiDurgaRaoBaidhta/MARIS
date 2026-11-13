@@ -1,0 +1,18 @@
+# Production: every value comes from environment variables or the secret store. Nothing environment-specific here.
+server:
+  servlet:
+    session:
+      cookie:
+        secure: true
+
+maris:
+  legacy:
+    base-url: ${MARIS_LEGACY_BASE_URL}
+  dev-api:
+    enabled: false
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

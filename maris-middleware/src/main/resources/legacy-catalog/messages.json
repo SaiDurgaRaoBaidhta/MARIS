@@ -1,0 +1,298 @@
+{
+  "ACCESS DENIED" : {
+    "text" : "You do not have the authority to run the application.  Please consult your system administrator for authorization.",
+    "type" : "I"
+  },
+  "AFC13101" : {
+    "text" : "No records found for the ~1 report",
+    "type" : "I"
+  },
+  "AFC54I01" : {
+    "text" : "The Active indicator for the record has been updated to 'N'.",
+    "type" : "I"
+  },
+  "AFC6501" : {
+    "text" : "Invalid Tech Posn Cd for Equip Type ~1, Equip Id ~2",
+    "type" : "E"
+  },
+  "AFCR001" : {
+    "text" : "No records found.",
+    "type" : "I"
+  },
+  "ALREADY LIMIT" : {
+    "text" : "Already at the ~1",
+    "type" : "I"
+  },
+  "ARRAY LIMIT EXCEEDED" : {
+    "text" : "Array limit of ~1 exceeded on Table --~2",
+    "type" : "W"
+  },
+  "EXT CALL ERROR" : {
+    "text" : "Error occurred calling an external module.  External Name = ~1, Appl = ~2, EZERT8 = ~3.",
+    "type" : "E"
+  },
+  "INPUT REQ" : {
+    "text" : "Input is required for ~1.",
+    "type" : "E"
+  },
+  "INVALID DATE OR TIME" : {
+    "text" : "~1 must not be ~2 ~3.",
+    "type" : "E"
+  },
+  "INVALID DATE VALUE" : {
+    "text" : "The ~1 must be greater than ~2.",
+    "type" : "E"
+  },
+  "INVALID EXCPT" : {
+    "text" : "'~1' is INVALID for ~2",
+    "type" : "E"
+  },
+  "INVALID NUMBER" : {
+    "text" : "Invalid numeric input (valid: digit, decimal point, sign).",
+    "type" : "I"
+  },
+  "MSGWIN EXAMPLE" : {
+    "text" : "~1",
+    "type" : "I"
+  },
+  "NO DATA FOUND" : {
+    "text" : "There were no ~1 for the requested ~2.",
+    "type" : "E"
+  },
+  "NO SEL MADE" : {
+    "text" : "No selections were made.",
+    "type" : "E"
+  },
+  "NO UPDATE" : {
+    "text" : "No ~1 to update",
+    "type" : "E"
+  },
+  "NOT AUTHORIZED" : {
+    "text" : "You are not authorized to ~1",
+    "type" : "E"
+  },
+  "NOT NUMERIC" : {
+    "text" : "Input for ~1 is NOT a valid numeric value.",
+    "type" : "E"
+  },
+  "NOT REQUIRED" : {
+    "text" : "~1 not required",
+    "type" : "E"
+  },
+  "NOT SUPPORTED" : {
+    "text" : "~1 is not supported",
+    "type" : "E"
+  },
+  "NRF MSG CODE" : {
+    "text" : "No record found for message code = ~1.",
+    "type" : "E"
+  },
+  "REC NOT FND" : {
+    "text" : "~1 Is Not Found",
+    "type" : "E"
+  },
+  "RECORD ADDED" : {
+    "text" : "~1 Record added.",
+    "type" : "I"
+  },
+  "RECORD DELETED" : {
+    "text" : "~1 Record deleted.",
+    "type" : "I"
+  },
+  "RECORD MAX" : {
+    "text" : "The maximum number of rows for this application has been reached.  Appl = ~1.  Max = ~3.",
+    "type" : "W"
+  },
+  "RECORD NOT ADDED" : {
+    "text" : "~1 Record not added - return code ~2.",
+    "type" : "W"
+  },
+  "RECORD NOT DELETED" : {
+    "text" : "~1 Record not deleted - return code ~2.",
+    "type" : "W"
+  },
+  "RECORD NOT UPDATED" : {
+    "text" : "~1 Record not updated - return code ~2.",
+    "type" : "W"
+  },
+  "RECORD UPDATED" : {
+    "text" : "~1 Record updated.",
+    "type" : "I"
+  },
+  "REQD FIELDS INCOMP" : {
+    "text" : "Please enter all the required information.",
+    "type" : "E"
+  },
+  "ROWS ADDED" : {
+    "text" : "~1 row(s) added successfully.",
+    "type" : "I"
+  },
+  "ROWS DELETED" : {
+    "text" : "~1 row(s) deleted successfully.",
+    "type" : "I"
+  },
+  "ROWS UPDATED" : {
+    "text" : "~1 row(s) updated successfully.",
+    "type" : "I"
+  },
+  "SQL DEADLOCK ERR" : {
+    "text" : "Database deadlock/timeout occurred. Appl(~2) Tbl(~3)",
+    "type" : "E"
+  },
+  "SQL DUP ERR" : {
+    "text" : "Duplicate key for insert or update. Appl(~2) Tbl(~3)",
+    "type" : "E"
+  },
+  "SQL NRF ERR" : {
+    "text" : "Record not found in database. Appl(~2)Tbl(~3)",
+    "type" : "E"
+  },
+  "SQL OTHER ERR" : {
+    "text" : "A database error occurred.  SQL Code(~1) Appl(~2) Tbl(~3)",
+    "type" : "E"
+  },
+  "WS00I001" : {
+    "text" : "Logon as User Group  ~1  was successful.",
+    "type" : "I"
+  },
+  "WS00I002" : {
+    "text" : "Invalid password entered for User Group ~1. Please reenter the password or contact your system administrator.",
+    "type" : "I"
+  },
+  "WS00I003" : {
+    "text" : "User Group ~1 is invalid. Please reenter the user group or contact your system administrator.",
+    "type" : "I"
+  },
+  "WS10I001" : {
+    "text" : "Incident Number ~1 has been changed.",
+    "type" : "I"
+  },
+  "WS10I002" : {
+    "text" : "Incident Number ~1 has been forced closed.",
+    "type" : "I"
+  },
+  "WS10I003" : {
+    "text" : "Incident Number ~1 has been created.",
+    "type" : "I"
+  },
+  "WS10I004" : {
+    "text" : "Incident Number ~1 has been deleted.",
+    "type" : "I"
+  },
+  "WS10I005" : {
+    "text" : "The equipment entered does not exist.",
+    "type" : "E"
+  },
+  "WS10I006" : {
+    "text" : "No fields were updated.  Incident No ~1 has not been changed.",
+    "type" : "I"
+  },
+  "WS10I007" : {
+    "text" : "Event Number ~1 has been created",
+    "type" : "I"
+  },
+  "WS11I001" : {
+    "text" : "Emergency Crew has been assigned.",
+    "type" : "I"
+  },
+  "WS15I001" : {
+    "text" : "Please enter ~1, ~2, and ~3 fields",
+    "type" : "E"
+  },
+  "WS15I002" : {
+    "text" : "Cannot close incident, Status is not REP",
+    "type" : "E"
+  },
+  "WS15I003" : {
+    "text" : "Cannot add SP Instructions, No Next PM Cycle",
+    "type" : "E"
+  },
+  "WS15I004" : {
+    "text" : "Incident ~1 is closed",
+    "type" : "I"
+  },
+  "WS15I005" : {
+    "text" : "Work Completed",
+    "type" : "I"
+  },
+  "WS15I006" : {
+    "text" : "Cannot close Incident without any repair document",
+    "type" : "E"
+  },
+  "WS15I007" : {
+    "text" : "Please enter repair document before to complete incident",
+    "type" : "E"
+  },
+  "WS22I001" : {
+    "text" : "PM Updated",
+    "type" : "I"
+  },
+  "WS22I002" : {
+    "text" : "PM Completed",
+    "type" : "I"
+  },
+  "WS22I003" : {
+    "text" : "PM Closed",
+    "type" : "I"
+  },
+  "WS27I001" : {
+    "text" : "PM STATUS CHANGED",
+    "type" : "I"
+  },
+  "WS30I001" : {
+    "text" : "PM Equipment was ~1 successfully.",
+    "type" : "I"
+  },
+  "WS31I001" : {
+    "text" : "NO PM EQUIPMENT SCHEDULED",
+    "type" : "I"
+  },
+  "WS32I001" : {
+    "text" : "The PM Scheduled Successully",
+    "type" : "I"
+  },
+  "WS32I002" : {
+    "text" : "CANNOT ADD DUPLICATE PM",
+    "type" : "I"
+  },
+  "WS32I003" : {
+    "text" : "CANNOT ADD PREVIOUS DROUP SAME SCHEDULED PM",
+    "type" : "I"
+  },
+  "WS33I001" : {
+    "text" : "The PM selected was dropped successfully.",
+    "type" : "I"
+  },
+  "WS33I002" : {
+    "text" : "Please select an employee.",
+    "type" : "E"
+  },
+  "WS33I003" : {
+    "text" : "Please enter a Drop PM Narrative.",
+    "type" : "E"
+  },
+  "WS41I002" : {
+    "text" : "Symptom Code is not in the valid range",
+    "type" : "E"
+  },
+  "WS82I001" : {
+    "text" : "Employee is already absent on the chosen Start Date.",
+    "type" : "E"
+  },
+  "WS82I002" : {
+    "text" : "Start Date must not be in the past.",
+    "type" : "E"
+  },
+  "WS82I003" : {
+    "text" : "End Date must not be before Start Date.",
+    "type" : "E"
+  },
+  "WS84I001" : {
+    "text" : "A crew can have no more than 5 workers.  Please split the workers into multiple crews.",
+    "type" : "I"
+  },
+  "WS84I002" : {
+    "text" : "You have chosen a worker that is not in.  Assign anyway?",
+    "type" : "A"
+  }
+}

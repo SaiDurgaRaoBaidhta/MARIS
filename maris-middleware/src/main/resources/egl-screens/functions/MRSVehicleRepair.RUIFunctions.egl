@@ -1,0 +1,2441 @@
+
+
+package MRSVehicleRepair;
+
+
+Function VHRV01IS-ADD-REPR () 
+    VHRV01IW.SYSTEM-DATE = VGVar.currentFormattedGregorianDate;
+    VHRV01IS-VALIDATE(); 
+    if (ERROR-IND == 0)
+        set VHRV01B_CRIT empty;
+        set VHRV01B_DATA empty;
+        VHRV01B_CRIT.CLOSE-INCD-IND = "N";
+        VHRV01IS-MOVE-REC();
+        try
+            call "VHRV01B"(XDCONTROL, VHRV01B_CRIT, VHRV01B_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            if (VHRV01B_CRIT.ERR-FOUND == "N")
+                RECORDS-ADDED-MSG = "Y";
+                VHRV01IW-MSG.FINAL-ERROR-MSG = "REPAIR RECORD ADDED";
+                DISABLE-INCDLIST = "Y";
+            else
+
+            end
+        else
+            VHRV01IS-CLR-FLDS();
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHRV01IS-AFT-CLOSE () 
+    set VHRV01IW empty;
+    VHRV01IW-MSG.FINAL-ERROR-MSG = VHRV01IW-TRIGGER.TEMP-MESSAGE;
+    set VHINC1D_CRIT empty;
+    set VHINC1D_DATA empty;
+  
+    set VHINC2D_DATA empty;
+  
+    ENABLE-INCDLIST = "Y";
+    DISABLE-FIELDS = "Y";
+    DISABLE-NARR-DET = "Y";
+    DISABLE-PREV-DET = "Y";
+    DISABLE-PREV = "Y";
+    DISABLE-NEXT = "Y";
+    DISABLE-ADDREPR = "Y";
+    DISABLE-ADDNARR = "Y";
+    DISABLE-ADDCMPNT = "Y";
+    DISABLE-CLOSEINCD = "Y";
+    VHRV01IW.REPR-DOC-NO = 0;
+    VHRV01IW.DISP-REPR-DATA = " ";
+    VHRV01IW.REPR-LABOR-HRS = 0.0;
+    VHRV01IW.DISP-TIME-REPR = " ";
+    VHRV01IW.DISP-CON-DASH = " ";
+    VHRV01IW-TRIGGER.TEMP-MESSAGE = " ";
+    VHRV01IW.USER-GRP = VHRV01IW-PASSVALUE.USER-GRP;
+    VHRV01IW.DATE-NARR = VGVar.currentFormattedGregorianDate;
+    VHRV01IW.TIME-NARR = VGVar.currentFormattedTime;
+    VHRV01IW-TRIGGER.LOAD-PREV-REPR = "Y";
+    VHRV01IW.SEL-IDX = 0;
+end 
+
+Function VHRV01IS-AFT-NAR () 
+    VHRV01A_CRIT.REPR-NARR-COUNT = 0;
+    VHRV01F_CRIT.INCD-NO = VHRV01IW.INCD-NO;
+    VHRV01F_CRIT.REPR-DOC-NO = VHRV01IW.REPR-DOC-NO;
+    try
+        call "VHRV01F"(XDCONTROL, VHRV01F_CRIT, VHRV01F_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHRV01A_CRIT.REPR-NARR-COUNT = XDCONTROL.UROWCNT;
+        VHRV01IW.STORE-NARR-INDEX = VHRV01A_CRIT.REPR-NARR-COUNT;
+        VHRV01IS-NARR-DET();
+        ADDNARR-SETFOCUS = "Y";
+    else
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+    end
+end 
+
+Function VHRV01IS-CLEAR () 
+    set VHRV01IW empty;
+    set VHINC1D_CRIT empty;
+    set VHINC1D_DATA empty;
+    set VHINC2D_DATA empty;
+  
+    set VHRV01IW-RETAIN empty;
+    set VHRV01IW-PREV-REPR empty;
+    VHRV01IW-TRIGGER.LOAD-PREV-REPR = "Y";
+    ENABLE-INCDLIST = "Y";
+    DISABLE-FIELDS = "Y";
+    DISABLE-NARR-DET = "Y";
+    DISABLE-PREV-DET = "Y";
+    DISABLE-PREV = "Y";
+    DISABLE-NEXT = "Y";
+    DISABLE-ADDREPR = "Y";
+    DISABLE-ADDNARR = "Y";
+    DISABLE-ADDCMPNT = "Y";
+    DISABLE-CLOSEINCD = "Y";
+    VHRV01IW.REPR-DOC-NO = 0;
+    VHRV01IW.DISP-REPR-DATA = " ";
+    VHRV01IW.REPR-LABOR-HRS = 0.0;
+    VHRV01IW.DISP-TIME-REPR = " ";
+    VHRV01IW.DISP-CON-DASH = " ";
+    VHRV01IW.USER-GRP = VHRV01IW-PASSVALUE.USER-GRP;
+    VHRV01IW.DATE-NARR = VGVar.currentFormattedGregorianDate;
+    VHRV01IW.TIME-NARR = VGVar.currentFormattedTime;
+    VHRV01IW.SEL-IDX = 0;
+
+  
+    set VHRV01IW-MSG empty;
+end 
+
+Function VHRV01IS-CLOSE-INC () 
+    VHRV01IW.SYSTEM-DATE = VGVar.currentFormattedGregorianDate;
+    set VHRV01B_CRIT empty;
+    set VHRV01B_DATA empty;
+    VHRV01B_CRIT.CLOSE-INCD-IND = "Y";
+    VHRV01IW-TRIGGER.TEMP-MESSAGE = " ";
+    VHRV01IW-MSG.FINAL-ERROR-MSG = " ";
+    VHRV01IS-MOVE-REC();
+    try
+        call "VHRV01B"(XDCONTROL, VHRV01B_CRIT, VHRV01B_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        if (VHRV01B_CRIT.ERR-FOUND == "N")
+            RECORD-CLOSED-MSG = "Y";
+            VHRV01IW-TRIGGER.TEMP-MESSAGE-1 = "Incident ";
+            VHRV01IW-TRIGGER.TEMP-MESSAGE-2 = VHRV01IW.INCD-NO;
+            VHRV01IW-TRIGGER.TEMP-MESSAGE-3 = "was closed successfully";
+        else
+            VHRV01IW-MSG.FINAL-ERROR-MSG = "Error - Incident not closed.";
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    else
+        VHRV01IS-CLR-FLDS();
+   
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+    end
+end 
+
+Function VHRV01IS-CLR-CAR () 
+    set VHINC2D_DATA empty;
+    set VHINC2D_CRIT empty;
+end 
+
+Function VHRV01IS-CLR-FLDS () 
+    set VHINC1D_DATA empty;
+    VHRV01IW.DISP-CON-DASH = " ";
+    VHRV01IW.DISP-REPR-DOC-NO = 0;
+    VHRV01IW.REPR-DOC-NO = 0;
+    VHRV01IW.DISP-REPR-DATA = " ";
+    VHRV01IW.DATE-REPR = " ";
+    VHRV01IW.DISP-TIME-REPR = " ";
+    VHRV01IW.NARR-NO = 0;
+    VHRV01IW.USER-GRP = VHRV01IW-PASSVALUE.USER-GRP;
+    VHRV01IW.DATE-NARR = VGVar.currentFormattedGregorianDate;
+    VHRV01IW.TIME-NARR = VGVar.currentFormattedTime;
+    DISABLE-FIELDS = "Y";
+    DISABLE-NARR-DET = "Y";
+    DISABLE-PREV-DET = "Y";
+    DISABLE-ADDREPR = "Y";
+    DISABLE-ADDNARR = "Y";
+    DISABLE-ADDCMPNT = "Y";
+    DISABLE-CLOSEINCD = "Y";
+    VHRV01IW-TRIGGER.LOAD-PREV-REPR = "Y";
+    VHRV01IW.SEL-IDX = 0;
+end 
+
+Function VHRV01IS-INIT ()
+   
+    set VHRV01IW-MSG empty;
+
+  
+    try
+        call "VHRV01C"(XDCONTROL, VHRV01C_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+    else
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+    end
+
+  
+    try
+        call "VHRV01D"(XDCONTROL, VHRV01D_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+
+    else
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+    end
+    set VHRV01IW empty;
+    set VHINC1D_CRIT empty;
+    set VHINC1D_DATA empty;
+    set VHRV01IW-PREV-REPR empty;
+    VHRV01IW.DISP-REPR-DATA = " ";
+    VHRV01IW.DISP-TIME-REPR = " ";
+    VHRV01IW.DISP-CON-DASH = " ";
+    VHRV01IW.REPR-LABOR-HRS = 0.0;
+    VHRV01IW.DATE-NARR = VGVar.currentFormattedGregorianDate;
+    VHRV01IW.TIME-NARR = VGVar.currentFormattedTime;
+    VHRV01IW.USER-GRP = VHRV01IW-PASSVALUE.USER-GRP;
+    DISABLE-PREV = "Y";
+    DISABLE-NEXT = "Y";
+    DISABLE-FIELDS = "Y";
+    DISABLE-NARR-DET = "Y";
+    DISABLE-PREV-DET = "Y";
+    DISABLE-ADDREPR = "Y";
+    DISABLE-ADDNARR = "Y";
+    DISABLE-ADDCMPNT = "Y";
+    DISABLE-CLOSEINCD = "Y";
+    ENABLE-INCDLIST = "Y";
+    LOAD-PREV-REPR = "Y";
+end 
+
+Function VHRV01IS-LIST () 
+    VHRV01IW.FINAL-ERROR-MSG-2 = " ";
+    VHRV01IW-MSG.FINAL-ERROR-MSG = " ";
+    VHRV01IW.NARR-NO = 1;
+    VHRV01IW.USER-GRP = VHRV01IW-PASSVALUE.USER-GRP;
+    VHRV01IW.REPR-PREV-NEXT = " ";
+    set VHRV01IW-PREV-REPR empty;
+    set VHRV01IW-TEMP-NARR empty;
+    if (VHRV01IW.INCD-NO != " ")
+        set VHINC2D_DATA empty;
+        set VHINC2D_DATA1 empty;
+        set VHINC2D_CRIT empty;
+        VHINC2D_CRIT.INCD-NO = VHRV01IW.INCD-NO;
+        VHINC2D_CRIT.RET-CHECK = "INCD";
+        try
+            call "MRSVehicleIncident.VHINC2D"(XDCONTROL, VHINC2D_CRIT, VHINC2D_DATA, VHINC2D_DATA1);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            if (VHRV01IW.INCD-NO-ARRAY[1] == "H" &&
+             VHINC2D_DATA.WORST-CASE-RANK >= 80)
+                DISABLE-FIELDS = "Y";
+                DISABLE-NARR-DET = "Y";
+                DISABLE-PREV-DET = "Y";
+                DISABLE-ADDREPR = "Y";
+                DISABLE-ADDCMPNT = "Y";
+                DISABLE-ADDNARR = "Y";
+                DISABLE-CLOSEINCD = "Y";
+                VHRV01IW-MSG.FINAL-ERROR-MSG = "Invalid Request.";
+                INVALID-RQST = "Y";
+                return;
+            end
+            if (VHINC2D_DATA.VEH-INCD-STAT == "OPU")
+                if (VHRV01IW-PASSVALUE.USER-GRP == "DBMAINT" ||
+                 VHRV01IW-PASSVALUE.USER-GRP == "TRBLDESK" ||
+                 VHRV01IW-PASSVALUE.USER-GRP == "TEST")
+
+                else
+                    VHRV01IS-CLR-FLDS();
+                    VHRV01IW-MSG.FINAL-ERROR-MSG = "Car in service.";
+                    INVALID-CARINSVC = "Y";
+                    return;
+                end
+            end
+
+  
+            if (VHINC2D_DATA.INCD-TYPE == "PMS" ||
+             VHINC2D_DATA.INCD-TYPE == "EVT" ||
+             VHINC2D_DATA.INCD-TYPE == "PM ")
+                                   
+                VHRV01IS-CLR-FLDS();
+                VHRV01IW-MSG.FINAL-ERROR-MSG = "Incident Type cannot be PM, PMS or EVT.";
+                CLOSED-INCDS = "Y";
+                return;
+            end
+            if (VHINC2D_DATA.VEH-INCD-STAT == "CLO") 
+                                   
+                VHRV01IS-CLR-FLDS();
+                VHRV01IW-MSG.FINAL-ERROR-MSG = "Closed Incidents are not listed.";
+                CLOSED-INCDS = "Y";
+                return;
+            else
+                if (VHINC2D_DATA.CON-NO == " ")
+                    VHRV01IW.DISP-CON-DASH = " ";
+                else
+                    VHRV01IW.CON-NO = VHINC2D_DATA.CON-NO;
+                    VHRV01IW.CON-DASH-FILLER = "-";
+                    VHRV01IW.DASH-NO-NUM = VHINC2D_DATA.DASH-NO;
+                end
+        
+                VHRV01A_CRIT.INCD-NO = VHRV01IW.INCD-NO;
+                VHRV01A_CRIT.RET-CHECK = "BOTH";
+                try
+                    call "VHRV01A"(XDCONTROL, VHRV01A_CRIT, VHRV01A_DATA, VHRV01A_NARR_DATA);
+                
+                end
+                if (REPR-COUNT > 0)
+                    if (VHRV01A_CRIT.REPR-NARR-COUNT > 0)
+
+                    else
+                        set VHRV01A_NARR_DATA empty;
+                    end
+                    VHRV01IW.REPR-DOC-NO = VHRV01A_CRIT.REPR-COUNT + 1;
+                    EXECUTE-PREV-ACT = "Y";
+                else
+                    if (XDCONTROL.URC == 100)
+                        VHRV01IW.REPR-DOC-NO = 01;
+                        if (VHINC2D_DATA.VEH-INCD-STAT == "CLO")
+                            VHRV01IS-CLR-FLDS();
+                            VHRV01IW-MSG.FINAL-ERROR-MSG = "Invalid Request.";
+                            INVALID-RQST = "Y";
+                            return;
+                        else
+                            VHRV01IW.REPR-PREV-COUNT = 0;
+                            set VHRV01IW-PREV-REPR empty;
+                            ENABLE-FIELDS = "Y";
+                            ENABLE-NARR = "Y";
+                            ENABLE-NARR-DET = "Y";
+                            ENABLE-PREV-DET = "Y";
+                            ENABLE-ADDREPR = "Y";
+                            DISABLE-ADDNARR = "Y";
+                            DISABLE-ADDCMPNT = "Y";
+                            DISABLE-CLOSEINCD = "Y";
+                            LOAD-PREV-REPR = "Y";
+                            REPRCAUSECD-SETFOCUS = "Y";
+                        end
+                    else
+                        VHRV01IW.REPR-PREV-COUNT = 0;
+                        set VHRV01IW-PREV-REPR empty;
+                        DISABLE-FIELDS = "Y";
+                        DISABLE-PREV-DET = "Y";
+                        DISABLE-NARR-DET = "Y";
+                        DISABLE-ADDREPR = "Y";
+                        DISABLE-ADDNARR = "Y";
+                        DISABLE-CLOSEINCD = "Y";
+                        LOAD-PREV-REPR = "Y";
+                        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                    end
+                end
+            end
+        else
+            if (XDCONTROL.URC == 100)
+                set VHRV01IW empty;
+                VHRV01IW-MSG.FINAL-ERROR-MSG = "Incident not found.";
+                NO-INCD-FOUND = "Y";
+                 
+                VHRV01IS-CLR-FLDS();
+            else
+                VHRV01IS-CLR-FLDS();
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end
+    else
+        VHRV01IS-CLR-FLDS();
+        VHRV01IW-MSG.FINAL-ERROR-MSG = "Please enter an Incident No.";
+        INVALID-INCD-NO = "Y";
+         
+    end
+end 
+
+Function VHRV01IS-MOVE-MSG () 
+    VHRV01IW.ERROR-LOOP-INDEX = 1;
+    VHRV01IW.FINAL-INDEX = 0;
+    VHRV01IW-MSG.FINAL-ERROR-MSG = " ";
+    VHRV01IW.TEMP-ERROR-MSG = " ";
+    if (ERROR-IND > 0)
+        while (((ERROR-LOOP-INDEX <= 6) &&
+         (ERROR-MESSAGE[ERROR-LOOP-INDEX] != " ")))
+            ERROR-IND = 1;
+            TEMP-ERROR-MSG = ERROR-MESSAGE[ERROR-LOOP-INDEX];
+            while ((ERROR-IND <= 40))
+                if (TEMP-MSG[ERROR-IND] != ".")
+                    FINAL-INDEX = FINAL-INDEX + 1;
+                    FINAL-MSG[FINAL-INDEX] = TEMP-MSG[ERROR-IND];
+                else
+                    if (TEMP-MSG[ERROR-IND] == ".")
+                        FINAL-INDEX = FINAL-INDEX + 1;
+                        FINAL-MSG[FINAL-INDEX] = ",";
+                        FINAL-INDEX = FINAL-INDEX + 1;
+                        FINAL-MSG[FINAL-INDEX] = " ";
+                        ERROR-IND = 40;
+                    end
+                end
+                ERROR-IND = ERROR-IND + 1;
+            end
+            ERROR-LOOP-INDEX = ERROR-LOOP-INDEX + 1;
+        end
+        FINAL-INDEX = FINAL-INDEX - 1;
+        FINAL-MSG[FINAL-INDEX] = " ";
+        LOAD-ERR-MSG = "Y";
+    end
+end 
+
+Function VHRV01IS-MOVE-POSN () 
+    LOOP-INDEX = 2;
+    INVALID-PRTCTLNO = "N";
+    while ((LOOP-INDEX <= 7))
+        CHECK-NO-CHAR = VHRV01IW.PRT-CTL-NO-ARRAY[LOOP-INDEX];
+        if (CHECK-NO < 0)
+            INVALID-PRTCTLNO = "Y";
+            ERROR-IND = ERROR-IND + 1;
+            ERROR-MESSAGE[ERROR-IND] = "Invalid PCT No.";
+            LOOP-INDEX = 7;
+        else
+            SUFFIX-ARRAY[LOOP-INDEX] = CHECK-NO;
+        end
+        LOOP-INDEX = LOOP-INDEX + 1;
+    end
+    if (INVALID-PRTCTLNO == "N")
+        VHRV01IS-SUFFIX(); 
+    end
+    LOOP-INDEX = 1;
+end 
+
+Function VHRV01IS-MOVE-REC () 
+    VHRV01B_CRIT.INCD-NO = VHRV01IW.INCD-NO;
+    VHRV01B_DATA.CAR-NO = VHINC2D_DATA.CAR-NO;
+    VHRV01B_DATA.INCD-NO = VHRV01IW.INCD-NO;
+    VHRV01B_DATA.USER-GRP = VHRV01IW-PASSVALUE.USER-GRP;
+    VHRV01B_DATA.TERM-LAST-UPD = VHRV01IW-PASSVALUE.TERM-ID;
+    if (VHRV01B_CRIT.CLOSE-INCD-IND == "Y")
+  
+        VHRV01B_DATA.VEH-INCD-STAT = "CLO";
+        VHRV01B_DATA.INCD-STAT-NEW = "CLO";
+        VHRV01B_DATA.DATE-REPR = VHRV01IW-PREV-REPR.DATE-REPR[1];
+        VHRV01B_DATA.TIME-REPR = VHRV01IW-PREV-REPR.TIME-REPR[1];
+        VHRV01B_DATA.REPR-LOC = VHRV01IW-PREV-REPR.REPR-LOC[1];
+    else
+        VHRV01B_DATA.VEH-INCD-STAT = VHINC2D_DATA.VEH-INCD-STAT;
+        VHRV01B_DATA.REPR-DOC-NO = VHRV01IW.REPR-DOC-NO;
+        VHRV01B_DATA.REPR-CAUSE-CD = VHRV01IW.REPR-CAUSE-CD;
+        VHRV01B_DATA.SER-NO-ON = VHRV01IW.SER-NO-ON;
+        VHRV01B_DATA.SER-NO-OFF = VHRV01IW.SER-NO-OFF;
+        VHRV01B_DATA.VEH-PRT-CTL-NO = VHRV01IW.VEH-PRT-CTL-NO;
+        VHRV01B_DATA.VEH-SYSTEM = VHRV01IW.VEH-SYSTEM;
+        VHRV01B_DATA.VEH-SUB-SYSTEM = VHRV01IW.VEH-SUB-SYSTEM;
+        if (VHRV01IW.DATE-REPR == " ")
+            VHRV01B_DATA.DATE-REPR = VGVar.currentFormattedGregorianDate;
+        else
+            VHRV01B_DATA.DATE-REPR = VHRV01IW.DATE-REPR;
+        end
+        VHRV01B_DATA.INCD-TYPE = VHINC2D_DATA.INCD-TYPE;
+        if (VHRV01IW.DISP-TIME-REPR == " ")
+            VHRV01IW.TEMP-TIME-REPR = VGVar.currentFormattedTime;
+        else
+            VHRV01IW.TEMP-TIME-REPR-HR = VHRV01IW.DISP-TIME-REPR-HR;
+            VHRV01IW.TEMP-TIME-REPR-FILLER1 = ":";
+            VHRV01IW.TEMP-TIME-REPR-MIN = VHRV01IW.DISP-TIME-REPR-MIN;
+            VHRV01IW.TEMP-TIME-REPR-FILLER2 = ":00";
+        end
+        VHRV01B_DATA.TIME-REPR = VHRV01IW.TEMP-TIME-REPR;
+        VHRV01B_DATA.REPR-DISP-CD = VHRV01IW.REPR-DISP-CD;
+        VHRV01B_DATA.REPR-LOC = VHRV01IW.REPR-LOC;
+        VHRV01B_DATA.WAR-REPR-IND = VHRV01IW.WAR-REPR-IND;
+        VHRV01B_DATA.REPR-LABOR-HRS = VHRV01IW.REPR-LABOR-HRS;
+        VHRV01B_DATA.EMPL-NO = VHRV01IW.EMPL-NO;
+
+    
+        VHRV01B_DATA.NARR-NO = VHRV01IW.NARR-NO;
+        VHRV01B_DATA.DATE-NARR = VHRV01IW.DATE-NARR;
+        VHRV01B_DATA.TIME-NARR = VHRV01IW.TIME-NARR;
+        VHRV01B_DATA.NARR = VHRV01IW.NARR;
+    end
+end 
+
+Function VHRV01IS-NARR-DET () 
+    DISP-INDEX = 1;
+    while ((DISP-INDEX <= STORE-NARR-INDEX))
+        VHRV01IW-TEMP-NARR.NARR-NO[DISP-INDEX] = VHRV01F_DATA.NARR-NO[DISP-INDEX];
+        VHRV01IW-TEMP-NARR.NARR[DISP-INDEX] = VHRV01F_DATA.NARR[DISP-INDEX];
+        VHRV01IW-TEMP-NARR.DATE-NARR[DISP-INDEX] = VHRV01F_DATA.DATE-NARR[DISP-INDEX];
+        VHRV01IW-TEMP-NARR.TIME-NARR[DISP-INDEX] = VHRV01F_DATA.TIME-NARR[DISP-INDEX];
+        VHRV01IW-TEMP-NARR.USER-GRP[DISP-INDEX] = VHRV01F_DATA.USER-GRP[DISP-INDEX];
+        DISP-INDEX = DISP-INDEX + 1;
+    end
+    DISP-INDEX = 1;
+    VHRV01IW.REPR-PREV-NEXT = " ";
+    VHRV01IS-PREV-NEXT();
+end 
+
+Function VHRV01IS-PREV-ACT () 
+    VHRV01IW.DISP-REPR-DATA = " ";
+    VHRV01IW.DISP-TIME-REPR = " ";
+    VHRV01IW.NARR = " ";
+    set VHRV01IW-PREV-REPR empty;
+    REPR-INDEX = 1; 
+    ACTION-INDEX = 0;
+    if (VHRV01A_CRIT.REPR-COUNT > 0)
+        while ((REPR-INDEX <= VHRV01A_CRIT.REPR-COUNT))
+            NARR-INDEX = 1; 
+            while ((NARR-INDEX <= VHRV01A_CRIT.REPR-NARR-COUNT))
+                if (VHRV01A_DATA.REPR-DOC-NO[REPR-INDEX] ==
+                 VHRV01A_NARR_DATA.REPR-DOC-NO[NARR-INDEX])
+                    ACTION-INDEX = ACTION-INDEX + 1;
+                    VHRV01IW-PREV-REPR.REPR-DOC-NO[ACTION-INDEX] = VHRV01A_NARR_DATA.REPR-DOC-NO[REPR-INDEX];
+                    VHRV01IW-PREV-REPR.REPR-LOC[ACTION-INDEX] = VHRV01A_DATA.REPR-LOC[REPR-INDEX];
+                    VHRV01IW-PREV-REPR.DATE-REPR[ACTION-INDEX] = VHRV01A_DATA.DATE-REPR[REPR-INDEX];
+                    VHRV01IW-PREV-REPR.TIME-REPR[ACTION-INDEX] = VHRV01A_DATA.TIME-REPR[REPR-INDEX];
+                    VHRV01IW-PREV-REPR.NARR[ACTION-INDEX] = VHRV01A_NARR_DATA.NARR[NARR-INDEX];
+                    NARR-INDEX = VHRV01A_CRIT.REPR-NARR-COUNT;
+                end
+                NARR-INDEX = NARR-INDEX + 1;
+            end
+            REPR-INDEX = REPR-INDEX + 1;
+        end
+    end
+    VHRV01IW.REPR-PREV-COUNT = ACTION-INDEX;
+    ENABLE-FIELDS = "Y";
+    ENABLE-NARR-DET = "Y";
+    ENABLE-PREV-DET = "Y";
+    ENABLE-NARR = "Y";
+    ENABLE-ADDREPR = "Y";
+    DISABLE-ADDNARR = "Y";
+    DISABLE-ADDCMPNT = "Y";
+    ENABLE-CLOSEINCD = "Y";
+    REPRCAUSECD-SETFOCUS = "Y";
+    LOAD-PREV-REPR = "Y";
+
+
+  
+    VHRV01IW-RETAIN.REPR-LOC = VHRV01IW-PREV-REPR.REPR-LOC[1];
+    VHRV01IW-RETAIN.TIME-REPR-HRS = VHRV01IW-PREV-REPR.TIME-REPR-HRS[1];
+    VHRV01IW-RETAIN.TIME-REPR-MINS = VHRV01IW-PREV-REPR.TIME-REPR-MINS[1];
+    VHRV01IW-RETAIN.DATE-REPR = VHRV01IW-PREV-REPR.DATE-REPR[1];
+    VHRV01IW-RETAIN.EMPL-NO = VHRV01A_DATA.EMPL-NO[1];
+end 
+
+Function VHRV01IS-PREV-NEXT () 
+    if (VHRV01IW.REPR-PREV-NEXT == "REPRPRV")
+        DISP-INDEX = DISP-INDEX - 1;
+        if (DISP-INDEX == 1)
+            DISABLE-PREV = "Y";
+            if (DISP-INDEX == STORE-NARR-INDEX)
+                DISABLE-NEXT = "Y";
+            else
+                ENABLE-NEXT = "Y";
+                NEXT-SETFOCUS = "Y";
+            end
+        else
+            ENABLE-PREV = "Y";
+            ENABLE-NEXT = "Y";
+            PREV-SETFOCUS = "Y";
+        end
+    else
+        if (VHRV01IW.REPR-PREV-NEXT == "REPRNXT")
+            DISP-INDEX = DISP-INDEX + 1;
+            ENABLE-PREV = "Y";
+            if (DISP-INDEX == STORE-NARR-INDEX)
+                DISABLE-NEXT = "Y";
+                PREV-SETFOCUS = "Y";
+            else
+                ENABLE-NEXT = "Y";
+                NEXT-SETFOCUS = "Y";
+            end
+        else
+            if (VHRV01IW.REPR-PREV-NEXT == " ")
+                VHRV01IW.DISP-INDEX = 1; 
+                if (DISP-INDEX == STORE-NARR-INDEX)
+                    DISABLE-PREV = "Y";
+                    DISABLE-NEXT = "Y";
+                else
+                    DISABLE-PREV = "Y";
+                    ENABLE-NEXT = "Y";
+                    NEXT-SETFOCUS = "Y";
+                end
+            end
+        end
+    end
+    VHRV01IW.NARR-NO = VHRV01IW-TEMP-NARR.NARR-NO[DISP-INDEX];
+    VHRV01IW.NARR = VHRV01IW-TEMP-NARR.NARR[DISP-INDEX];
+    VHRV01IW.USER-GRP = VHRV01IW-TEMP-NARR.USER-GRP[DISP-INDEX];
+    VHRV01IW.DATE-NARR = VHRV01IW-TEMP-NARR.DATE-NARR[DISP-INDEX];
+    VHRV01IW.TIME-NARR = VHRV01IW-TEMP-NARR.TIME-NARR[DISP-INDEX];
+end 
+
+Function VHRV01IS-SELECT () 
+    VHRV01IW.TEMP-ERROR-MSG = " ";
+    VHRV01IW-MSG.FINAL-ERROR-MSG = " ";
+    if (SEL-IDX > 0)
+        LOOP-INDEX = 1;
+        VHRV01IW.DISP-INDEX = 1;
+        VHRV01IW.DISP-REPR-DATA = " ";
+        VHRV01IW.REPR-PREV-NEXT = " ";
+        set VHRV01IW-TEMP-NARR empty;
+        VHRV01A_CRIT.INCD-NO = VHRV01IW.INCD-NO;
+        VHRV01A_CRIT.RET-CHECK = "REPR";
+        try
+            call "VHRV01A"(XDCONTROL, VHRV01A_CRIT, VHRV01A_DATA, VHRV01A_NARR_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+      
+            while ((LOOP-INDEX <= VHRV01A_CRIT.REPR-COUNT))
+                if (VHRV01A_DATA.REPR-DOC-NO[LOOP-INDEX] ==
+                 VHRV01A_DATA.REPR-DOC-NO[SEL-IDX])
+                    VHRV01IW.DISP-REPR-DATA = VHRV01A_DATA.DATA-REPR-ROW[LOOP-INDEX];
+                    VHRV01IW.TEMP-TIME-REPR = VHRV01A_DATA.TIME-REPR[LOOP-INDEX];
+                    VHRV01IW.DISP-TIME-REPR-HR = VHRV01IW.TEMP-TIME-REPR-HR;
+                    VHRV01IW.DISP-TIME-REPR-MIN = VHRV01IW.TEMP-TIME-REPR-MIN;
+                    LOOP-INDEX = VHRV01A_CRIT.REPR-COUNT;
+                end
+                LOOP-INDEX = LOOP-INDEX + 1;
+            end
+
+        
+            VHRV01F_CRIT.INCD-NO = VHRV01IW.INCD-NO;
+            VHRV01F_CRIT.REPR-DOC-NO = VHRV01A_DATA.REPR-DOC-NO[SEL-IDX];
+            try
+                call "VHRV01F"(XDCONTROL, VHRV01F_CRIT, VHRV01F_DATA);
+            
+            end
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                VHRV01A_CRIT.REPR-NARR-COUNT = XDCONTROL.UROWCNT;
+                LOOP-INDEX = 1;
+                STORE-NARR-INDEX = 0;
+                VHRV01IW.REPR-DOC-NO = VHRV01F_CRIT.REPR-DOC-NO;
+                while ((LOOP-INDEX <= VHRV01A_CRIT.REPR-NARR-COUNT))
+                    STORE-NARR-INDEX = STORE-NARR-INDEX + 1;
+                    VHRV01IW-TEMP-NARR.NARR-NO[STORE-NARR-INDEX] = VHRV01F_DATA.NARR-NO[LOOP-INDEX];
+                    VHRV01IW-TEMP-NARR.USER-GRP[STORE-NARR-INDEX] = VHRV01F_DATA.USER-GRP[LOOP-INDEX];
+                    VHRV01IW-TEMP-NARR.DATE-NARR[STORE-NARR-INDEX] = VHRV01F_DATA.DATE-NARR[LOOP-INDEX];
+                    VHRV01IW-TEMP-NARR.TIME-NARR[STORE-NARR-INDEX] = VHRV01F_DATA.TIME-NARR[LOOP-INDEX];
+                    VHRV01IW-TEMP-NARR.NARR[STORE-NARR-INDEX] = VHRV01F_DATA.NARR[LOOP-INDEX];
+                    DISABLE-PREV = "Y";
+                    LOOP-INDEX = LOOP-INDEX + 1;
+                end
+            end
+            VHRV01IW.DISP-INDEX = 1;
+            DISABLE-ADDREPR = "Y";
+            DISABLE-FIELDS = "Y";
+            DISABLE-NARR = "Y";
+            ENABLE-NARR-DET = "Y";
+            ENABLE-ADDNARR = "Y";
+            ENABLE-ADDCMPNT = "Y";
+            ENABLE-CLOSEINCD = "Y";
+            LOAD-NARRATIVES = "Y";
+            ADDNARR-SETFOCUS = "Y";
+        end
+    else
+        set VHRV01IW-PREV-REPR empty;
+        VHRV01IW.REPR-PREV-COUNT = 0;
+        LOAD-PREV-REPR = "Y";
+        INCDNO-SETFOCUS = "Y";
+    end
+end 
+
+Function VHRV01IS-SETFOCUS () 
+    if (INVALID-REPRCAUSECD == "Y")
+        REPRCAUSECD-SETFOCUS = "Y";
+    else
+        if (INVALID-REPRDISPCD == "Y")
+            REPRDISPCD-SETFOCUS = "Y";
+        else
+            if (INVALID-SYSTEMSUB == "Y")
+                SYSTEMSUB-SETFOCUS = "Y";
+            else
+                if (INVALID-DATEREPR-FUT == "Y" ||
+                 INVALID-DATEREPR-OLD == "Y" ||
+                 INVALID-DATEREPR == "Y")
+                    DATEREPR-SETFOCUS = "Y";
+                else
+                    if (INVALID-TIMEREPR == "Y")
+                        TIMEREPR-SETFOCUS = "Y";
+                    else
+                        if (INVALID-REPRLOC == "Y")
+                            REPRLOC-SETFOCUS = "Y";
+                        else
+                            if (INVALID-EMPLNO == "Y")
+                                EMPLNO-SETFOCUS = "Y";
+                            else
+                                if (INVALID-WARREPRIND == "Y")
+                                    WARREPRIND-SETFOCUS = "Y";
+                                else
+                                    if (INVALID-LABORHRS == "Y")
+                                        LABORHRS-SETFOCUS = "Y";
+                                    else
+                                        if (INVALID-SNOOFF == "Y")
+                                            SNOOFF-SETFOCUS = "Y";
+                                        else
+                                            if (INVALID-SNOON == "Y")
+                                                SNOON-SETFOCUS = "Y";
+                                            else
+                                                if (INVALID-NARR == "Y")
+                                                    NARR-SETFOCUS = "Y";
+                                                end
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end 
+
+Function VHRV01IS-SUFFIX () 
+    RESULT = VHRV01IW.SUFFIX / 13;
+    REM = VHRV01IW.SUFFIX - (RESULT * 13);
+    if (REM > 0)
+        REM = REM + 1;
+        if (REM == 1)
+            VHRV01IW.PRT-CTL-NO-ARRAY[8] = "A";
+        else
+            if (REM == 2)
+                VHRV01IW.PRT-CTL-NO-ARRAY[8] = "B";
+            else
+                if (REM == 3)
+                    VHRV01IW.PRT-CTL-NO-ARRAY[8] = "C";
+                else
+                    if (REM == 4)
+                        VHRV01IW.PRT-CTL-NO-ARRAY[8] = "D";
+                    else
+                        if (REM == 5)
+                            VHRV01IW.PRT-CTL-NO-ARRAY[8] = "E";
+                        else
+                            if (REM == 6)
+                                VHRV01IW.PRT-CTL-NO-ARRAY[8] = "F";
+                            else
+                                if (REM == 7)
+                                    VHRV01IW.PRT-CTL-NO-ARRAY[8] = "G";
+                                else
+                                    if (REM == 8)
+                                        VHRV01IW.PRT-CTL-NO-ARRAY[8] = "H";
+                                    else
+                                        if (REM == 9)
+                                            VHRV01IW.PRT-CTL-NO-ARRAY[8] = "I";
+                                        else
+                                            if (REM == 10)
+                                                VHRV01IW.PRT-CTL-NO-ARRAY[8] = "J";
+                                            else
+                                                if (REM == 11)
+                                                    VHRV01IW.PRT-CTL-NO-ARRAY[8] = "K";
+                                                else
+                                                    if (REM == 12)
+                                                        VHRV01IW.PRT-CTL-NO-ARRAY[8] = "L";
+                                                    else
+                                                        if (REM == 13)
+                                                            VHRV01IW.PRT-CTL-NO-ARRAY[8] = "M";
+                                                        end
+                                                    end
+                                                end
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end 
+
+Function VHRV01IS-VALIDATE () 
+    ERROR-IND = 0;
+    DISP-ERR-MSG = " ";
+    INVALID-DATEREPR-OLD = "N";
+    INVALID-DATEREPR-FUT = "N";
+    INVALID-DATEREPR = "N";
+    INVALID-TIMEREPR = "N";
+    INVALID-REPRLOC = "N";
+    INVALID-EMPLNO = "N";
+    INVALID-WARREPRIND = "N";
+    INVALID-LABORHRS = "N";
+    INVALID-PRTCTLNO = "N";
+    INVALID-NARR = "N";
+    INVALID-REPRCAUSECD = "N";
+    INVALID-REPRDISPCD = "N";
+    INVALID-SYSTEMSUB = "N";
+    LOOP-INDEX = 1;
+    CAUSECD-FOUND = "N";
+    if (VHRV01IW.REPR-CAUSE-CD == " ")
+        ERROR-IND = ERROR-IND + 1;
+        INVALID-REPRCAUSECD = "Y";
+        ERROR-MESSAGE[ERROR-IND] = "Invalid Repr Cause Cd.";
+    else
+        while ((LOOP-INDEX <= VHRV01C_DATA.REPR-CAUSE-COUNT))
+            if (VHRV01IW.REPR-CAUSE-CD == VHRV01C_DATA.REPR-CAUSE-CD[LOOP-INDEX])
+                CAUSECD-FOUND = "Y";
+                LOOP-INDEX = VHRV01C_DATA.REPR-CAUSE-COUNT;
+            end
+            LOOP-INDEX = LOOP-INDEX + 1;
+        end
+        if (CAUSECD-FOUND == "N")
+            ERROR-IND = ERROR-IND + 1;
+            INVALID-REPRCAUSECD = "Y";
+            ERROR-MESSAGE[ERROR-IND] = "Invalid Repr Cause Cd.";
+        end
+    end
+    if (VHRV01IW.VEH-SYSTEM != " " && VHRV01IW.VEH-SUB-SYSTEM != " ")
+  
+  
+        VHRV01E_CRIT.VEH-SYSTEM = VHRV01IW.VEH-SYSTEM;
+        VHRV01E_CRIT.VEH-SUB-SYSTEM = VHRV01IW.VEH-SUB-SYSTEM;
+        try
+            call "VHRV01E"(XDCONTROL, VHRV01E_CRIT);
+        
+        end
+        if (VHRV01E_CRIT.ROW-COUNT == 1)
+
+        else
+            if (XDCONTROL.URC == 0 && VHRV01E_CRIT.ROW-COUNT == 0)
+                ERROR-IND = ERROR-IND + 1;
+                INVALID-SYSTEMSUB = "Y";
+                ERROR-MESSAGE[ERROR-IND] = "Invalid System/Sub System.";
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end
+    else
+        if (VHRV01IW.VEH-SYSTEM == " " || VHRV01IW.VEH-SUB-SYSTEM == " ")
+            ERROR-IND = ERROR-IND + 1;
+            INVALID-SYSTEMSUB = "Y";
+            ERROR-MESSAGE[ERROR-IND] = "Invalid System/Sub System.";
+        end
+    end
+    LOOP-INDEX = 1;
+    DISPCD-FOUND = "N";
+    if (VHRV01IW.REPR-DISP-CD == " ")
+        ERROR-IND = ERROR-IND + 1;
+        INVALID-REPRDISPCD = "Y";
+        ERROR-MESSAGE[ERROR-IND] = "Invalid Repr Disp Cd.";
+    else
+        while ((LOOP-INDEX <= VHRV01D_DATA.REPR-DISP-COUNT))
+            if (VHRV01IW.REPR-DISP-CD == VHRV01D_DATA.REPR-DISP-CD[LOOP-INDEX])
+                DISPCD-FOUND = "Y";
+                LOOP-INDEX = VHRV01D_DATA.REPR-DISP-COUNT;
+            end
+            LOOP-INDEX = LOOP-INDEX + 1;
+        end
+        if (DISPCD-FOUND == "N")
+            ERROR-IND = ERROR-IND + 1;
+            INVALID-REPRDISPCD = "Y";
+            ERROR-MESSAGE[ERROR-IND] = "Invalid Repr Disp Cd.";
+        end
+    end
+    if (VHRV01IW.DATE-REPR == " ")
+  
+  
+  
+
+    else
+        AFCXVLD_CRIT.FORM-DATE = VHRV01IW.DATE-REPR;
+        MRSCommonCode.AFCXVLD-VALIDATE();
+        if (AFCXVLDW.INCORRECT-DATE == "Y")
+            ERROR-IND = ERROR-IND + 1;
+            INVALID-DATEREPR = "Y";
+            ERROR-MESSAGE[ERROR-IND] = "Invalid Date.";
+        else
+            if (AFCXVLDW.SQL-ERROR == "Y")
+
+            else
+                if (AFCXVLDW.NO-ERROR == "Y")
+                    if (((VHRV01IW.DATE-REPR-YR > SYSTEM-DATE-YR) ||
+                     ((VHRV01IW.DATE-REPR-YR == SYSTEM-DATE-YR) &&
+                     (VHRV01IW.DATE-REPR-MON > SYSTEM-DATE-MON)) ||
+                     ((VHRV01IW.DATE-REPR-YR == SYSTEM-DATE-YR) &&
+                     (VHRV01IW.DATE-REPR-MON == SYSTEM-DATE-MON) &&
+                     (VHRV01IW.DATE-REPR-DAY > SYSTEM-DATE-DAY))))
+                        ERROR-IND = ERROR-IND + 1;
+                        INVALID-DATEREPR-FUT = "Y";
+                        ERROR-MESSAGE[ERROR-IND] = "Future date not allowed.";
+                    else
+                        if (((VHRV01IW.DATE-REPR-YR < VHINC1D_DATA.DATE-INCD-OCCR-YR) ||
+                         ((VHRV01IW.DATE-REPR-YR == VHINC1D_DATA.DATE-INCD-OCCR-YR) &&
+                         (VHRV01IW.DATE-REPR-MON < VHINC1D_DATA.DATE-INCD-OCCR-MON)) ||
+                         ((VHRV01IW.DATE-REPR-YR == VHINC1D_DATA.DATE-INCD-OCCR-YR) &&
+                         (VHRV01IW.DATE-REPR-MON == VHINC1D_DATA.DATE-INCD-OCCR-MON) &&
+                         (VHRV01IW.DATE-REPR-DAY < VHINC1D_DATA.DATE-INCD-OCCR-DAY))))
+                            ERROR-IND = ERROR-IND + 1;
+                            INVALID-DATEREPR-OLD = "Y";
+                            ERROR-MESSAGE[ERROR-IND] = "Date too old.";
+                        end
+                    end
+                end
+            end
+        end
+    end
+    if (VHRV01IW.DISP-TIME-REPR == " ")
+  
+  
+  
+
+    else
+        if (VHRV01IW.DISP-TIME-REPR is numeric)
+            if (DISP-TIME-REPR-HR-NUM > 24 ||
+             (DISP-TIME-REPR-HR-NUM == 24 && DISP-TIME-REPR-MIN-NUM > 0) ||
+             (DISP-TIME-REPR-HR-NUM == 0 && DISP-TIME-REPR-MIN-NUM == 0) ||
+             DISP-TIME-REPR-MIN-NUM > 59)
+                ERROR-IND = ERROR-IND + 1;
+                INVALID-TIMEREPR = "Y";
+                ERROR-MESSAGE[ERROR-IND] = "Invalid Time.";
+            end
+        else
+            ERROR-IND = ERROR-IND + 1;
+            INVALID-TIMEREPR = "Y";
+            ERROR-MESSAGE[ERROR-IND] = "Invalid Time.";
+        end
+    end
+    if (VHRV01IW.REPR-LOC == " ")
+        ERROR-IND = ERROR-IND + 1;
+        INVALID-REPRLOC = "Y";
+        ERROR-MESSAGE[ERROR-IND] = "Invalid Yard.";
+    else
+        if (VHRV01IW.REPR-LOC == "CY" ||
+         VHRV01IW.REPR-LOC == "DY" ||
+         VHRV01IW.REPR-LOC == "HY" ||
+         VHRV01IW.REPR-LOC == "RY" ||
+         VHRV01IW.REPR-LOC == "ML")
+
+        else
+            ERROR-IND = ERROR-IND + 1;
+            INVALID-REPRLOC = "Y";
+            ERROR-MESSAGE[ERROR-IND] = "Invalid Yard.";
+        end
+    end
+    if (ERROR-IND == 6)
+        VHRV01IS-MOVE-MSG();
+        return;
+    end
+    if (VHRV01IW.EMPL-NO != " ")
+        if (VHRV01IW.EMPL-NO-NUM[1] < 0 ||
+         VHRV01IW.EMPL-NO-NUM[2] < 0 ||
+         VHRV01IW.EMPL-NO-NUM[3] < 0 ||
+         VHRV01IW.EMPL-NO-NUM[4] < 0 ||
+         VHRV01IW.EMPL-NO-NUM[5] < 0)
+            ERROR-IND = ERROR-IND + 1;
+            INVALID-EMPLNO = "Y";
+            ERROR-MESSAGE[ERROR-IND] = "Invalid Empl No.";
+        end
+    end
+    if (ERROR-IND == 6)
+        VHRV01IS-MOVE-MSG();
+        return;
+    end
+    if (VHRV01IW.WAR-REPR-IND != " ")
+        if (VHRV01IW.WAR-REPR-IND == "Y" ||
+         VHRV01IW.WAR-REPR-IND == "N")
+
+        else
+            ERROR-IND = ERROR-IND + 1;
+            INVALID-WARREPRIND = "Y";
+            ERROR-MESSAGE[ERROR-IND] = "Invalid Warranty - Values (Y/N) only.";
+        end
+    end
+    if (ERROR-IND == 6)
+        VHRV01IS-MOVE-MSG();
+        return;
+    end
+    if (VHRV01IW.WAR-REPR-IND == "Y" &&
+     VHRV01IW.REPR-LABOR-HRS == 0.0)
+        ERROR-IND = ERROR-IND + 1;
+        INVALID-LABORHRS = "Y";
+        ERROR-MESSAGE[ERROR-IND] = "Labor Hrs Required.";
+    end
+    if (ERROR-IND == 6)
+        VHRV01IS-MOVE-MSG();
+        return;
+    end
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+    if (VHRV01IW.VEH-PRT-CTL-NO != " ")
+    
+        if (VHRV01IW.PRT-CTL-NO-ARRAY[7] != " " &&
+         VHRV01IW.PRT-CTL-NO-ARRAY[8] != " ")
+            if (VHRV01IW.PRT-CTL-NO-ARRAY[1] != "P")
+      
+      
+      
+
+            else
+                if (VHRV01IW.PRT-CTL-NO-ARRAY[1] == "P")
+                    VHRV01IS-MOVE-POSN();
+                end
+            end
+        else
+            if (VHRV01IW.PRT-CTL-NO-ARRAY[7] == " " &&
+             VHRV01IW.PRT-CTL-NO-ARRAY[8] == " ")
+                VHRV01IW.PRT-CTL-NO-ARRAY[7] = VHRV01IW.PRT-CTL-NO-ARRAY[6];
+                VHRV01IW.PRT-CTL-NO-ARRAY[6] = VHRV01IW.PRT-CTL-NO-ARRAY[5];
+                VHRV01IW.PRT-CTL-NO-ARRAY[5] = VHRV01IW.PRT-CTL-NO-ARRAY[4];
+                VHRV01IW.PRT-CTL-NO-ARRAY[4] = VHRV01IW.PRT-CTL-NO-ARRAY[3];
+                VHRV01IW.PRT-CTL-NO-ARRAY[3] = VHRV01IW.PRT-CTL-NO-ARRAY[2];
+                VHRV01IW.PRT-CTL-NO-ARRAY[2] = VHRV01IW.PRT-CTL-NO-ARRAY[1];
+                VHRV01IW.PRT-CTL-NO-ARRAY[1] = "P";
+                VHRV01IS-MOVE-POSN();
+            end
+        end
+    end
+    if (ERROR-IND == 6)
+        VHRV01IS-MOVE-MSG();
+        return;
+    end
+    if (VHRV01IW.NARR == " ")
+        ERROR-IND = ERROR-IND + 1;
+        INVALID-NARR = "Y";
+        ERROR-MESSAGE[ERROR-IND] = "Invalid Narr.";
+    end
+    VHRV01IS-MOVE-MSG();
+end 
+
+Function VHRV02IS-CLEAR () 
+    VHRV02IW.CMPNT-DATA-ROW = " ";
+    VHRV02IW.CMPNT-DOC-NO = VHRV02IW.CMPNT-COUNT + 1;
+    VHRV02IW.FINAL-MESSAGE = " ";
+    ENABLE-ADD = "Y";
+    DISABLE-UPDATE = "Y";
+    DISABLE-DELETE = "Y";
+    SET-INDEX-0 = "Y"; 
+    CMPNTCD-SETFOCUS = "Y";
+end 
+
+Function VHRV02IS-HIDE () 
+    if (VHRV02IW-HIDE.GUI-NAME == "VHRV04I")
+        VHRV02IW-TRIGGER.UNHIDE = "Y";
+        VHRV02IW-LABELS.WINDOW-TITLE = "VHRV02I - Vehicle Tracking - Component Maintenance                                                     V.AUGUST.01.01";
+    else
+        VHRV02IW-LABELS.WINDOW-TITLE = "VHRV02I - Vehicle Tracking - Repair Component Screen                                                    V.AUGUST.01.01";
+    end
+end 
+
+Function VHRV02IS-INIT () 
+    XDCONTROL.UFUNCTION = "RETRIEVE";
+end 
+
+Function VHRV02IS-MOVE-MSG () 
+    VHRV02IW.ERROR-LOOP-INDEX = 1;
+    VHRV02IW.FINAL-INDEX = 0;
+    VHRV02IW.FINAL-MESSAGE = " ";
+    VHRV02IW.TEMP-ERROR-MSG = " ";
+    if (ERROR-IND > 0)
+        while (((ERROR-LOOP-INDEX <= 6) &&
+         (ERR-MSG[ERROR-LOOP-INDEX] != " ")))
+            ERROR-IND = 1;
+            TEMP-ERROR-MSG = ERR-MSG[ERROR-LOOP-INDEX];
+            while ((ERROR-IND <= 40))
+                if (TEMP-MSG[ERROR-IND] != ".")
+                    FINAL-INDEX = FINAL-INDEX + 1;
+                    FINAL-MSG[FINAL-INDEX] = TEMP-MSG[ERROR-IND];
+                else
+                    if (TEMP-MSG[ERROR-IND] == ".")
+                        FINAL-INDEX = FINAL-INDEX + 1;
+                        FINAL-MSG[FINAL-INDEX] = ",";
+                        FINAL-INDEX = FINAL-INDEX + 1;
+                        FINAL-MSG[FINAL-INDEX] = " ";
+                        ERROR-IND = 40;
+                    end
+                end
+                ERROR-IND = ERROR-IND + 1;
+            end
+            ERROR-LOOP-INDEX = ERROR-LOOP-INDEX + 1;
+        end
+        FINAL-INDEX = FINAL-INDEX - 1;
+        FINAL-MSG[FINAL-INDEX] = " ";
+        VHRV02IW-TRIGGER.LOAD-ERROR-MESSAGE = "Y";
+    end
+end 
+
+Function VHRV02IS-MOVE-VAL () 
+    if (XDCONTROL.UFUNCTION == "ADD")
+        VHRV02B_DATA.INCD-NO = VHRV02IW-PASSVALUE.INCD-NO;
+        VHRV02B_DATA.REPR-DOC-NO = VHRV02IW-PASSVALUE.REPR-DOC-NO;
+        VHRV02B_DATA.CMPNT-DOC-NO = VHRV02IW.CMPNT-DOC-NO;
+        VHRV02B_DATA.DATE-REPR = VHRV02IW-PASSVALUE.DATE-REPR;
+        VHRV02B_DATA.CMPNT-CD = VHRV02IW.CMPNT-CD;
+        VHRV02B_DATA.CMPNT-TYPE = VHRV02IW.CMPNT-TYPE;
+        VHRV02B_DATA.CMPNT-FAULT-CD = VHRV02IW.CMPNT-FAULT-CD;
+        VHRV02B_DATA.REPR-DISP-CD = VHRV02IW.REPR-DISP-CD;
+        VHRV02B_DATA.SER-NO-OFF = VHRV02IW.SER-NO-OFF;
+        VHRV02B_DATA.SER-NO-ON = VHRV02IW.SER-NO-ON;
+        VHRV02B_DATA.TERM-MAINT-UPD = VHRV02IW-PASSVALUE.TERM-LAST-UPD;
+    else
+        if (XDCONTROL.UFUNCTION == "UPDATE")
+            VHRV02C_CRIT.INCD-NO = VHRV02IW-PASSVALUE.INCD-NO;
+            VHRV02C_CRIT.REPR-DOC-NO = VHRV02IW-PASSVALUE.REPR-DOC-NO;
+            VHRV02C_CRIT.CMPNT-DOC-NO = VHRV02IW.CMPNT-DOC-NO;
+            VHRV02C_DATA.DATE-REPR = VHRV02IW-PASSVALUE.DATE-REPR;
+            VHRV02C_DATA.CMPNT-CD = VHRV02IW.CMPNT-CD;
+            VHRV02C_DATA.CMPNT-TYPE = VHRV02IW.CMPNT-TYPE;
+            VHRV02C_DATA.CMPNT-FAULT-CD = VHRV02IW.CMPNT-FAULT-CD;
+            VHRV02C_DATA.REPR-DISP-CD = VHRV02IW.REPR-DISP-CD;
+            VHRV02C_DATA.SER-NO-OFF = VHRV02IW.SER-NO-OFF;
+            VHRV02C_DATA.SER-NO-ON = VHRV02IW.SER-NO-ON;
+            VHRV02C_DATA.TERM-MAINT-UPD = VHRV02IW-PASSVALUE.TERM-LAST-UPD;
+        end
+    end
+end 
+
+Function VHRV02IS-NULL-CHK () 
+    VHRV02IW.ERROR-MESSAGE = " ";
+    VHRV02IW-TRIGGER.ERROR-IND = 0;
+    INVALID-CMPNTCD = "N";
+    INVALID-CMPNTTYPE = "N";
+    INVALID-CMPNTFAULTCD = "N";
+    INVALID-REPRDISPCD = "N";
+    DISPCD-FOUND = "N";
+    INVALID-SERNOOFF = "N";
+    INVALID-SERNOON = "N";
+    if (VHRV02IW.CMPNT-CD == " " &&
+     VHRV02IW.CMPNT-TYPE != " ")
+        INVALID-CMPNTCD = "Y";
+    else
+        if (VHRV02IW.CMPNT-CD != " " &&
+         VHRV02IW.CMPNT-TYPE == " ")
+            INVALID-CMPNTTYPE = "Y";
+        else
+            if (VHRV02IW.CMPNT-CD != " " &&
+             VHRV02IW.CMPNT-TYPE != " ")
+                VHRV02F_DATA.CMPNT-TYPE = VHRV02IW.CMPNT-TYPE;
+                VHRV02F_DATA.CMPNT-CD = VHRV02IW.CMPNT-CD;
+                VHRV02F_DATA.VEH-SYSTEM = VHRV02IW-PASSVALUE.VEH-SYSTEM;
+                VHRV02F_DATA.VEH-SUB-SYSTEM = VHRV02IW-PASSVALUE.VEH-SUB-SYSTEM;
+                try
+                    call "VHRV02F"(XDCONTROL, VHRV02F_DATA);
+                
+                end
+                if (VHRV02F_DATA.ROW-COUNT == 1)
+
+                else
+                    if (VHRV02F_DATA.ROW-COUNT == 0)
+                        INVALID-CMPNTCD = "Y";
+                        INVALID-CMPNTTYPE = "Y";
+                    else
+                        INVALID-CMPNTCD = "Y";
+                        INVALID-CMPNTTYPE = "Y";
+                    end
+                end
+            end
+        end
+    end
+    if (VHRV02IW.CMPNT-FAULT-CD != " ")
+        VHRV02E_DATA.CMPNT-FAULT-CD = VHRV02IW.CMPNT-FAULT-CD;
+        try
+            call "VHRV02E"(XDCONTROL, VHRV02E_DATA);
+        
+        end
+        if (XDCONTROL.UROWCNT == 1)
+
+        else
+            INVALID-CMPNTFAULTCD = "Y";
+        end
+    end
+    if (VHRV02IW.REPR-DISP-CD == " ")
+        INVALID-REPRDISPCD = "Y";
+    else
+        LOOP-INDEX = 1;
+        while ((LOOP-INDEX <= VHRV01D_DATA.REPR-DISP-COUNT))
+            if (VHRV02IW.REPR-DISP-CD == VHRV01D_DATA.REPR-DISP-CD[LOOP-INDEX])
+                DISPCD-FOUND = "Y";
+                LOOP-INDEX = VHRV01D_DATA.REPR-DISP-COUNT;
+            end
+            LOOP-INDEX = LOOP-INDEX + 1;
+        end
+        if (DISPCD-FOUND == "N")
+            INVALID-REPRDISPCD = "Y";
+        end
+    end
+    if (INVALID-CMPNTCD == "Y" &&
+     INVALID-CMPNTTYPE == "N")
+        ERROR-IND = ERROR-IND + 1;
+        VHRV02IW.ERR-MSG[ERROR-IND] = "Invalid Component Cd.";
+    else
+        if (INVALID-CMPNTCD == "N" &&
+         INVALID-CMPNTTYPE == "Y")
+            ERROR-IND = ERROR-IND + 1;
+            VHRV02IW.ERR-MSG[ERROR-IND] = "Invalid Component Type.";
+        else
+            if (INVALID-CMPNTCD == "Y" &&
+             INVALID-CMPNTTYPE == "Y")
+                ERROR-IND = ERROR-IND + 1;
+                VHRV02IW.ERR-MSG[ERROR-IND] = "Invalid Cmpnt Cd & Cmpnt type.";
+            end
+        end
+    end
+    if (INVALID-CMPNTFAULTCD == "Y")
+        ERROR-IND = ERROR-IND + 1;
+        VHRV02IW.ERR-MSG[ERROR-IND] = "Invalid Component Fault Cd.";
+    end
+    if (INVALID-REPRDISPCD == "Y")
+        ERROR-IND = ERROR-IND + 1;
+        VHRV02IW.ERR-MSG[ERROR-IND] = "Invalid Repair Disposition Cd.";
+    else
+
+    end
+    if (ERROR-IND > 0)
+        VHRV02IS-MOVE-MSG();
+    end
+end 
+
+Function VHRV02IS-RESET () 
+    VHRV02IW-HIDE.GUI-NAME = "       ";
+end 
+
+Function VHRV02IS-RET-DATA () 
+    VHRV02IW.CMPNT-COUNT = 0;
+    VHRV02IW.FINAL-MESSAGE = " ";
+    if (XDCONTROL.UFUNCTION == "ADD")
+        VHRV02IS-NULL-CHK(); 
+                                   
+        if (ERROR-IND == 0)
+            VHRV02IS-MOVE-VAL();
+            try
+                call "VHRV02B"(XDCONTROL, VHRV02B_DATA);
+            
+            end
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                VHRV02IW.FINAL-MESSAGE = "Repair Component record added.";
+            else
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        else
+            return;
+        end
+    else
+        if (XDCONTROL.UFUNCTION == "UPDATE")
+            VHRV02IS-NULL-CHK(); 
+                                   
+            if (ERROR-IND == 0)
+                VHRV02IS-MOVE-VAL();
+                try
+                    call "VHRV02C"(XDCONTROL, VHRV02C_CRIT, VHRV02C_DATA);
+                
+                end
+                if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                    VHRV02IW.FINAL-MESSAGE = "Repair Component record updated.";
+                else
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end
+            else
+                return;
+            end
+        else
+            if (XDCONTROL.UFUNCTION == "DELETE")
+                VHRV02D_CRIT.INCD-NO = VHRV02IW-PASSVALUE.INCD-NO;
+                VHRV02D_CRIT.REPR-DOC-NO = VHRV02IW-PASSVALUE.REPR-DOC-NO;
+                VHRV02D_CRIT.CMPNT-DOC-NO = VHRV02IW.CMPNT-DOC-NO;
+                try
+                    call "VHRV02D"(XDCONTROL, VHRV02D_CRIT);
+                
+                end
+                if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                    VHRV02IW.FINAL-MESSAGE = "Repair Component record deleted.";
+                else
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end
+            end
+        end
+    end
+    XDCONTROL.UFUNCTION = "RETRIEVE";
+    VHRV02A_CRIT.INCD-NO = VHRV02IW-PASSVALUE.INCD-NO;
+    VHRV02A_CRIT.REPR-DOC-NO = VHRV02IW-PASSVALUE.REPR-DOC-NO;
+    try
+        call "VHRV02A"(XDCONTROL, VHRV02A_CRIT, VHRV02A_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHRV02IW.CMPNT-COUNT = XDCONTROL.UROWCNT;
+        ENABLE-ADD = "Y";
+        DISABLE-UPDATE = "Y";
+        DISABLE-DELETE = "Y";
+        LOAD-DATA = "Y";
+        EXECUTE-CLEAR = "Y";
+    else
+        if (XDCONTROL.URC == 100)
+            LOAD-DATA = "Y";
+            EXECUTE-CLEAR = "Y";
+            VHRV02IW.CMPNT-DOC-NO = 1;
+        else
+            LOAD-DATA = "Y";
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            EXECUTE-CLEAR = "Y";
+            VHRV02IW.CMPNT-DOC-NO = 1;
+        end
+    end
+end 
+
+Function VHRV02IS-SELECT () 
+    if (SELECTION-IDX > 0)
+        VHRV02IW.CMPNT-DATA-ROW = VHRV02A_DATA.DATA_ROW[SELECTION-IDX];
+        DISABLE-ADD = "Y";
+        ENABLE-UPDATE = "Y";
+        ENABLE-DELETE = "Y";
+    end
+end 
+
+Function VHRV02IS-SETFOCUS () 
+    if (INVALID-CMPNTCD == "Y")
+        CMPNTCD-SETFOCUS = "Y";
+    else
+        if (INVALID-CMPNTTYPE == "Y")
+            CMPNTTYPE-SETFOCUS = "Y";
+        else
+            if (INVALID-CMPNTFAULTCD == "Y")
+                CMPNTFAULTCD-SETFOCUS = "Y";
+            else
+                if (INVALID-REPRDISPCD == "Y")
+                    REPRDISPCD-SETFOCUS = "Y";
+                else
+                    if (INVALID-SERNOOFF == "Y")
+                        SERNOOFF-SETFOCUS = "Y";
+                    else
+                        if (INVALID-SERNOON == "Y")
+                            SERNOON-SETFOCUS = "Y";
+                        end
+                    end
+                end
+            end
+        end
+    end
+end 
+
+Function VHRV03IS-ADD-REPR () 
+    VHRV03IW.SYSTEM-DATE = VGVar.currentFormattedGregorianDate;
+    VHRV03IS-VALIDATE(); 
+    if (ERROR-IND == 0)
+        set VHRV03A_CRIT empty;
+        set VHRV03A_DATA empty;
+        VHRV03A_CRIT.CLOSE-INCD-IND = "N";
+        VHRV03IS-MOVE-REC();
+        try
+            call "VHRV03A"(XDCONTROL, VHRV03A_CRIT, VHRV03A_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            if (VHRV03A_CRIT.ERR-FOUND == "N")
+                RECORDS-ADDED-MSG = "Y";
+                DISABLE-INCDINFO = "Y";
+            else
+                VHRV03IS-CLR-FLDS();
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        else
+            VHRV03IS-CLR-FLDS();
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+end 
+
+Function VHRV03IS-AFT-CLOSE () 
+    set VHRV03IW empty;
+    set VHINC1D_CRIT empty;
+    set VHINC1D_DATA empty;
+    set VHINC2D_DATA empty;
+    VHRV03IW.FINAL-ERROR-MSG = VHRV03IW-TRIGGER.TEMP-MESSAGE;
+    ENABLE-INCDINFO = "Y";
+    DISABLE-FIELDS = "Y";
+    DISABLE-NARR-DET = "Y";
+    DISABLE-PREV-DET = "Y";
+    DISABLE-PREV = "Y";
+    DISABLE-NEXT = "Y";
+    DISABLE-ADDREPR = "Y";
+    DISABLE-ADDNARR = "Y";
+    DISABLE-CLOSEINCD = "Y";
+    VHRV03IW.REPR-DOC-NO = 0;
+    VHRV03IW.DATE-REPR = " ";
+    VHRV03IW.DISP-TIME-REPR = " ";
+    VHRV03IW.DISP-CON-DASH = " ";
+    VHRV03IW.TEMP-TIME-REPR = " ";
+    VHRV03IW-TRIGGER.TEMP-MESSAGE = " ";
+    VHRV03IW.USER-GRP = VHRV03IW-PASSVALUE.USER-GRP;
+    VHRV03IW.DATE-NARR = VGVar.currentFormattedGregorianDate;
+    VHRV03IW.TIME-NARR = VGVar.currentFormattedTime;
+    VHRV03IW-TRIGGER.LOAD-PREV-REPR = "Y";
+    VHRV03IW.SEL-IDX = 0;
+end 
+
+Function VHRV03IS-AFT-NAR () 
+    VHRV01A_CRIT.REPR-NARR-COUNT = 0;
+    VHRV01F_CRIT.INCD-NO = VHRV03IW.INCD-NO;
+    VHRV01F_CRIT.REPR-DOC-NO = VHRV03IW.REPR-DOC-NO;
+    try
+        call "VHRV01F"(XDCONTROL, VHRV01F_CRIT, VHRV01F_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHRV01A_CRIT.REPR-NARR-COUNT = XDCONTROL.UROWCNT;
+        VHRV03IW.STORE-NARR-INDEX = VHRV01A_CRIT.REPR-NARR-COUNT;
+        VHRV03IS-NARR-DET();
+        ADDNARR-SETFOCUS = "Y";
+    else
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+    end
+end 
+
+Function VHRV03IS-CLEAR () 
+    set VHRV03IW empty;
+    set VHINC1D_CRIT empty;
+    set VHINC1D_DATA empty;
+    set VHINC2D_DATA empty;
+    ENABLE-INCDINFO = "Y";
+    DISABLE-FIELDS = "Y";
+    DISABLE-NARR-DET = "Y";
+    DISABLE-PREV-DET = "Y";
+    DISABLE-PREV = "Y";
+    DISABLE-NEXT = "Y";
+    DISABLE-ADDREPR = "Y";
+    DISABLE-ADDNARR = "Y";
+    DISABLE-CLOSEINCD = "Y";
+    LOAD-PREV-REPR = "Y";
+    VHRV03IW.REPR-DOC-NO = 0;
+    VHRV03IW.DATE-REPR = " ";
+    VHRV03IW.DISP-TIME-REPR = " ";
+    VHRV03IW.DISP-CON-DASH = " ";
+    VHRV03IW.TEMP-TIME-REPR = " ";
+    VHRV03IW.USER-GRP = VHRV03IW-PASSVALUE.USER-GRP;
+    VHRV03IW.DATE-NARR = VGVar.currentFormattedGregorianDate;
+    VHRV03IW.TIME-NARR = VGVar.currentFormattedTime;
+    VHRV03IW.SEL-IDX = 0;
+end 
+
+Function VHRV03IS-CLOSE-INC () 
+    VHRV03IW.SYSTEM-DATE = VGVar.currentFormattedGregorianDate;
+    set VHRV03A_CRIT empty;
+    set VHRV03A_DATA empty;
+    VHRV03A_CRIT.CLOSE-INCD-IND = "Y";
+    VHRV03IW.FINAL-ERROR-MSG = " ";
+    VHRV03IW-TRIGGER.TEMP-MESSAGE = " ";
+    VHRV03IS-MOVE-REC();
+    try
+        call "VHRV03A"(XDCONTROL, VHRV03A_CRIT, VHRV03A_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        if (VHRV03A_CRIT.ERR-FOUND == "N")
+            VHRV03IW-TRIGGER.TEMP-MESSAGE-1 = "Incident ";
+            VHRV03IW-TRIGGER.TEMP-MESSAGE-2 = VHRV03IW.INCD-NO;
+            VHRV03IW-TRIGGER.TEMP-MESSAGE-3 = "was closed successfully";
+            CLOSE-INCD-MSG = "Y";
+        else
+            VHRV03IW.FINAL-ERROR-MSG = "Error - Incident not closed.";
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    else
+        VHRV03IS-CLR-FLDS();
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+    end
+end 
+
+Function VHRV03IS-CLR-FLDS () 
+    set VHINC1D_DATA empty;
+    VHRV03IW.DISP-CON-DASH = " ";
+    VHRV03IW.REPR-DOC-NO = 0;
+    VHRV03IW.DISP-REPR-NARR = " ";
+    VHRV03IW.DATE-REPR = " ";
+    VHRV03IW.DISP-TIME-REPR = " ";
+    VHRV03IW.NARR-NO = 0;
+    VHRV03IW.USER-GRP = VHRV03IW-PASSVALUE.USER-GRP;
+    VHRV03IW.DATE-NARR = VGVar.currentFormattedGregorianDate;
+    VHRV03IW.TIME-NARR = VGVar.currentFormattedTime;
+    DISABLE-FIELDS = "Y";
+    DISABLE-NARR-DET = "Y";
+    DISABLE-PREV-DET = "Y";
+    DISABLE-ADDREPR = "Y";
+    DISABLE-ADDNARR = "Y";
+    DISABLE-CLOSEINCD = "Y";
+    VHRV03IW-TRIGGER.LOAD-PREV-REPR = "Y";
+    VHRV03IW.SEL-IDX = 0;
+end 
+
+Function VHRV03IS-INIT ()
+
+   
+    set VHINC1D_DATA empty;
+    set VHINC1D_CRIT empty;
+    set VHRV03IW empty;
+    set VHRV03IW-PREV-REPR empty;
+    VHRV03IW.DISP-REPR-NARR = " ";
+    VHRV03IW.DATE-REPR = " ";
+    VHRV03IW.DISP-TIME-REPR = " ";
+    VHRV03IW.REPR-PREV-NEXT = " ";
+    VHRV03IW.DISP-CON-DASH = " ";
+    VHRV03IW.DATE-NARR = VGVar.currentFormattedGregorianDate;
+    VHRV03IW.TIME-NARR = VGVar.currentFormattedTime;
+    VHRV03IW.USER-GRP = VHRV03IW-PASSVALUE.USER-GRP;
+    ENABLE-INCDINFO = "Y";
+    DISABLE-FIELDS = "Y";
+    DISABLE-PREV = "Y";
+    DISABLE-NEXT = "Y";
+    DISABLE-NARR-DET = "Y";
+    DISABLE-PREV-DET = "Y";
+    DISABLE-ADDREPR = "Y";
+    DISABLE-ADDNARR = "Y";
+    DISABLE-CLOSEINCD = "Y";
+    LOAD-PREV-REPR = "Y";
+end 
+
+Function VHRV03IS-LIST () 
+    VHRV03IW.FINAL-ERROR-MSG = " ";
+    VHRV03IW.REPR-PREV-NEXT = " ";
+    VHRV03IW.NARR = " ";
+    VHRV03IW.NARR-NO = 1;
+    VHRV03IW.USER-GRP = VHRV03IW-PASSVALUE.USER-GRP;
+    set VHRV03IW-PREV-REPR empty;
+    set VHRV03IW-TEMP-NARR empty;
+    if (VHRV03IW.INCD-NO != " ")
+        if (VHRV03IW.INCD-NO-ARRAY[1] != "E")
+            VHRV03IS-CLR-FLDS();
+            VHRV03IW.FINAL-ERROR-MSG = "Invalid incident no.";
+            INVALID-RQST = "Y";
+        else
+            VHRV03IW.DISP-CON-DASH = " ";
+            VHINC2D_CRIT.INCD-NO = VHRV03IW.INCD-NO;
+            VHINC2D_CRIT.RET-CHECK = "INCD";
+            try
+                call "MRSVehicleIncident.VHINC2D"(XDCONTROL, VHINC2D_CRIT, VHINC2D_DATA, VHINC2D_DATA1);
+            
+            end
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                if (VHINC2D_DATA.INCD-TYPE != "EVT")
+                    VHRV03IS-CLR-FLDS();
+                    VHRV03IW.FINAL-ERROR-MSG = "Invalid Request.";
+                    INVALID-RQST = "Y";
+                    return;
+                else
+                    if (VHINC2D_DATA.VEH-INCD-STAT == "CLO")
+                        VHRV03IS-CLR-FLDS();
+                        VHRV03IW.FINAL-ERROR-MSG = "Closed Incidents are not listed.";
+                        NO-CLOSED-INCDS = "Y";
+                        return;
+                    end
+                    if (VHINC2D_DATA.CON-NO == " ")
+                        VHRV03IW.DISP-CON-DASH = " ";
+                    else
+                        VHRV03IW.CON-NO = VHINC2D_DATA.CON-NO;
+                        VHRV03IW.CON-DASH-FILLER = "-";
+                        VHRV03IW.DASH-NO = VHINC2D_DATA.DASH-NO;
+                    end
+         
+                    VHRV01A_CRIT.INCD-NO = VHRV03IW.INCD-NO;
+                    VHRV01A_CRIT.RET-CHECK = "BOTH";
+                    try
+                        call "VHRV01A"(XDCONTROL, VHRV01A_CRIT, VHRV01A_DATA, VHRV01A_NARR_DATA);
+                    
+                    end
+                    if (REPR-COUNT > 0)
+                        if (VHRV01A_CRIT.REPR-NARR-COUNT > 0)
+
+                        else
+                            set VHRV01A_NARR_DATA empty;
+                        end
+                        VHRV03IW.REPR-DOC-NO = VHRV01A_CRIT.REPR-COUNT + 1;
+                        EXECUTE-PREV-ACT = "Y";
+                    else
+                        if (XDCONTROL.URC == 100)
+                            VHRV03IW.REPR-DOC-NO = 01;
+                            if (VHINC2D_DATA.VEH-INCD-STAT == "CLO")
+                                VHRV03IS-CLR-FLDS();
+                                VHRV03IW.FINAL-ERROR-MSG = "Invalid Request.";
+                                INVALID-RQST = "Y";
+                                return;
+                            else
+                                VHRV03IW.REPR-PREV-COUNT = 0;
+                                set VHRV03IW-PREV-REPR empty;
+                                ENABLE-FIELDS = "Y";
+                                ENABLE-NARR = "Y";
+                                ENABLE-NARR-DET = "Y";
+                                ENABLE-PREV-DET = "Y";
+                                ENABLE-ADDREPR = "Y";
+                                DISABLE-ADDNARR = "Y";
+                                DISABLE-CLOSEINCD = "Y";
+                                LOAD-PREV-REPR = "Y";
+                                DATEREPR-SETFOCUS = "Y";
+                            end
+                        else
+                            VHRV03IW.REPR-PREV-COUNT = 0;
+                            set VHRV03IW-PREV-REPR empty;
+                            DISABLE-NARR-DET = "Y";
+                            DISABLE-ADDREPR = "Y";
+                            DISABLE-ADDNARR = "Y";
+                            DISABLE-CLOSEINCD = "Y";
+                            LOAD-PREV-REPR = "Y";
+                            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                        end
+                    end
+                end
+            else
+                if (XDCONTROL.URC == 100)
+                    set VHRV03IW empty;
+                    VHRV03IW.FINAL-ERROR-MSG = "Incident not found.";
+                    NO-INCD-FOUND = "Y";
+                     
+                    VHRV03IS-CLR-FLDS();
+                else
+                    VHRV03IS-CLR-FLDS();
+                    XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                    XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                    XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                    XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                end
+            end
+        end
+    else
+        VHRV03IS-CLR-FLDS();
+        VHRV03IW.FINAL-ERROR-MSG = "Please enter an incident no.";
+        INVALID-INCD-NO = "Y";
+    end
+end 
+
+Function VHRV03IS-MOVE-MSG () 
+    VHRV03IW.ERROR-LOOP-INDEX = 1;
+    VHRV03IW.FINAL-INDEX = 0;
+    VHRV03IW.FINAL-ERROR-MSG = " ";
+    VHRV03IW.TEMP-ERROR-MSG = " ";
+    if (ERROR-IND > 0)
+        while (((ERROR-LOOP-INDEX <= 6) &&
+         (ERROR-MESSAGE[ERROR-LOOP-INDEX] != " ")))
+            ERROR-IND = 1;
+            TEMP-ERROR-MSG = ERROR-MESSAGE[ERROR-LOOP-INDEX];
+            while ((ERROR-IND <= 40))
+                if (TEMP-MSG[ERROR-IND] != ".")
+                    FINAL-INDEX = FINAL-INDEX + 1;
+                    FINAL-MSG[FINAL-INDEX] = TEMP-MSG[ERROR-IND];
+                else
+                    if (TEMP-MSG[ERROR-IND] == ".")
+                        FINAL-INDEX = FINAL-INDEX + 1;
+                        FINAL-MSG[FINAL-INDEX] = ",";
+                        FINAL-INDEX = FINAL-INDEX + 1;
+                        FINAL-MSG[FINAL-INDEX] = " ";
+                        ERROR-IND = 40;
+                    end
+                end
+                ERROR-IND = ERROR-IND + 1;
+            end
+            ERROR-LOOP-INDEX = ERROR-LOOP-INDEX + 1;
+        end
+        FINAL-INDEX = FINAL-INDEX - 1;
+        FINAL-MSG[FINAL-INDEX] = " ";
+        LOAD-ERR-MSG = "Y";
+    end
+end 
+
+Function VHRV03IS-MOVE-REC () 
+    VHRV03A_CRIT.INCD-NO = VHRV03IW.INCD-NO;
+    VHRV03A_DATA.CAR-NO = VHINC2D_DATA.CAR-NO;
+    VHRV03A_DATA.INCD-NO = VHRV03IW.INCD-NO;
+    VHRV03A_DATA.USER-GRP = VHRV03IW-PASSVALUE.USER-GRP;
+    VHRV03A_DATA.TERM-LAST-UPD = VHRV03IW-PASSVALUE.TERM-ID;
+    if (VHRV03A_CRIT.CLOSE-INCD-IND == "Y")
+  
+        VHRV03A_DATA.VEH-INCD-STAT = "CLO";
+    else
+        VHRV03A_DATA.INCD-NO = VHRV03IW.INCD-NO;
+        VHRV03A_DATA.REPR-DOC-NO = VHRV03IW.REPR-DOC-NO;
+        if (VHRV03IW.DATE-REPR == " ")
+            VHRV03A_DATA.DATE-REPR = VGVar.currentFormattedGregorianDate;
+        else
+            VHRV03A_DATA.DATE-REPR = VHRV03IW.DATE-REPR;
+        end
+        if (VHRV03IW.DISP-TIME-REPR == " ")
+            VHRV03IW.TEMP-TIME-REPR = VGVar.currentFormattedTime;
+        else
+            VHRV03IW.TEMP-TIME-REPR-HR = VHRV03IW.DISP-TIME-REPR-HR;
+            VHRV03IW.TEMP-TIME-REPR-FILLER1 = ":";
+            VHRV03IW.TEMP-TIME-REPR-MIN = VHRV03IW.DISP-TIME-REPR-MIN;
+            VHRV03IW.TEMP-TIME-REPR-FILLER2 = ":00";
+        end
+        VHRV03A_DATA.TIME-REPR = VHRV03IW.TEMP-TIME-REPR;
+    
+        VHRV03A_DATA.NARR-NO = VHRV03IW.NARR-NO;
+        VHRV03A_DATA.DATE-NARR = VHRV03IW.DATE-NARR;
+        VHRV03A_DATA.TIME-NARR = VHRV03IW.TIME-NARR;
+        VHRV03A_DATA.NARR = VHRV03IW.NARR;
+    end
+end 
+
+Function VHRV03IS-NARR-DET () 
+    DISP-INDEX = 1;
+    while ((DISP-INDEX <= STORE-NARR-INDEX))
+        VHRV03IW-TEMP-NARR.NARR-NO[DISP-INDEX] = VHRV01F_DATA.NARR-NO[DISP-INDEX];
+        VHRV03IW-TEMP-NARR.NARR[DISP-INDEX] = VHRV01F_DATA.NARR[DISP-INDEX];
+        VHRV03IW-TEMP-NARR.DATE-NARR[DISP-INDEX] = VHRV01F_DATA.DATE-NARR[DISP-INDEX];
+        VHRV03IW-TEMP-NARR.TIME-NARR[DISP-INDEX] = VHRV01F_DATA.TIME-NARR[DISP-INDEX];
+        VHRV03IW-TEMP-NARR.USER-GRP[DISP-INDEX] = VHRV01F_DATA.USER-GRP[DISP-INDEX];
+        DISP-INDEX = DISP-INDEX + 1;
+    end
+    DISP-INDEX = 1;
+    VHRV03IW.REPR-PREV-NEXT = " ";
+    VHRV03IS-PREV-NEXT();
+end 
+
+Function VHRV03IS-PREV-ACT () 
+    VHRV03IW.DISP-TIME-REPR = " ";
+    VHRV03IW.DATE-REPR = " ";
+    VHRV03IW.NARR = " ";
+    set VHRV03IW-PREV-REPR empty;
+    REPR-INDEX = 1; 
+    ACTION-INDEX = 0;
+    if (VHRV01A_CRIT.REPR-COUNT > 0)
+        while ((REPR-INDEX <= VHRV01A_CRIT.REPR-COUNT))
+            NARR-INDEX = 1;
+            while ((NARR-INDEX <= VHRV01A_CRIT.REPR-NARR-COUNT))
+                if (VHRV01A_DATA.REPR-DOC-NO[REPR-INDEX] ==
+                 VHRV01A_NARR_DATA.REPR-DOC-NO[NARR-INDEX])
+                    ACTION-INDEX = ACTION-INDEX + 1;
+                    VHRV03IW-PREV-REPR.REPR-DOC-NO[ACTION-INDEX] = VHRV01A_DATA.REPR-DOC-NO[REPR-INDEX];
+                    VHRV03IW-PREV-REPR.REPR-LOC[ACTION-INDEX] = VHRV01A_DATA.REPR-LOC[REPR-INDEX];
+                    VHRV03IW-PREV-REPR.DATE-REPR[ACTION-INDEX] = VHRV01A_DATA.DATE-REPR[REPR-INDEX];
+                    VHRV03IW-PREV-REPR.TIME-REPR[ACTION-INDEX] = VHRV01A_DATA.TIME-REPR[REPR-INDEX];
+                    VHRV03IW-PREV-REPR.NARR[ACTION-INDEX] = VHRV01A_NARR_DATA.NARR[NARR-INDEX];
+                    NARR-INDEX = VHRV01A_CRIT.REPR-NARR-COUNT;
+                end
+                NARR-INDEX = NARR-INDEX + 1;
+            end
+            REPR-INDEX = REPR-INDEX + 1;
+        end
+    end
+    VHRV03IW.REPR-PREV-COUNT = ACTION-INDEX;
+    ENABLE-FIELDS = "Y";
+    ENABLE-NARR = "Y";
+    ENABLE-NARR-DET = "Y";
+    ENABLE-PREV-DET = "Y";
+    ENABLE-ADDREPR = "Y";
+    DISABLE-ADDNARR = "Y";
+    ENABLE-CLOSEINCD = "Y";
+    DATEREPR-SETFOCUS = "Y";
+    LOAD-PREV-REPR = "Y";
+end 
+
+Function VHRV03IS-PREV-NEXT () 
+    if (VHRV03IW.REPR-PREV-NEXT == "REPRPRV")
+        DISP-INDEX = DISP-INDEX - 1;
+        if (DISP-INDEX == 1)
+            DISABLE-PREV = "Y";
+            if (DISP-INDEX == STORE-NARR-INDEX)
+                DISABLE-NEXT = "Y";
+            else
+                ENABLE-NEXT = "Y";
+                NEXT-SETFOCUS = "Y";
+            end
+        else
+            ENABLE-PREV = "Y";
+            ENABLE-NEXT = "Y";
+            PREV-SETFOCUS = "Y";
+        end
+    else
+        if (VHRV03IW.REPR-PREV-NEXT == "REPRNXT")
+            DISP-INDEX = DISP-INDEX + 1;
+            ENABLE-PREV = "Y";
+            if (DISP-INDEX == STORE-NARR-INDEX)
+                DISABLE-NEXT = "Y";
+                PREV-SETFOCUS = "Y";
+            else
+                ENABLE-NEXT = "Y";
+                NEXT-SETFOCUS = "Y";
+            end
+        else
+            if (VHRV03IW.REPR-PREV-NEXT == " ")
+                VHRV03IW.DISP-INDEX = 1; 
+                if (DISP-INDEX == STORE-NARR-INDEX)
+                    DISABLE-PREV = "Y";
+                    DISABLE-NEXT = "Y";
+                else
+                    DISABLE-PREV = "Y";
+                    ENABLE-NEXT = "Y";
+                    NEXT-SETFOCUS = "Y";
+                end
+            end
+        end
+    end
+    VHRV03IW.NARR-NO = VHRV03IW-TEMP-NARR.NARR-NO[DISP-INDEX];
+    VHRV03IW.NARR = VHRV03IW-TEMP-NARR.NARR[DISP-INDEX];
+    VHRV03IW.USER-GRP = VHRV03IW-TEMP-NARR.USER-GRP[DISP-INDEX];
+    VHRV03IW.DATE-NARR = VHRV03IW-TEMP-NARR.DATE-NARR[DISP-INDEX];
+    VHRV03IW.TIME-NARR = VHRV03IW-TEMP-NARR.TIME-NARR[DISP-INDEX];
+end 
+
+Function VHRV03IS-SELECT () 
+    VHRV03IW.TEMP-ERROR-MSG = " ";
+    VHRV03IW.FINAL-ERROR-MSG = " ";
+    if (SEL-IDX > 0)
+        LOOP-INDEX = 1;
+        VHRV03IW.DISP-INDEX = 1;
+        VHRV03IW.REPR-PREV-NEXT = " ";
+        VHRV03IW.DATE-REPR = " ";
+        VHRV03IW.DISP-TIME-REPR = " ";
+        set VHRV03IW-TEMP-NARR empty;
+        VHRV01A_CRIT.INCD-NO = VHRV03IW.INCD-NO;
+        VHRV01A_CRIT.RET-CHECK = "REPR";
+        try
+            call "VHRV01A"(XDCONTROL, VHRV01A_CRIT, VHRV01A_DATA, VHRV01A_NARR_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            VHRV03IW.REPR-DOC-NO = VHRV01A_CRIT.REPR-COUNT + 1;
+
+    
+            while ((LOOP-INDEX <= VHRV01A_CRIT.REPR-COUNT))
+                if (VHRV01A_DATA.REPR-DOC-NO[LOOP-INDEX] ==
+                 VHRV01A_DATA.REPR-DOC-NO[SEL-IDX])
+                    VHRV03IW.REPR-DOC-NO = VHRV01A_DATA.REPR-DOC-NO[SEL-IDX];
+                    VHRV03IW.DELETE-IND = VHRV01A_DATA.DELETE-IND[SEL-IDX];
+                    VHRV03IW.DATE-REPR = VHRV01A_DATA.DATE-REPR[LOOP-INDEX];
+                    VHRV03IW.TEMP-TIME-REPR = VHRV01A_DATA.TIME-REPR[LOOP-INDEX];
+                    VHRV03IW.DISP-TIME-REPR-HR = VHRV03IW.TEMP-TIME-REPR-HR;
+                    VHRV03IW.DISP-TIME-REPR-MIN = VHRV03IW.TEMP-TIME-REPR-MIN;
+                    LOOP-INDEX = VHRV01A_CRIT.REPR-COUNT;
+                end
+                LOOP-INDEX = LOOP-INDEX + 1;
+            end
+
+      
+            VHRV01F_CRIT.INCD-NO = VHRV03IW.INCD-NO;
+            VHRV01F_CRIT.REPR-DOC-NO = VHRV01A_DATA.REPR-DOC-NO[SEL-IDX];
+            try
+                call "VHRV01F"(XDCONTROL, VHRV01F_CRIT, VHRV01F_DATA);
+            
+            end
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                VHRV01A_CRIT.REPR-NARR-COUNT = XDCONTROL.UROWCNT;
+                LOOP-INDEX = 1;
+                STORE-NARR-INDEX = 0;
+                VHRV03IW.REPR-DOC-NO = VHRV01F_CRIT.REPR-DOC-NO;
+                while ((LOOP-INDEX <= VHRV01A_CRIT.REPR-NARR-COUNT))
+                    STORE-NARR-INDEX = STORE-NARR-INDEX + 1;
+                    VHRV03IW-TEMP-NARR.NARR-NO[STORE-NARR-INDEX] = VHRV01F_DATA.NARR-NO[LOOP-INDEX];
+                    VHRV03IW-TEMP-NARR.USER-GRP[STORE-NARR-INDEX] = VHRV01F_DATA.USER-GRP[LOOP-INDEX];
+                    VHRV03IW-TEMP-NARR.DATE-NARR[STORE-NARR-INDEX] = VHRV01F_DATA.DATE-NARR[LOOP-INDEX];
+                    VHRV03IW-TEMP-NARR.TIME-NARR[STORE-NARR-INDEX] = VHRV01F_DATA.TIME-NARR[LOOP-INDEX];
+                    VHRV03IW-TEMP-NARR.NARR[STORE-NARR-INDEX] = VHRV01F_DATA.NARR[LOOP-INDEX];
+                    DISABLE-PREV = "Y";
+                    LOOP-INDEX = LOOP-INDEX + 1;
+                end
+            end
+            VHRV03IW.DISP-INDEX = 1;
+            DISABLE-ADDREPR = "Y";
+            DISABLE-FIELDS = "Y";
+            DISABLE-NARR = "Y";
+            ENABLE-NARR-DET = "Y";
+            ENABLE-ADDNARR = "Y";
+            ENABLE-CLOSEINCD = "Y";
+            LOAD-NARRATIVES = "Y";
+            ADDNARR-SETFOCUS = "Y";
+        end
+    else
+        set VHRV03IW-PREV-REPR empty;
+        VHRV03IW.REPR-PREV-COUNT = 0;
+        LOAD-PREV-REPR = "Y";
+        INCDNO-SETFOCUS = "Y";
+    end
+end 
+
+Function VHRV03IS-SETFOCUS () 
+    if (INVALID-DATEREPR-FUT == "Y" ||
+     INVALID-DATEREPR-OLD == "Y" ||
+     INVALID-DATEREPR == "Y")
+        DATEREPR-SETFOCUS = "Y";
+    else
+        if (INVALID-TIMEREPR == "Y")
+            TIMEREPR-SETFOCUS = "Y";
+        else
+            if (INVALID-NARR == "Y")
+                NARR-SETFOCUS = "Y";
+            end
+        end
+    end
+end 
+
+Function VHRV03IS-VALIDATE () 
+    ERROR-IND = 0;
+    DISP-ERR-MSG = " ";
+    INVALID-DATEREPR-OLD = "N";
+    INVALID-DATEREPR-FUT = "N";
+    INVALID-TIMEREPR = "N";
+    INVALID-DATEREPR = "N";
+    INVALID-NARR = "N";
+    if (VHRV03IW.DATE-REPR == " ")
+
+    else
+        AFCXVLD_CRIT.FORM-DATE = VHRV03IW.DATE-REPR;
+        MRSCommonCode.AFCXVLD-VALIDATE();
+        if (AFCXVLDW.INCORRECT-DATE == "Y")
+            ERROR-IND = ERROR-IND + 1;
+            INVALID-DATEREPR = "Y";
+            ERROR-MESSAGE[ERROR-IND] = "Invalid Date.";
+        else
+            if (AFCXVLDW.SQL-ERROR == "Y")
+
+            else
+                if (AFCXVLDW.NO-ERROR == "Y")
+                    if (((VHRV03IW.DATE-REPR-YR > SYSTEM-DATE-YR) ||
+                     ((VHRV03IW.DATE-REPR-YR == SYSTEM-DATE-YR) &&
+                     (VHRV03IW.DATE-REPR-MON > SYSTEM-DATE-MON)) ||
+                     ((VHRV03IW.DATE-REPR-YR == SYSTEM-DATE-YR) &&
+                     (VHRV03IW.DATE-REPR-MON == SYSTEM-DATE-MON) &&
+                     (VHRV03IW.DATE-REPR-DAY > SYSTEM-DATE-DAY))))
+                        ERROR-IND = ERROR-IND + 1;
+                        INVALID-DATEREPR-FUT = "Y";
+                        ERROR-MESSAGE[ERROR-IND] = "Future date not allowed.";
+                    else
+                        if (((VHRV03IW.DATE-REPR-YR < VHINC1D_DATA.DATE-INCD-OCCR-YR) ||
+                         ((VHRV03IW.DATE-REPR-YR == VHINC1D_DATA.DATE-INCD-OCCR-YR) &&
+                         (VHRV03IW.DATE-REPR-MON < VHINC1D_DATA.DATE-INCD-OCCR-MON)) ||
+                         ((VHRV03IW.DATE-REPR-YR == VHINC1D_DATA.DATE-INCD-OCCR-YR) &&
+                         (VHRV03IW.DATE-REPR-MON == VHINC1D_DATA.DATE-INCD-OCCR-MON) &&
+                         (VHRV03IW.DATE-REPR-DAY < VHINC1D_DATA.DATE-INCD-OCCR-DAY))))
+                            ERROR-IND = ERROR-IND + 1;
+                            INVALID-DATEREPR-OLD = "Y";
+                            ERROR-MESSAGE[ERROR-IND] = "Date too old.";
+                        end
+                    end
+                end
+            end
+        end
+    end
+    if (VHRV03IW.DISP-TIME-REPR == " ")
+
+    else
+        if (VHRV03IW.DISP-TIME-REPR is numeric)
+            if (VHRV03IW.DISP-TIME-REPR-HR-NUM > 24 ||
+             VHRV03IW.DISP-TIME-REPR-MIN-NUM > 59 ||
+             (VHRV03IW.DISP-TIME-REPR-HR-NUM == 24 &&
+             VHRV03IW.DISP-TIME-REPR-MIN-NUM > 0) ||
+             (VHRV03IW.DISP-TIME-REPR-HR-NUM == 0 &&
+             VHRV03IW.DISP-TIME-REPR-MIN-NUM == 0))
+                ERROR-IND = ERROR-IND + 1;
+                INVALID-TIMEREPR = "Y";
+                ERROR-MESSAGE[ERROR-IND] = "Invalid Time.";
+            end
+        else
+            ERROR-IND = ERROR-IND + 1;
+            INVALID-TIMEREPR = "Y";
+            ERROR-MESSAGE[ERROR-IND] = "Invalid Time.";
+        end
+    end
+    if (VHRV03IW.NARR == " ")
+        ERROR-IND = ERROR-IND + 1;
+        INVALID-NARR = "Y";
+        ERROR-MESSAGE[ERROR-IND] = "Invalid Repair Narr.";
+    end
+    if (ERROR-IND > 0)
+        VHRV03IS-MOVE-MSG();
+    end
+end 
+
+Function VHRV04IS-AFT-NAR () 
+    VHRV01A_CRIT.REPR-NARR-COUNT = 0;
+    VHRV01F_CRIT.INCD-NO = VHRV01IW.INCD-NO;
+    VHRV01F_CRIT.REPR-DOC-NO = VHRV01IW.REPR-DOC-NO;
+    try
+        call "VHRV01F"(XDCONTROL, VHRV01F_CRIT, VHRV01F_DATA);
+    
+    end
+    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+        VHRV01A_CRIT.REPR-NARR-COUNT = XDCONTROL.UROWCNT;
+        VHRV01IW.STORE-NARR-INDEX = VHRV01A_CRIT.REPR-NARR-COUNT;
+        VHRV04IS-NARR-DET();
+        ADDNARR-SETFOCUS = "Y";
+  
+  
+        if (VHRV01IW.NARR-NO == 1)
+            VHRV01IW-PREV-REPR.NARR[DISP-REPR-DOC-NO] = VHRV01IW.NARR;
+            VHRV01IW-TRIGGER.LOAD-PREV-REPR = "Y";
+        end
+    else
+        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+    end
+end 
+
+Function VHRV04IS-CHG-REPR ()
+  
+
+  
+
+  
+  
+
+  
+  
+  
+  
+  
+  
+   
+    if (ERROR-IND == 0)
+        set VHRV4A1_DATA empty;
+
+  
+        if (VHRV04IW-TRIGGER.DELETE-RECORD == "Y")
+            VHRV4A1_DATA.DELETE-IND = "Y";
+        end
+
+  
+  
+  
+        VHRV4A1_DATA.INCD-NO = VHRV01IW.INCD-NO;
+        VHRV4A1_DATA.TERM-LAST-UPD = VHRV01IW-PASSVALUE.TERM-ID;
+        VHRV4A1_DATA.REPR-DOC-NO = VHRV01IW.REPR-DOC-NO;
+        VHRV4A1_DATA.REPR-CAUSE-CD = VHRV04IW-HOLDDATA.REPR-CAUSE-CD;
+        VHRV4A1_DATA.SER-NO-ON = VHRV04IW-HOLDDATA.SER-NO-ON;
+        VHRV4A1_DATA.SER-NO-OFF = VHRV04IW-HOLDDATA.SER-NO-OFF;
+        VHRV4A1_DATA.VEH-PRT-CTL-NO = VHRV04IW-HOLDDATA.VEH-PRT-CTL-NO;
+        VHRV4A1_DATA.VEH-SYSTEM = VHRV04IW-HOLDDATA.VEH-SYSTEM;
+        VHRV4A1_DATA.VEH-SUB-SYSTEM = VHRV04IW-HOLDDATA.VEH-SUB-SYSTEM;
+        if (VHRV04IW-HOLDDATA.DATE-REPR == " ")
+            VHRV4A1_DATA.DATE-REPR = VGVar.currentFormattedGregorianDate;
+        else
+            VHRV4A1_DATA.DATE-REPR = VHRV04IW-HOLDDATA.DATE-REPR;
+        end
+        if (VHRV01IW.DISP-TIME-REPR == " ")
+            VHRV01IW.TEMP-TIME-REPR = VGVar.currentFormattedTime;
+        else
+            VHRV01IW.TEMP-TIME-REPR-HR = VHRV01IW.DISP-TIME-REPR-HR;
+            VHRV01IW.TEMP-TIME-REPR-FILLER1 = ":";
+            VHRV01IW.TEMP-TIME-REPR-MIN = VHRV01IW.DISP-TIME-REPR-MIN;
+            VHRV01IW.TEMP-TIME-REPR-FILLER2 = ":00";
+        end
+        VHRV4A1_DATA.TIME-REPR = VHRV01IW.TEMP-TIME-REPR;
+        VHRV4A1_DATA.REPR-DISP-CD = VHRV01IW.REPR-DISP-CD;
+        VHRV4A1_DATA.REPR-LOC = VHRV01IW.REPR-LOC;
+        VHRV4A1_DATA.WAR-REPR-IND = VHRV01IW.WAR-REPR-IND;
+        VHRV4A1_DATA.REPR-LABOR-HRS = VHRV01IW.REPR-LABOR-HRS;
+        VHRV4A1_DATA.EMPL-NO = VHRV01IW.EMPL-NO;
+        try
+            call "VHRV4A1"(XDCONTROL, VHRV4A1_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+            if (VHRV4A1_DATA.ERROR == " ")
+  
+  
+  
+                if (VHRV04IW-TRIGGER.DELETE-RECORD == "Y" || VHRV04IW-HOLDDATA.SYS-CHANGED == "Y")
+                    VHRV4A2_DATA.REPR-DOC-NO = VHRV4A1_DATA.REPR-DOC-NO;
+                    VHRV4A2_DATA.INCD-NO = VHRV4A1_DATA.INCD-NO;
+                    try
+                        call "VHRV4A2"(XDCONTROL, VHRV4A2_DATA);
+                    
+                    end
+                    if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                        VHRV01IW-MSG.FINAL-ERROR-MSG = "Repair Record Successfully Deleted";
+          
+                        DISP-REPR-DOC-NO = VHRV4A2_DATA.REPR-DOC-NO;
+                        VHRV01IW-PREV-REPR.NARR[DISP-REPR-DOC-NO] = "REPAIR RECORD DELETED BY USER";
+                        VHRV01IW-TRIGGER.LOAD-PREV-REPR = "Y";
+                    end
+                end
+  
+                if (VHRV04IW-TRIGGER.DELETE-RECORD != "Y")
+                    RECORDS-ADDED-MSG = "Y";
+                    VHRV01IW-MSG.FINAL-ERROR-MSG = "Repair Record Successfully Updated";
+                end
+                DISABLE-INCDLIST = "Y";
+            else 
+                VHRV01IW-MSG.FINAL-ERROR-MSG = "'DATA OR PROGRAM ERROR (Note: You Cannot Delete Only Repair) CANNOT COMPLETE TRANSACTION";
+            end
+        else
+            VHRV01IS-CLR-FLDS();
+            XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+            XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+            XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+            XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+        end
+    end
+
+  
+    VHRV04IW-TRIGGER.DELETE-RECORD = "N";
+
+  
+    if (VHRV04IW-HOLDDATA.SYS-CHANGED == "Y")
+        VHRV04IW-HOLDDATA.ORG-VEH-SYSTEM = VHRV01IW.VEH-SYSTEM;
+        VHRV04IW-HOLDDATA.ORG-VEH-SUB-SYSTEM = VHRV01IW.VEH-SUB-SYSTEM;
+        VHRV04IW-HOLDDATA.SYS-CHANGED = "N";
+    end
+end 
+
+Function VHRV04IS-CLEAR () 
+    set VHRV01IW empty;
+    set VHINC1D_CRIT empty;
+    set VHINC1D_DATA empty;
+    ENABLE-INCDLIST = "Y";
+    DISABLE-FIELDS = "Y";
+    DISABLE-NARR-DET = "Y";
+    DISABLE-PREV-DET = "Y";
+    DISABLE-PREV = "Y";
+    DISABLE-NEXT = "Y";
+    DISABLE-ADDREPR = "Y";
+    DISABLE-ADDNARR = "Y";
+    DISABLE-ADDCMPNT = "Y";
+    DISABLE-CLOSEINCD = "Y";
+    VHRV04IW-TRIGGER.ENABLE4DEL = "Y";
+    VHRV01IW.REPR-DOC-NO = 0;
+    VHRV01IW.DISP-REPR-DATA = " ";
+    VHRV01IW.REPR-LABOR-HRS = 0.0;
+    VHRV01IW.DISP-TIME-REPR = " ";
+    VHRV01IW.DISP-CON-DASH = " ";
+    VHRV01IW.USER-GRP = VHRV01IW-PASSVALUE.USER-GRP;
+    VHRV01IW.DATE-NARR = VGVar.currentFormattedGregorianDate;
+    VHRV01IW.TIME-NARR = VGVar.currentFormattedTime;
+    VHRV01IW.SEL-IDX = 0;
+
+  
+    VHRV01IW-TRIGGER.RECORDS-ADDED-MSG = "Y";
+end 
+
+Function VHRV04IS-DELETE () 
+    VHRV04IW-TRIGGER.DELETE-RECORD = "Y";
+end 
+
+Function VHRV04IS-LIST () 
+    VHRV01IW-MSG.FINAL-ERROR-MSG = " ";
+    VHRV01IW.NARR-NO = 1;
+    VHRV01IW.USER-GRP = VHRV01IW-PASSVALUE.USER-GRP;
+    VHRV01IW.REPR-PREV-NEXT = " ";
+    set VHRV01IW-PREV-REPR empty;
+    set VHRV01IW-TEMP-NARR empty;
+    if (VHRV01IW.INCD-NO != " ")
+        set VHINC2D_DATA empty;
+        set VHINC2D_DATA1 empty;
+        set VHINC2D_CRIT empty;
+        VHINC2D_CRIT.INCD-NO = VHRV01IW.INCD-NO;
+        VHINC2D_CRIT.RET-CHECK = "INCD";
+        try
+            call "MRSVehicleIncident.VHINC2D"(XDCONTROL, VHINC2D_CRIT, VHINC2D_DATA, VHINC2D_DATA1);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+  
+            if (VHINC2D_DATA.VEH-INCD-STAT == "XXXCLO") 
+                                   
+                VHRV01IS-CLR-FLDS();
+                VHRV01IW-MSG.FINAL-ERROR-MSG = "Closed Incidents are not listed.";
+                CLOSED-INCDS = "Y";
+                return;
+            else
+                if (VHINC2D_DATA.CON-NO == " ")
+                    VHRV01IW.DISP-CON-DASH = " ";
+                else
+                    VHRV01IW.CON-NO = VHINC2D_DATA.CON-NO;
+                    VHRV01IW.CON-DASH-FILLER = "-";
+                    VHRV01IW.DASH-NO-NUM = VHINC2D_DATA.DASH-NO;
+                end
+        
+                VHRV01A_CRIT.INCD-NO = VHRV01IW.INCD-NO;
+                VHRV01A_CRIT.RET-CHECK = "BOTH";
+                try
+                    call "VHRV01A"(XDCONTROL, VHRV01A_CRIT, VHRV01A_DATA, VHRV01A_NARR_DATA);
+                
+                end
+                if (REPR-COUNT > 0)
+                    if (VHRV01A_CRIT.REPR-NARR-COUNT > 0)
+
+                    else
+                        set VHRV01A_NARR_DATA empty;
+                    end
+                    VHRV01IW.REPR-DOC-NO = VHRV01A_CRIT.REPR-COUNT + 1;
+                    EXECUTE-PREV-ACT = "Y";
+                else
+                    if (XDCONTROL.URC == 100)
+                        VHRV01IS-CLR-FLDS();
+                        VHRV01IW-MSG.FINAL-ERROR-MSG = "You Must Have at Least 1 Repair to Use this GUI, use VHRV01i - Repair Vehicle";
+                        CLOSED-INCDS = "Y";
+                    else
+                        VHRV01IW.REPR-PREV-COUNT = 0;
+                        set VHRV01IW-PREV-REPR empty;
+                        DISABLE-FIELDS = "Y";
+                        DISABLE-PREV-DET = "Y";
+                        DISABLE-NARR-DET = "Y";
+                        DISABLE-ADDREPR = "Y";
+                        DISABLE-ADDNARR = "Y";
+                        DISABLE-CLOSEINCD = "Y";
+                        LOAD-PREV-REPR = "Y";
+                        XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                        XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                        XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                        XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+                    end
+                end
+            end
+        else
+            if (XDCONTROL.URC == 100)
+                set VHRV01IW empty;
+                VHRV01IW-MSG.FINAL-ERROR-MSG = "Incident not found.";
+                NO-INCD-FOUND = "Y";
+                 
+                VHRV01IS-CLR-FLDS();
+            else
+                VHRV01IS-CLR-FLDS();
+                XXMESSAGE.UMSGCODE = XDCONTROL.UMSGCODE;
+                XXMESSAGE.UMSGINS[1] = XDCONTROL.UMSGINS[1];
+                XXMESSAGE.UMSGINS[2] = XDCONTROL.UMSGINS[2];
+                XXMESSAGE.UMSGINS[3] = XDCONTROL.UMSGINS[3];
+            end
+        end
+    else
+        VHRV01IS-CLR-FLDS();
+        VHRV01IW-MSG.FINAL-ERROR-MSG = "Please enter an Incident No.";
+        INVALID-INCD-NO = "Y";
+         
+    end
+end 
+
+Function VHRV04IS-MAINT () 
+    VHRV02IW-HIDE.GUI-NAME = "VHRV04I";
+end 
+
+Function VHRV04IS-MOVE-REC () 
+    VHRV01B_CRIT.INCD-NO = VHRV01IW.INCD-NO;
+    VHRV01B_DATA.CAR-NO = VHINC2D_DATA.CAR-NO;
+    VHRV01B_DATA.INCD-NO = VHRV01IW.INCD-NO;
+    VHRV01B_DATA.USER-GRP = VHRV01IW-PASSVALUE.USER-GRP;
+    VHRV01B_DATA.TERM-LAST-UPD = VHRV01IW-PASSVALUE.TERM-ID;
+    if (VHRV01B_CRIT.CLOSE-INCD-IND == "Y")
+  
+        VHRV01B_DATA.VEH-INCD-STAT = "CLO";
+        VHRV01B_DATA.INCD-STAT-NEW = "CLO";
+        VHRV01B_DATA.DATE-REPR = VHRV01IW-PREV-REPR.DATE-REPR[1];
+        VHRV01B_DATA.TIME-REPR = VHRV01IW-PREV-REPR.TIME-REPR[1];
+        VHRV01B_DATA.REPR-LOC = VHRV01IW-PREV-REPR.REPR-LOC[1];
+    else
+        VHRV01B_DATA.VEH-INCD-STAT = VHINC2D_DATA.VEH-INCD-STAT;
+        VHRV01B_DATA.REPR-DOC-NO = VHRV01IW.REPR-DOC-NO;
+        VHRV01B_DATA.REPR-CAUSE-CD = VHRV01IW.REPR-CAUSE-CD;
+        VHRV01B_DATA.SER-NO-ON = VHRV01IW.SER-NO-ON;
+        VHRV01B_DATA.SER-NO-OFF = VHRV01IW.SER-NO-OFF;
+        VHRV01B_DATA.VEH-PRT-CTL-NO = VHRV01IW.VEH-PRT-CTL-NO;
+        VHRV01B_DATA.VEH-SYSTEM = VHRV01IW.VEH-SYSTEM;
+        VHRV01B_DATA.VEH-SUB-SYSTEM = VHRV01IW.VEH-SUB-SYSTEM;
+        if (VHRV01IW.DATE-REPR == " ")
+            VHRV01B_DATA.DATE-REPR = VGVar.currentFormattedGregorianDate;
+        else
+            VHRV01B_DATA.DATE-REPR = VHRV01IW.DATE-REPR;
+        end
+        VHRV01B_DATA.INCD-TYPE = VHINC2D_DATA.INCD-TYPE;
+        if (VHRV01IW.DISP-TIME-REPR == " ")
+            VHRV01IW.TEMP-TIME-REPR = VGVar.currentFormattedTime;
+        else
+            VHRV01IW.TEMP-TIME-REPR-HR = VHRV01IW.DISP-TIME-REPR-HR;
+            VHRV01IW.TEMP-TIME-REPR-FILLER1 = ":";
+            VHRV01IW.TEMP-TIME-REPR-MIN = VHRV01IW.DISP-TIME-REPR-MIN;
+            VHRV01IW.TEMP-TIME-REPR-FILLER2 = ":00";
+        end
+        VHRV01B_DATA.TIME-REPR = VHRV01IW.TEMP-TIME-REPR;
+        VHRV01B_DATA.REPR-DISP-CD = VHRV01IW.REPR-DISP-CD;
+        VHRV01B_DATA.REPR-LOC = VHRV01IW.REPR-LOC;
+        VHRV01B_DATA.WAR-REPR-IND = VHRV01IW.WAR-REPR-IND;
+        VHRV01B_DATA.REPR-LABOR-HRS = VHRV01IW.REPR-LABOR-HRS;
+        VHRV01B_DATA.EMPL-NO = VHRV01IW.EMPL-NO;
+
+    
+        VHRV01B_DATA.NARR-NO = VHRV01IW.NARR-NO;
+        VHRV01B_DATA.DATE-NARR = VHRV01IW.DATE-NARR;
+        VHRV01B_DATA.TIME-NARR = VHRV01IW.TIME-NARR;
+        VHRV01B_DATA.NARR = VHRV01IW.NARR;
+    end
+end 
+
+Function VHRV04IS-NARR-DET () 
+    DISP-INDEX = 1;
+    while ((DISP-INDEX <= STORE-NARR-INDEX))
+        VHRV01IW-TEMP-NARR.NARR-NO[DISP-INDEX] = VHRV01F_DATA.NARR-NO[DISP-INDEX];
+        VHRV01IW-TEMP-NARR.NARR[DISP-INDEX] = VHRV01F_DATA.NARR[DISP-INDEX];
+        VHRV01IW-TEMP-NARR.DATE-NARR[DISP-INDEX] = VHRV01F_DATA.DATE-NARR[DISP-INDEX];
+        VHRV01IW-TEMP-NARR.TIME-NARR[DISP-INDEX] = VHRV01F_DATA.TIME-NARR[DISP-INDEX];
+        VHRV01IW-TEMP-NARR.USER-GRP[DISP-INDEX] = VHRV01F_DATA.USER-GRP[DISP-INDEX];
+        DISP-INDEX = DISP-INDEX + 1;
+    end
+    DISP-INDEX = 1;
+    VHRV01IW.REPR-PREV-NEXT = " ";
+    VHRV01IS-PREV-NEXT();
+end 
+
+Function VHRV04IS-SELECT () 
+    VHRV01IW.TEMP-ERROR-MSG = " ";
+    VHRV01IW-MSG.FINAL-ERROR-MSG = " ";
+    if (SEL-IDX > 0)
+        LOOP-INDEX = 1;
+        VHRV01IW.DISP-INDEX = 1;
+        VHRV01IW.DISP-REPR-DATA = " ";
+        VHRV01IW.REPR-PREV-NEXT = " ";
+        set VHRV01IW-TEMP-NARR empty;
+        VHRV01A_CRIT.INCD-NO = VHRV01IW.INCD-NO;
+        VHRV01A_CRIT.RET-CHECK = "REPR";
+        try
+            call "VHRV01A"(XDCONTROL, VHRV01A_CRIT, VHRV01A_DATA, VHRV01A_NARR_DATA);
+        
+        end
+        if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+      
+            while ((LOOP-INDEX <= VHRV01A_CRIT.REPR-COUNT))
+                if (VHRV01A_DATA.REPR-DOC-NO[LOOP-INDEX] ==
+                 VHRV01A_DATA.REPR-DOC-NO[SEL-IDX])
+                    VHRV01IW.DISP-REPR-DATA = VHRV01A_DATA.DATA-REPR-ROW[LOOP-INDEX];
+                    VHRV01IW.TEMP-TIME-REPR = VHRV01A_DATA.TIME-REPR[LOOP-INDEX];
+                    VHRV01IW.DISP-TIME-REPR-HR = VHRV01IW.TEMP-TIME-REPR-HR;
+                    VHRV01IW.DISP-TIME-REPR-MIN = VHRV01IW.TEMP-TIME-REPR-MIN;
+                    LOOP-INDEX = VHRV01A_CRIT.REPR-COUNT;
+                end
+                LOOP-INDEX = LOOP-INDEX + 1;
+            end
+
+        
+            VHRV01F_CRIT.INCD-NO = VHRV01IW.INCD-NO;
+            VHRV01F_CRIT.REPR-DOC-NO = VHRV01A_DATA.REPR-DOC-NO[SEL-IDX];
+            try
+                call "VHRV01F"(XDCONTROL, VHRV01F_CRIT, VHRV01F_DATA);
+            
+            end
+            if (XDCONTROL.URC == 0 || XDCONTROL.URC == 4)
+                VHRV01A_CRIT.REPR-NARR-COUNT = XDCONTROL.UROWCNT;
+                LOOP-INDEX = 1;
+                STORE-NARR-INDEX = 0;
+                VHRV01IW.REPR-DOC-NO = VHRV01F_CRIT.REPR-DOC-NO;
+                while ((LOOP-INDEX <= VHRV01A_CRIT.REPR-NARR-COUNT))
+                    STORE-NARR-INDEX = STORE-NARR-INDEX + 1;
+                    VHRV01IW-TEMP-NARR.NARR-NO[STORE-NARR-INDEX] = VHRV01F_DATA.NARR-NO[LOOP-INDEX];
+                    VHRV01IW-TEMP-NARR.USER-GRP[STORE-NARR-INDEX] = VHRV01F_DATA.USER-GRP[LOOP-INDEX];
+                    VHRV01IW-TEMP-NARR.DATE-NARR[STORE-NARR-INDEX] = VHRV01F_DATA.DATE-NARR[LOOP-INDEX];
+                    VHRV01IW-TEMP-NARR.TIME-NARR[STORE-NARR-INDEX] = VHRV01F_DATA.TIME-NARR[LOOP-INDEX];
+                    VHRV01IW-TEMP-NARR.NARR[STORE-NARR-INDEX] = VHRV01F_DATA.NARR[LOOP-INDEX];
+                    DISABLE-PREV = "Y";
+                    LOOP-INDEX = LOOP-INDEX + 1;
+                end
+            end
+
+  
+            if (VHRV01IW.DELETE-IND == "Y")
+                VHRV04IW-TRIGGER.DISABLE4DEL = "Y";
+            else
+                VHRV04IW-TRIGGER.ENABLE4DEL = "Y";
+            end
+            VHRV01IW.DISP-INDEX = 1;
+            DISABLE-ADDREPR = "Y";
+            DISABLE-FIELDS = "Y";
+            DISABLE-NARR = "Y";
+            ENABLE-NARR-DET = "Y";
+            ENABLE-ADDNARR = "Y";
+            ENABLE-ADDCMPNT = "Y";
+            ENABLE-CLOSEINCD = "Y";
+            LOAD-NARRATIVES = "Y";
+            ADDNARR-SETFOCUS = "Y";
+  
+            VHRV04IW-HOLDDATA.ORG-VEH-SYSTEM = VHRV01IW.VEH-SYSTEM;
+            VHRV04IW-HOLDDATA.ORG-VEH-SUB-SYSTEM = VHRV01IW.VEH-SUB-SYSTEM;
+        end
+    else
+        set VHRV01IW-PREV-REPR empty;
+        VHRV01IW.REPR-PREV-COUNT = 0;
+        LOAD-PREV-REPR = "Y";
+        INCDNO-SETFOCUS = "Y";
+    end
+end 
+
+Function VHRV04IS-SYS-CHG () 
+    VHRV01IW.SYSTEM-DATE = VGVar.currentFormattedGregorianDate;
+    VHRV01IS-VALIDATE(); 
+
+  
+    VHRV04IW-HOLDDATA.SYS-CHANGED = "N";
+    if (ERROR-IND == 0)
+        if (VHRV01IW.VEH-SYSTEM != VHRV04IW-HOLDDATA.ORG-VEH-SYSTEM ||
+         VHRV01IW.VEH-SUB-SYSTEM != VHRV04IW-HOLDDATA.ORG-VEH-SUB-SYSTEM)
+            VHRV04IW-HOLDDATA.SYS-CHANGED = "Y";
+            VHRV04IW-TRIGGER.VAGen_PROMPT = "Y";
+        else
+            VHRV04IW-TRIGGER.OK = "Y";
+        end
+    end
+end

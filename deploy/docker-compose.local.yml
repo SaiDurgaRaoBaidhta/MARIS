@@ -1,0 +1,14 @@
+# Local integration only. Each app is still built and deployed separately in real environments.
+# The legacy Tomcat keeps running as it is today (maris-local, port 8080).
+services:
+  maris-middleware:
+    build: ../maris-middleware
+    environment:
+      MARIS_LEGACY_BASE_URL: http://host.docker.internal:8080/MARIS_RUI_Services_Web
+    ports: ["8090:8090"]
+  maris-ui:
+    build: ../maris-ui
+    environment:
+      MIDDLEWARE_UPSTREAM: http://maris-middleware:8090
+    ports: ["3000:80"]
+    depends_on: [maris-middleware]

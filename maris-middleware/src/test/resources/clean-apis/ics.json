@@ -1,0 +1,17 @@
+{
+  "_about": "Screens of the ICS module rebuilt on the clean API, with their tests. One file per module; CleanApiCoverageTest reads them all.",
+  "VHIC30I": {
+    "module": "ics",
+    "api": "com.bart.maris.middleware.api.ics.IcsController",
+    "apiTest": "com.bart.maris.middleware.api.ics.IcsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.ics.IcsParityTest",
+    "uiTest": "src/features/ics/IcsReportPage.test.tsx"
+  },
+  "VHIC31I": {
+    "module": "ics",
+    "api": "com.bart.maris.middleware.api.ics.IcsController",
+    "apiTest": "com.bart.maris.middleware.api.ics.IcsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.ics.IcsParityTest",
+    "uiTest": "src/features/ics/IcsReportPage.test.tsx"
+  }
+}
