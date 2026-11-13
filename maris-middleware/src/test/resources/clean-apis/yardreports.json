@@ -97,5 +97,12 @@
     "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
     "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
     "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHIC03I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsMoveApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsMoveParityTest",
+    "uiTest": "src/features/yardreports/PseudoTrainMovePage.test.tsx"
   }
 }

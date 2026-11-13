@@ -84,4 +84,13 @@ class YardReportsLiveTest extends LiveTestBase {
             assertThat(marked).as(loc.get("location").asText()).isEqualTo(!loc.get("cars").isEmpty());
         }
     }
+
+    /** VHIC03I's yard list (read-only VHYT09A); the move itself writes, so it is never run here */
+    @Test
+    void pseudoTrainMoveYards() throws Exception {
+        JsonNode yards = send("GET", "/api/v1/yard-reports/pseudo-train-move/yards", null);
+        assertThat(yards.get("_status").asInt()).isEqualTo(200);
+        assertThat(yards.get("_body")).isNotEmpty();
+        for (JsonNode y : yards.get("_body")) assertThat(y.asText()).isNotBlank();
+    }
 }

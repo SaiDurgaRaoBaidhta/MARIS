@@ -67,6 +67,32 @@ public final class YardReportsLayout {
         return backgroundField == null ? List.of(text) : List.of(text, background);
     }
 
+    /**
+     * every text a statement group assigns to a field, in the order the code has them (then before else), e.g. the two
+     * VHIC03IS-MOVE messages; ScreenBundle.assignedText gives only the first. Fails at start-up if there is none.
+     */
+    public static List<String> assignedTexts(ScreenBundle screens, String function, String pkg, String field) {
+        Ast.Function f = screens.function(function, pkg);
+        if (f == null) throw new IllegalStateException("function " + function + " not found");
+        List<String> out = new java.util.ArrayList<>();
+        texts(f.body(), field, out);
+        if (out.isEmpty()) throw new IllegalStateException(function + " assigns no text to " + field);
+        return out;
+    }
+
+    private static void texts(List<Ast.Stmt> body, String field, List<String> out) {
+        for (Ast.Stmt s : body) {
+            switch (s) {
+                case Ast.Assign a when a.value() instanceof Ast.Str v
+                        && a.target().segments().get(a.target().segments().size() - 1).name().equalsIgnoreCase(field) -> out.add(v.value());
+                case Ast.If i -> { texts(i.then(), field, out); texts(i.otherwise(), field, out); }
+                case Ast.While w -> texts(w.body(), field, out);
+                case Ast.Try t -> texts(t.body(), field, out);
+                default -> {}
+            }
+        }
+    }
+
     /** track -> its spots, in the LOAD's order */
     public static Map<String, Set<Integer>> of(ScreenBundle screens, String load, String pkg) {
         Ast.Function f = screens.function(load, pkg);
