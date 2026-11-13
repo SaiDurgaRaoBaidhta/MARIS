@@ -2,6 +2,7 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { CLEAN_PAGES } from "@/features/screens/cleanPages";
+import { resolve } from "@/app/router";
 import { AppProvider } from "@/shared/lib/app-state";
 import { fakeMiddleware } from "@/test/fetch";
 import { SystemWidePage } from "./SystemWidePage";
@@ -89,9 +90,16 @@ describe("system-wide map page (old VHSW01I)", () => {
 });
 
 describe("routing", () => {
-  it("routes every converted yard report screen to its new page", () => {
+  it("keeps every converted yard report screen in CLEAN_PAGES", () => {
     for (const code of ["VHIC01", "VHIC02", "VHYT80I", "VHYT81I", "VHYT105I", "VHYT106I", "VHY105I", "VHY106I", "VHYT70I", "VHYT71I", "VHYT90I", "VHYT91I", "VHYT100I", "VHYT101I", "VHYT61I", "VHSW01I"]) {
       expect(CLEAN_PAGES[code], code).toBeTypeOf("function");
     }
+  });
+
+  it("sends the map screens to the drawn map island anyway, and only non-map pages to their rebuilt page", () => {
+    for (const code of ["VHIC01", "VHYT80I", "VHY105I", "VHYT70I", "VHYT71I", "VHYT90I", "VHYT100I", "VHYT101I", "VHYT61I"]) {
+      expect(resolve({ kind: "screen", key: `egl:${code}`, label: code })).toEqual({ kind: "map", yard: expect.any(String), shop: expect.any(Boolean), label: code });
+    }
+    expect(resolve({ kind: "screen", key: "egl:VHSW01I", label: "System wide" })).toEqual({ kind: "screen", key: "egl:VHSW01I", label: "System wide" });
   });
 });

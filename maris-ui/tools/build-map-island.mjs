@@ -1,10 +1,14 @@
 // The yard / shop map viewer (2D plan, 3D yard, Show-cars panel, camera views) is ~3,500 lines of imperative three.js + DOM
 // in the reference UI. Until it is ported, the React app runs it as an island: this script copies ../maris-2-v4.html to
-// public/legacy/maris-map.html and appends a bootstrap that signs on, opens the requested map in its focus mode, and talks
-// to the React page over postMessage:
-//   parent -> island  { type: "maris-map:open", yard, shop, user }   { type: "maris-map:theme", theme }
+// public/legacy/maris-map.html and appends a bootstrap that takes the React session (no demo sign-on), opens the requested
+// map in its focus mode, and talks to the React page over postMessage:
+//   parent -> island  { type: "maris-map:open", yard, shop, user, role, group, update, homeYard }
+//                     { type: "maris-map:data", fleet }         { type: "maris-map:theme", theme }
 //   island -> parent  { type: "maris-map:ready" }   { type: "maris-map:shown", yard, shop }   { type: "maris-map:closed" }
 //   node tools/build-map-island.mjs
+// NOTE: the reference source ../maris-2-v4.html no longer exists in the repo — public/legacy/maris-map.html is now the
+// master copy and is edited directly (the app-side session injection, USER_GROUPS guards and applyRealFleet live there),
+// and its boot is mirrored into dist/ and the MARIS project by hand.
 import fs from 'fs';
 const src = fs.readFileSync(new URL('../../maris-2-v4.html', import.meta.url), 'utf8');
 const boot = `
@@ -18,19 +22,27 @@ const boot = `
   css.textContent = "html.island-wait body { visibility: hidden !important; } #wv-login, .taskbar, #wv-side, #wv-head, .mm-foot, .nav-crumb { display: none !important; }";
   document.head.appendChild(css);
   document.documentElement.classList.add("island-wait");
-  let user = null, pending = null, mapWin = null;
+  let mapWin = null;
   const until = (ok, ms = 20000) => new Promise((res, rej) => { const t0 = Date.now(); (function poll() { if (ok()) return res(); if (Date.now() - t0 > ms) return rej(new Error("timeout")); setTimeout(poll, 40); })(); });
-  async function signOn(u) {
-    if (user === u && SESSION.signed) return;
-    await until(() => document.querySelector(".lg-user"));
-    const sel = document.querySelector(".lg-user"); sel.value = u; sel.dispatchEvent(new Event("change"));
-    document.querySelector(".lg-go").click();
-    await until(() => SESSION.signed && document.querySelectorAll(".sd-sec").length > 0);
-    user = u;
+  /* the real middleware session arrives with every open request: no demo sign-on, any group ID works */
+  function applySession(m) {
+    if (!m.user) return false;
+    const fresh = !SESSION.signed || SESSION.user !== m.user || SESSION.role !== (m.role || SESSION.role);
+    SESSION.user = m.user;
+    SESSION.role = m.role || SESSION.role;
+    SESSION.group = m.group || SESSION.group;
+    SESSION.forced = !!m.update;
+    SESSION.yard = m.homeYard || SESSION.yard;
+    SESSION.signed = true;
+    return fresh;
   }
   async function open(m) {
     document.documentElement.classList.add("island-wait");
-    await signOn(m.user);
+    await until(() => document.querySelector(".lg-user"));      // the app shell is built
+    const fresh = applySession(m);
+    // the viewer's own shell (task bar, side menu) is hidden in the island: building it must never hold the map up
+    if (fresh) { try { Taskbar.update(); if (window.__marisLauncher) window.__marisLauncher(); Menus.openMain(); } catch (e) { console.warn("MARIS map shell", e); } }
+    await until(() => SESSION.signed && Menus.root());
     const root = Menus.root(); [...WM.list].reverse().forEach(x => { if (x !== root && WM.list.includes(x)) WM.close(x); });
     m.shop ? Screens.shopMap(root, m.yard) : Screens.yardMap(root, m.yard);
     mapWin = WM.list.at(-1);
@@ -40,9 +52,13 @@ const boot = `
   // Return / Exit on the map closes its window: the React page goes back
   const close0 = WM.close.bind(WM);
   WM.close = function (w) { const r = close0.apply(this, arguments); if (w && w === mapWin) { mapWin = null; send({ type: "maris-map:closed" }); } return r; };
+  // minimizing the map hides it on a desktop the island does not show: that is a return to the React page too
+  const min0 = WM.minimize.bind(WM);
+  WM.minimize = function (w) { const was = w && w.win.classList.contains("minimized"); const r = min0.apply(this, arguments); if (w && w === mapWin && !was) { mapWin = null; send({ type: "maris-map:closed" }); } return r; };
   addEventListener("message", e => {
     if (e.origin !== location.origin || !e.data) return;
-    if (e.data.type === "maris-map:open") { pending = open(e.data).catch(err => send({ type: "maris-map:error", message: String(err) })); }
+    if (e.data.type === "maris-map:open") { open(e.data).catch(err => send({ type: "maris-map:error", message: String(err) })); }
+    if (e.data.type === "maris-map:data") { try { applyRealFleet(e.data.fleet); } catch (err) { send({ type: "maris-map:error", message: String(err) }); } }
     if (e.data.type === "maris-map:theme") {
       // the reference's own switch: icon, stored choice and the 3D palette follow
       const b = document.querySelector(".wv-theme"); if (b && (document.documentElement.dataset.theme === "dark") !== (e.data.theme === "dark")) b.click();

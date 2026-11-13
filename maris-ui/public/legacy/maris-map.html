@@ -749,18 +749,16 @@ function isoToday() { const d = new Date(); return d.getFullYear() + '-' + pad2(
 function nowHM() { const d = new Date(); return pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
 function nowHMS() { const d = new Date(); return nowHM() + ':' + pad2(d.getSeconds()); }
 
-/* ---------------- session / user groups (from the AS-IS document) ---------------- */
-const USER_GROUPS = [
-  { group: 'Vehicle Trouble Desk Supervisor', role: 'VTD', users: ['TRBLDESK', 'VEHSUPR'] },
-  { group: 'Transportation', role: 'TRANS', users: ['CENTRAL', 'TRANS'] },
-  { group: 'Transportation Tower Foreworker', role: 'TOWER', users: ['CYTOWER', 'DYTOWER', 'HYTOWER', 'RYTOWER', 'DUBTMZ', 'MILTMZ', 'PITTMZ', 'SVBTMZ', 'TOWERS'] },
-  { group: 'Shop Supervisor', role: 'SHOP', users: ['CYSHOP', 'DYSHOP', 'HYSHOP', 'RYSHOP', 'SHOPSUPR'] },
-  { group: 'MARIS Administrator', role: 'ADMIN', users: ['MAXADMIN'] }
-];
+/* ---------------- session / user groups ---------------- */
+/* The real session (user, role, group, update) is injected from the React app (maris-map:open message) — the middleware's
+ * signed-on group, not a demo list. The island's own sign-on screens stay hidden. */
+const USER_GROUPS = [];
 
 const SESSION = {
-  user: 'TRBLDESK',
+  user: '',
   role: 'VTD',
+  group: '',                      // the middleware's group description, shown where the old demo list named the group
+  yard: null,                     // the group's own yard (YRD_TRKG_YRD), for its home menu button
   /* yard/shop maps open read-only (Inquiry) for the trouble desk, editable (Update) for towers, shops and admin */
   forced: null,
   get update() { return this.forced != null ? this.forced : (this.role === 'TOWER' || this.role === 'SHOP' || this.role === 'ADMIN'); }
@@ -892,18 +890,67 @@ function fillSparse(code, tracks) {
   return tracks;
 }
 
+/* ---------------- real fleet data (posted from the React app, middleware program VHSW01A) ---------------- */
+/* When present it replaces the baked demo cars for that yard, in every map, inventory and report that reads yardTracks. */
+const _realFleet = {};
+/* The DB names a sub-location its own way (Berryessa's storage tails are SSTOR1..3, the map binds STOR1..3):
+ * match a track id exactly, then ignoring punctuation / case, then with a leading S (station) added or dropped. */
+function specTrackIds(spec, ids) {
+  ((spec && spec.items) || []).forEach(it => { const [type, t] = it; if (type === 'row' || type === 'col' || type === 'cell' || type === 'cells') ids[t] = true; });
+}
+const _specIds = {};
+function aliasTrack(code, id) {
+  const ids = _specIds[code] || (_specIds[code] = (() => { const s = {}; specTrackIds(MAPS[code], s); specTrackIds(SHOPS[code], s); return s; })());
+  if (ids[id]) return id;
+  const norm = s => String(s).toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const n = norm(id);
+  for (const t of Object.keys(ids)) {
+    const nt = norm(t);
+    if (nt === n) return t;
+    const ns = n.replace(/^S(?=[A-Z])/, ''), nts = nt.replace(/^S(?=[A-Z])/, '');
+    if (nts === ns && (ns !== n || nts !== nt)) return t;
+  }
+  return id;
+}
+function applyRealFleet(fleet) {
+  // one yard's trouble must not keep the others' cars off their maps
+  Object.keys(fleet || {}).forEach(code => { try { applyYard(code, fleet); } catch (e) { console.warn("MARIS map data for " + code, e); } });
+}
+function applyYard(code, fleet) {
+  {
+    const tracks = (fleet[code] || []).map(t => ({
+      id: aliasTrack(code, t.id), cap: t.cap,
+      cars: (t.cars || []).map(c => (c ? parseCar(c, code) : null))
+    }));
+    // the drawing's tracks, then MARIS's: a track MARIS has no car on stays empty, a yard with no cars shows empty (never demo cars)
+    const byId = {};
+    emptyTracks(code).forEach(t => { byId[t.id] = t; });
+    tracks.forEach(t => { byId[t.id] = t; });
+    _realFleet[code] = Object.values(byId);
+    _yardCache[code] = _realFleet[code];
+    try { sessionStorage.removeItem('maris.yard.v3.' + code); } catch (e) { /* storage unavailable */ }
+    repaintMap(code);
+  }
+}
+
 function yardTracks(code) {
+  if (_realFleet[code]) return _realFleet[code];
   if (_yardCache[code]) return _yardCache[code];
-  let tracks = null;
-  try {
-    const saved = sessionStorage.getItem('maris.yard.v3.' + code);
-    if (saved) tracks = JSON.parse(saved);
-  } catch (e) { /* storage unavailable - fall back to fresh data */ }
-  _yardCache[code] = fillSparse(code, tracks || buildTracks(code));
+  // no demo cars: until MARIS's cars arrive (maris-map:data) a map shows its tracks empty
+  _yardCache[code] = emptyTracks(code);
   return _yardCache[code];
 }
 
+/* the map's own tracks (from its drawing), every position empty */
+function emptyTracks(code) {
+  const caps = { 'T-95': 30 };
+  specCaps(MAPS[code], caps);
+  specCaps(SHOPS[code], caps);
+  return Object.keys(caps).map(id => ({ id, cap: caps[id], cars: new Array(caps[id]).fill(null) }));
+}
+
 function saveYard(code) {
+  if (_realFleet[code]) { _realFleet[code] = _yardCache[code]; return; }
   try { sessionStorage.setItem('maris.yard.v3.' + code, JSON.stringify(_yardCache[code])); } catch (e) { /* ignore */ }
 }
 
@@ -4325,7 +4372,7 @@ const Taskbar = {
   update() {
     if (!this.bar) return;
     this.bar.classList.toggle('off', !SESSION.signed);
-    const g = USER_GROUPS.find(x => x.role === SESSION.role);
+    const g = USER_GROUPS.find(x => x.role === SESSION.role) || { group: SESSION.group };
     this.bar.querySelector('.tb-user').innerHTML = SESSION.signed ? '<b>' + SESSION.user + '</b> · ' + g.group + (SESSION.update ? ' <em>Update</em>' : ' <em>Inquiry</em>') : 'Not signed on';
     this.badge();
   },
@@ -4393,6 +4440,7 @@ Screens.signOn = function () {
     role.style.lineHeight = '15px';
     const showRole = () => {
       const g = USER_GROUPS.find(x => x.users.includes(user.value));
+      if (!g) { role.innerHTML = ''; return; }
       role.innerHTML = g.group + '<br>maps open in <b>' + (['TOWER', 'SHOP', 'ADMIN'].includes(g.role) ? 'Update' : 'Inquiry') + '</b> mode';
     };
     user.onchange = showRole;
@@ -4401,6 +4449,7 @@ Screens.signOn = function () {
     const go = () => {
       if (!pw.value) return status('Enter your password.', '#d0261b');
       const g = USER_GROUPS.find(x => x.users.includes(user.value));
+      if (!g) return status('User ID ' + user.value + ' is not known here. Sign on in the application and return.', '#d0261b');
       SESSION.user = user.value;
       SESSION.role = g.role;
       SESSION.signed = true;
@@ -4420,10 +4469,10 @@ Screens.signOn = function () {
   };
 
   /* after sign on the base window becomes a small launcher, like the MRS00I window behind the menus */
-  const launcher = () => {
+  const launcher = window.__marisLauncher = () => {
     area.innerHTML = '';
     const kk = kit({ cv: area, key: 'signon' }, { s: 1 });
-    const g = USER_GROUPS.find(x => x.role === SESSION.role);
+    const g = USER_GROUPS.find(x => x.role === SESSION.role) || { group: SESSION.group };
     kk.group('Signed On', 24, 18, 736, 140);
     kk.label('User: <b>' + SESSION.user + '</b> &nbsp; (' + g.group + ')', 44, 56);
     kk.label('Signed on ' + today() + ' ' + nowHM(), 44, 84);
@@ -9155,10 +9204,11 @@ html[data-theme=dark] .win pre.report { background-color: #0f1a2b !important; ba
        </div>`;
     const pic = cv.querySelector(".mm-pic");
     const ug = groupOf(SESSION.user);
-    cv.querySelector(".mm-who").innerHTML = `<b>${SESSION.user}</b> · ${ug ? ug.group : ""}`;
+    cv.querySelector(".mm-who").innerHTML = `<b>${SESSION.user}</b> · ${ug ? ug.group : SESSION.group || ""}`;
 
     /* buttons: everything for the administrator (MRS01I); otherwise the group's own button and EXIT (MRS00IS-MAIN_GUI) */
-    const home = HOME[SESSION.user], hb = homeButton(home);
+    const home = HOME[SESSION.user] || (SESSION.yard ? (SESSION.role === "SHOP" ? "shop:" : "yard:") + SESSION.yard : null);
+    const hb = homeButton(home);
     const hc = homeCaption(SESSION.user, SESSION.role);
     BTNS.forEach(([cap, x, y, hs, to], i) => {
       const b = el("button", "mm-btn");
@@ -10410,7 +10460,7 @@ html[data-theme=dark] .detail .stat-box.off { background: #0e1c2b !important; bo
   const userChip = () => {
     const u = bar.querySelector(".tb-user");
     if (!SESSION.signed) { u.textContent = ""; return; }
-    const g = USER_GROUPS.find(x => x.role === SESSION.role) || { group: "" };
+    const g = USER_GROUPS.find(x => x.role === SESSION.role) || { group: SESSION.group || "" };
     u.innerHTML = `<span class="wv-av">${esc(SESSION.user.slice(0, 2))}</span><span class="wv-uinfo"><b>${esc(SESSION.user)}</b><small>${esc(g.group)} · <em>${SESSION.update ? "Update" : "Inquiry"}</em></small></span>`;
   };
 
@@ -10520,7 +10570,7 @@ html[data-theme=dark] .detail .stat-box.off { background: #0e1c2b !important; bo
   // what the home page is showing; kept while the user moves around the application
   const HM = { f: "all", yard: null, q: "", sort: "sev", dir: 1 };
   function dashboard() {
-    const g = USER_GROUPS.find(x => x.role === SESSION.role) || { group: "" };
+    const g = USER_GROUPS.find(x => x.role === SESSION.role) || { group: SESSION.group || "" };
     const h = new Date().getHours(), hello = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
     const F = fleet(), pct = n => F.total ? Math.round(100 * n / F.total) : 0;
     const att = F.all.nogo + F.all.hi, occ = F.slots ? Math.round(100 * F.total / F.slots) : 0;
@@ -17345,19 +17395,27 @@ html[data-theme=dark] .wp-grid td.na { background-color: #0f2236 !important; }
   css.textContent = "html.island-wait body { visibility: hidden !important; } #wv-login, .taskbar, #wv-side, #wv-head, .mm-foot, .nav-crumb { display: none !important; }";
   document.head.appendChild(css);
   document.documentElement.classList.add("island-wait");
-  let user = null, pending = null, mapWin = null;
+  let mapWin = null;
   const until = (ok, ms = 20000) => new Promise((res, rej) => { const t0 = Date.now(); (function poll() { if (ok()) return res(); if (Date.now() - t0 > ms) return rej(new Error("timeout")); setTimeout(poll, 40); })(); });
-  async function signOn(u) {
-    if (user === u && SESSION.signed) return;
-    await until(() => document.querySelector(".lg-user"));
-    const sel = document.querySelector(".lg-user"); sel.value = u; sel.dispatchEvent(new Event("change"));
-    document.querySelector(".lg-go").click();
-    await until(() => SESSION.signed && document.querySelectorAll(".sd-sec").length > 0);
-    user = u;
+  /* the real middleware session arrives with every open request: no demo sign-on, any group ID works */
+  function applySession(m) {
+    if (!m.user) return false;
+    const fresh = !SESSION.signed || SESSION.user !== m.user || SESSION.role !== (m.role || SESSION.role);
+    SESSION.user = m.user;
+    SESSION.role = m.role || SESSION.role;
+    SESSION.group = m.group || SESSION.group;
+    SESSION.forced = !!m.update;
+    SESSION.yard = m.homeYard || SESSION.yard;
+    SESSION.signed = true;
+    return fresh;
   }
   async function open(m) {
     document.documentElement.classList.add("island-wait");
-    await signOn(m.user);
+    await until(() => document.querySelector(".lg-user"));      // the app shell is built
+    const fresh = applySession(m);
+    // the viewer's own shell (task bar, side menu) is hidden in the island: building it must never hold the map up
+    if (fresh) { try { Taskbar.update(); if (window.__marisLauncher) window.__marisLauncher(); Menus.openMain(); } catch (e) { console.warn("MARIS map shell", e); } }
+    await until(() => SESSION.signed && Menus.root());
     const root = Menus.root(); [...WM.list].reverse().forEach(x => { if (x !== root && WM.list.includes(x)) WM.close(x); });
     m.shop ? Screens.shopMap(root, m.yard) : Screens.yardMap(root, m.yard);
     mapWin = WM.list.at(-1);
@@ -17367,9 +17425,13 @@ html[data-theme=dark] .wp-grid td.na { background-color: #0f2236 !important; }
   // Return / Exit on the map closes its window: the React page goes back
   const close0 = WM.close.bind(WM);
   WM.close = function (w) { const r = close0.apply(this, arguments); if (w && w === mapWin) { mapWin = null; send({ type: "maris-map:closed" }); } return r; };
+  // minimizing the map hides it on a desktop the island does not show: that is a return to the React page too
+  const min0 = WM.minimize.bind(WM);
+  WM.minimize = function (w) { const was = w && w.win.classList.contains("minimized"); const r = min0.apply(this, arguments); if (w && w === mapWin && !was) { mapWin = null; send({ type: "maris-map:closed" }); } return r; };
   addEventListener("message", e => {
     if (e.origin !== location.origin || !e.data) return;
-    if (e.data.type === "maris-map:open") { pending = open(e.data).catch(err => send({ type: "maris-map:error", message: String(err) })); }
+    if (e.data.type === "maris-map:open") { open(e.data).catch(err => send({ type: "maris-map:error", message: String(err) })); }
+    if (e.data.type === "maris-map:data") { try { applyRealFleet(e.data.fleet); } catch (err) { send({ type: "maris-map:error", message: String(err) }); } }
     if (e.data.type === "maris-map:theme") {
       // the reference's own switch: icon, stored choice and the 3D palette follow
       const b = document.querySelector(".wv-theme"); if (b && (document.documentElement.dataset.theme === "dark") !== (e.data.theme === "dark")) b.click();

@@ -3,6 +3,7 @@
  * One iframe is kept for the whole session, so only the first map waits for it to load. It covers the page, as the
  * reference's map focus mode does; Return / Exit on the map comes back here as "closed". */
 import { useEffect, useRef, useState } from "react";
+import { fetchFleet } from "@/features/yard-tracking/api";
 import { useApp } from "@/shared/lib/app-state";
 
 type Msg = { source?: string; type: string; message?: string };
@@ -32,10 +33,23 @@ export function MapIsland({ map }: { map: { yard: string; shop: boolean } | null
   }, []);
   const post = (m: object) => frame.current?.contentWindow?.postMessage(m, location.origin);
   const key = map ? `${map.yard}:${map.shop}` : "";
+  /* the island runs on baked demo data: push the middleware's real fleet (program VHSW01A) into it before every map */
+  useEffect(() => {
+    if (!ready) return;
+    let gone = false;
+    fetchFleet(true)
+      .then(f => { if (!gone) post({ type: "maris-map:data", fleet: f.fleet }); })
+      .catch(e => toast.current("The map data could not be loaded: " + String(e), "err"));
+    return () => { gone = true; };
+  }, [ready, key]);
   useEffect(() => {
     if (!ready || !map) return;
     setShown(false);
-    post({ type: "maris-map:open", yard: map.yard, shop: map.shop, user: app.session?.user });
+    const s = app.session;
+    post({
+      type: "maris-map:open", yard: map.yard, shop: map.shop,
+      user: s?.user, role: s?.role, group: s?.group, update: s?.update, homeYard: s?.yard,
+    });
   }, [ready, key]);   // eslint-disable-line react-hooks/exhaustive-deps -- reopen only when the map changes
   useEffect(() => { if (ready) post({ type: "maris-map:theme", theme: app.theme }); }, [ready, app.theme]);
 
