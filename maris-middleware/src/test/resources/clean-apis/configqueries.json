@@ -1,0 +1,10 @@
+{
+  "_about": "Screens of the configuration tracking queries module rebuilt on the clean API, with their tests.",
+  "VHCF16I": {
+    "module": "configqueries",
+    "api": "com.bart.maris.middleware.api.configqueries.ConfigQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.configqueries.ConfigQueriesComponentsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.configqueries.ConfigQueriesComponentsParityTest",
+    "uiTest": "src/features/configqueries/ComponentsPage.test.tsx"
+  }
+}
