@@ -36,4 +36,14 @@ class YardQueriesLiveTest extends LiveTestBase {
         assertThat(status.get("_status").asInt()).isEqualTo(200);
         assertThat(send("GET", "/api/v1/yard-queries/status-history?from=" + to + "&to=" + from, null).get("_status").asInt()).isEqualTo(400);
     }
+
+    /** VHYT27I's lists (read-only); Hard Copy asks MARIS to print, so it is never run here */
+    @Test
+    void reportOptions() throws Exception {
+        JsonNode o = send("GET", "/api/v1/yard-queries/report-options", null);
+        assertThat(o.get("_status").asInt()).isEqualTo(200);
+        assertThat(o.get("warnings")).isEmpty();
+        assertThat(o.get("yards")).isNotEmpty();
+        assertThat(o.get("from").asText()).matches("\\d{4}-\\d{2}-\\d{2}");
+    }
 }

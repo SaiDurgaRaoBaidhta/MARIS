@@ -20,5 +20,12 @@
     "apiTest": "com.bart.maris.middleware.api.yardqueries.YardQueriesHistoryApiTest",
     "parityTest": "com.bart.maris.middleware.api.yardqueries.YardQueriesHistoryParityTest",
     "uiTest": "src/features/yardqueries/HistoryPage.test.tsx"
+  },
+  "VHYT27I": {
+    "module": "yardqueries",
+    "api": "com.bart.maris.middleware.api.yardqueries.YardQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.yardqueries.YardQueriesReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardqueries.YardQueriesReportsParityTest",
+    "uiTest": "src/features/yardqueries/ReportsPage.test.tsx"
   }
 }

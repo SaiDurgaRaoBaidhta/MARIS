@@ -1,5 +1,5 @@
 /* Yard tracking queries: the middleware's clean API (/api/v1/yard-queries). Shop status: MARIS programs VHYT25A, VHYT30A. */
-import { get } from "@/shared/api/client";
+import { get, post } from "@/shared/api/client";
 
 export interface ShopCar {
   track: string; position: number; car: string; leftEnd: string; rightEnd: string; status: string; incident: boolean;
@@ -25,3 +25,9 @@ export const fetchCarHistory = (c: HistoryCriteria) =>
   get<History<Move>>(`/yard-queries/car-history?${new URLSearchParams({ yard: c.yard, from: c.from, to: c.to, fromCar: c.fromCar ?? "", toCar: c.toCar ?? "" })}`);
 export const fetchStatusHistory = (c: HistoryCriteria) =>
   get<History<StatusChange>>(`/yard-queries/status-history?${new URLSearchParams({ yard: c.yard, from: c.from, to: c.to })}`);
+
+/* the reports criteria window (old VHYT27I): options (WS70A01, VHYT27B, VHRT04A) and Hard Copy (VHYT27A / F / C / D / E / G) */
+export interface ReportOptions { printers: { description: string; vtam: string }[]; yards: { code: string; description: string }[]; from: string; to: string; warnings: string[] }
+export interface PrintRequest { report: string; yard: string; printer: string; from: string; to: string; fromCar: string; toCar: string }
+export const fetchReportOptions = () => get<ReportOptions>("/yard-queries/report-options");
+export const printReport = (r: PrintRequest) => post<{ message: string }>("/yard-queries/reports/print", r);

@@ -86,6 +86,11 @@ public class YardQueriesHistoryService {
         return f;
     }
 
+    /** VHYT27IS-TEST-DATE's check, for the reports' hard copy too */
+    static boolean validRange(String from, String to) {
+        return valid(from) && valid(to) && from.compareTo(to) <= 0;
+    }
+
     private static boolean valid(String iso) {
         if (!iso.matches("\\d{4}-\\d{2}-\\d{2}")) return false;
         int y = Integer.parseInt(iso.substring(0, 4)), m = Integer.parseInt(iso.substring(5, 7)), d = Integer.parseInt(iso.substring(8));

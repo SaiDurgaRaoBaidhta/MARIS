@@ -42,6 +42,30 @@ public final class YardQueriesEgl {
         }
     }
 
+    /** the texts a statement group compares a field with ({@code if (X.field == "SHOPSTAT")}), in code order */
+    public static List<String> compared(ScreenBundle screens, String function, String pkg, String field) {
+        return List.copyOf(pairsOrValues(screens, function, pkg, field));
+    }
+
+    private static List<String> pairsOrValues(ScreenBundle screens, String function, String pkg, String field) {
+        Ast.Function f = screens.function(function, pkg);
+        if (f == null) throw new IllegalStateException("function " + function + " not found");
+        List<String> out = new java.util.ArrayList<>();
+        values(f.body(), field, out);
+        if (out.isEmpty()) throw new IllegalStateException(function + " compares " + field + " with nothing");
+        return out;
+    }
+
+    private static void values(List<Ast.Stmt> body, String field, List<String> out) {
+        for (Ast.Stmt s : body) {
+            if (!(s instanceof Ast.If i)) continue;
+            if (i.cond() instanceof Ast.Binary b && b.op().equals("==") && b.left() instanceof Ast.Name n && b.right() instanceof Ast.Str v
+                    && last(n).equalsIgnoreCase(field) && !out.contains(v.value().strip())) out.add(v.value().strip());
+            values(i.then(), field, out);
+            values(i.otherwise(), field, out);
+        }
+    }
+
     private static String last(Ast.Name n) {
         return n.segments().get(n.segments().size() - 1).name();
     }

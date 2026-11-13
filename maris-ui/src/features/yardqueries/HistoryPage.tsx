@@ -1,7 +1,7 @@
 /* The yard history reports (old VHYT29I car location history, VHYT33I yard vehicle status history), on the clean API.
  * The old reports were opened from VHYT27I with a yard, a date range and (car history) a car range; the middleware checks
  * the dates as VHYT27I did. As the old reports, a car is named once for its run of rows (and a date once, on VHYT33I). */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PageHead } from "@/shared/ui/PageHead";
 import { fetchCarHistory, fetchStatusHistory, type History, type HistoryCriteria, type Move, type StatusChange } from "./api";
 
@@ -13,22 +13,24 @@ const td = "whitespace-nowrap px-2 py-1";
 /** a value shown only where it changes from the row before, as the old reports print the car (and date) */
 const once = <R,>(rows: R[], i: number, key: (r: R) => string) => (i > 0 && key(rows[i - 1]) === key(rows[i]) ? "" : key(rows[i]));
 
-export function HistoryPage({ kind }: { kind: "cars" | "status" }) {
+/** initial: criteria from the reports criteria window (VHYT27I), shown at once */
+export function HistoryPage({ kind, initial }: { kind: "cars" | "status"; initial?: HistoryCriteria }) {
   const cars = kind === "cars";
-  const [c, setC] = useState<HistoryCriteria>({ yard: "", from: "", to: "", fromCar: "", toCar: "" });
+  const [c, setC] = useState<HistoryCriteria>({ yard: "", from: "", to: "", fromCar: "", toCar: "", ...initial });
   const [moves, setMoves] = useState<History<Move> | null>(null);
   const [changes, setChanges] = useState<History<StatusChange> | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const set = (k: keyof HistoryCriteria, v: string) => setC(x => ({ ...x, [k]: v }));
-  const show = async () => {
+  const show = async (q0: HistoryCriteria = c) => {
     setBusy(true); setError("");
-    const q = { ...c, yard: c.yard.trim().toUpperCase() };
+    const q = { ...q0, yard: q0.yard.trim().toUpperCase() };
     try { if (cars) setMoves(await fetchCarHistory(q)); else setChanges(await fetchStatusHistory(q)); }
     catch (e) { setMoves(null); setChanges(null); setError(e instanceof Error ? e.message : String(e)); }
     finally { setBusy(false); }
   };
   const report = cars ? moves : changes;
+  useEffect(() => { if (initial) void show(initial); }, []);   // eslint-disable-line react-hooks/exhaustive-deps -- once, for the criteria given
 
   return (
     <>

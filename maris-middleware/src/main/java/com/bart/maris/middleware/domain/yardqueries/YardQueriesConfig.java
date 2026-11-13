@@ -18,4 +18,9 @@ public class YardQueriesConfig {
     YardQueriesHistoryService yardQueriesHistoryService(LegacyProgramService legacy, MessageResolver messages, ScreenBundle screens) {
         return new YardQueriesHistoryService(legacy, messages, screens);
     }
+
+    @Bean
+    YardQueriesReportsService yardQueriesReportsService(LegacyProgramService legacy, MessageResolver messages, ScreenBundle screens) {
+        return new YardQueriesReportsService(legacy, messages, screens);
+    }
 }
