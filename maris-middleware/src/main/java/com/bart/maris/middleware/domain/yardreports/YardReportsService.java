@@ -100,7 +100,9 @@ public class YardReportsService {
                 spots.put(track + "/" + position, car(row, track, position, d));
             }
         }
-        return new YardReportsMap(name, d.yard(), new ArrayList<>(spots.values()));
+        List<YardReportsMap.Track> tracks = new ArrayList<>();
+        d.tracks().forEach((t, s) -> tracks.add(new YardReportsMap.Track(t, List.copyOf(s))));
+        return new YardReportsMap(name, d.yard(), tracks, new ArrayList<>(spots.values()));
     }
 
     private static YardReportsMap.Car car(Map<String, Object> row, String track, int position, Def d) {

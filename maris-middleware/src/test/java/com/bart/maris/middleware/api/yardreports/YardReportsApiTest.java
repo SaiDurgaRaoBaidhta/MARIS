@@ -59,6 +59,9 @@ class YardReportsApiTest extends ApiTestBase {
         assertThat(a.body().at("/cars/0/homeYard").asText()).isEqualTo("HY");
         assertThat(a.body().at("/cars/0/status").asText()).isEqualTo("GO");
         assertThat(a.body().at("/cars/0/moveReason").asText()).isEqualTo("M01");
+        // the map's tracks and their spots, in the old LOAD's order, so a page can draw the empty spots too
+        assertThat(a.body().get("tracks").findValuesAsText("track")).containsExactly("S-1", "S-2", "TM4", "TM3", "SSTOR1", "SSTOR2", "SSTOR3");
+        assertThat(a.body().at("/tracks/0/spots").toString()).isEqualTo("[1,2,3,4,5,6,7,8,9,10]");
     }
 
     @Test

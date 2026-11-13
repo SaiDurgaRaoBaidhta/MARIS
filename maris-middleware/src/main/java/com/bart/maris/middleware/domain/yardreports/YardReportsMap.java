@@ -2,8 +2,10 @@ package com.bart.maris.middleware.domain.yardreports;
 
 import java.util.List;
 
-/** One yard map (old screens VHIC01 / VHIC02, ...): the cars on the map's tracks, spots 1 to 10. */
-public record YardReportsMap(String map, String yard, List<Car> cars) {
+/** One yard map (old screens VHIC01 / VHIC02, ...): the map's tracks and spots (old LOAD order) and the cars on them. */
+public record YardReportsMap(String map, String yard, List<Track> tracks, List<Car> cars) {
+    public record Track(String track, List<Integer> spots) {}
+
     /**
      * @param label     what the old map's spot shows: a left orientation before the car number, any other after it
      * @param condition  null when the map's update screen colours no car; else the old update maps' colour rule (GiveAColor): go, go-pm-due, usable or not-usable
