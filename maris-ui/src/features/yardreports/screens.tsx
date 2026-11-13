@@ -2,6 +2,7 @@
  * (features/<module>/screens.tsx). Map screens reach these pages once shared/clean-pages-before-maps is merged
  * (until then app/router.tsx sends every map screen to the drawn map). */
 import type { ReactNode } from "react";
+import { PseudoConfigPage } from "./PseudoConfigPage";
 import { PseudoTrainMovePage } from "./PseudoTrainMovePage";
 import { SystemWidePage } from "./SystemWidePage";
 import { YardMapPage, type MapColours } from "./YardMapPage";
@@ -25,4 +26,5 @@ export const CLEAN_SCREENS: Record<string, () => ReactNode> = {
   VHYT61I: map("concord-shop", "VHYT61I", "Concord Shop Map (Update)", "home"),
   VHSW01I: () => <SystemWidePage />,
   VHIC03I: () => <PseudoTrainMovePage />,   // move a pseudo train to another yard (writes)
+  VHYT53I: () => <PseudoConfigPage />,      // configure pseudo trains (writes)
 };

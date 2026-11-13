@@ -93,6 +93,39 @@ public final class YardReportsLayout {
         }
     }
 
+    /**
+     * every text a statement group compares a field with, with the given operator ("==" or "!="), in code order, e.g. the
+     * car types VHYT53IS-VALID-MID accepts ({@code CAR-TYPE != "B1" && ...}). Fails at start-up if there is none.
+     */
+    public static List<String> comparedTexts(ScreenBundle screens, String function, String pkg, String field, String op) {
+        Ast.Function f = screens.function(function, pkg);
+        if (f == null) throw new IllegalStateException("function " + function + " not found");
+        List<String> out = new java.util.ArrayList<>();
+        compared(f.body(), field, op, out);
+        if (out.isEmpty()) throw new IllegalStateException(function + " compares " + field + " with nothing (" + op + ")");
+        return out;
+    }
+
+    private static void compared(List<Ast.Stmt> body, String field, String op, List<String> out) {
+        for (Ast.Stmt s : body) {
+            if (s instanceof Ast.If i) {
+                compared(i.cond(), field, op, out);
+                compared(i.then(), field, op, out);
+                compared(i.otherwise(), field, op, out);
+            } else if (s instanceof Ast.While w) compared(w.body(), field, op, out);
+        }
+    }
+
+    private static void compared(Ast.Expr e, String field, String op, List<String> out) {
+        if (!(e instanceof Ast.Binary b)) return;
+        if (b.op().equals(op) && b.left() instanceof Ast.Name n && b.right() instanceof Ast.Str v
+                && n.segments().get(n.segments().size() - 1).name().equalsIgnoreCase(field)) {
+            if (!out.contains(v.value().strip())) out.add(v.value().strip());
+        }
+        compared(b.left(), field, op, out);
+        compared(b.right(), field, op, out);
+    }
+
     /** track -> its spots, in the LOAD's order */
     public static Map<String, Set<Integer>> of(ScreenBundle screens, String load, String pkg) {
         Ast.Function f = screens.function(load, pkg);

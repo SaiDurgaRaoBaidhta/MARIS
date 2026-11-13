@@ -20,4 +20,9 @@ public class YardReportsConfig {
     YardReportsMoveService yardReportsMoveService(LegacyProgramService legacy, MessageResolver messages, ScreenBundle screens, MarisProperties props) {
         return new YardReportsMoveService(legacy, messages, screens, props.engine().terminalId());
     }
+
+    @Bean
+    YardReportsPseudoService yardReportsPseudoService(LegacyProgramService legacy, MessageResolver messages, ScreenBundle screens, MarisProperties props) {
+        return new YardReportsPseudoService(legacy, messages, screens, props.engine().terminalId());
+    }
 }

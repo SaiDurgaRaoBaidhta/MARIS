@@ -18,3 +18,18 @@ export const fetchSystemWide = () => get<SystemWide>("/yard-reports/system-wide"
 export interface MoveRequest { fromYard: string; fromPosition: number; toPosition: number; toYard: string }
 export const fetchMoveYards = () => get<string[]>("/yard-reports/pseudo-train-move/yards");
 export const movePseudoTrain = (r: MoveRequest) => post<{ moved: boolean; message: string }>("/yard-reports/pseudo-train-move", r);
+
+/* VHYT53I configure pseudo trains: reading (VHYT53D, B, C, E / M) and the writes (VHYT53F / G create, H move a car out, K reset) */
+export interface PseudoCar { car: string; leftEnd: string; rightEnd: string; type: string; ato: boolean; incident: boolean; status: string; homeYard?: string; serviceable?: boolean }
+export interface PseudoConsist { consist: string; dash: number; display: string; track: string; indicator: string; resettable: boolean; cars: PseudoCar[] }
+export interface PseudoConfig { yard: string; tracks: { track: string; description: string }[]; consists: PseudoConsist[]; message?: string; warnings: string[] }
+const pc = (yard: string) => `/yard-reports/pseudo-config/${encodeURIComponent(yard)}`;
+export const fetchPseudoConfig = (yard: string) => get<PseudoConfig>(pc(yard));
+export const fetchPseudoTrackCars = (yard: string, track: string, insert = false) =>
+  get<PseudoCar[]>(`${pc(yard)}/cars?${new URLSearchParams(insert ? { track, list: "insert" } : { track })}`);
+export const createPseudo = (yard: string, consist: string, partial: boolean, cars: PseudoCar[]) =>
+  post<{ done: boolean; message?: string }>(`${pc(yard)}/consists`, {
+    consist, partial, cars: cars.map(({ car, leftEnd, rightEnd, type, ato, incident, status }) => ({ car, leftEnd, rightEnd, type, ato, incident, status })),
+  });
+export const movePseudoCar = (yard: string, car: string, track: string) => post<{ moved: boolean; message: string }>(`${pc(yard)}/car-moves`, { car, track });
+export const resetPseudo = (yard: string, c: PseudoConsist) => post<{ done: boolean }>(`${pc(yard)}/resets`, { consist: c.consist, track: c.track, indicator: c.indicator });

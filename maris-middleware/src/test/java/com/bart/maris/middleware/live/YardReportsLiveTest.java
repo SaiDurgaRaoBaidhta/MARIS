@@ -93,4 +93,18 @@ class YardReportsLiveTest extends LiveTestBase {
         assertThat(yards.get("_body")).isNotEmpty();
         for (JsonNode y : yards.get("_body")) assertThat(y.asText()).isNotBlank();
     }
+
+    /** VHYT53I's reading (VHYT53D / B / C, VHYT53E); creating, moving and resetting write, so they are never run here */
+    @Test
+    void pseudoConfigReads() throws Exception {
+        JsonNode yards = send("GET", "/api/v1/yard-reports/pseudo-train-move/yards", null);
+        String yard = yards.get("_body").get(0).asText();
+        JsonNode config = send("GET", "/api/v1/yard-reports/pseudo-config/" + yard, null);
+        assertThat(config.get("_status").asInt()).isEqualTo(200);
+        for (JsonNode c : config.get("consists")) {
+            assertThat(c.get("display").asText()).startsWith(c.get("consist").asText());
+            assertThat(c.get("cars").size()).isPositive();
+        }
+        assertThat(send("GET", "/api/v1/yard-reports/pseudo-config/" + yard + "/cars?track=ALL", null).get("_status").asInt()).isEqualTo(200);
+    }
 }
