@@ -1,0 +1,27 @@
+package com.bart.maris.middleware.live;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.bart.maris.middleware.support.LiveTestBase;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.junit.jupiter.api.Test;
+
+/** Yard tracking queries module, read-only, against the real backend. */
+class YardQueriesLiveTest extends LiveTestBase {
+    /**
+     * the shop status report on real data: every car but T-24's is timed, the totals add up. (The engine cannot run the old
+     * VHYT25I with a yard, see YardQueriesShopStatusParityTest, so this checks the report itself, with no fixed numbers.)
+     */
+    @Test
+    void shopStatusReport() throws Exception {
+        for (String yard : new String[]{"HY", "CY", "RY", "DY"}) {
+            JsonNode r = send("GET", "/api/v1/yard-queries/shop-status/" + yard, null);
+            assertThat(r.get("_status").asInt()).as(yard).isEqualTo(200);
+            assertThat(r.get("totalCars").asInt()).as(yard).isEqualTo(r.get("cars").size());
+            assertThat(r.get("grandTotal").asInt()).as(yard).isGreaterThanOrEqualTo(r.get("totalCars").asInt());
+            for (JsonNode c : r.get("cars")) {
+                assertThat(c.has("elapsedDays")).as(yard + " " + c.get("car")).isEqualTo(!c.get("track").asText().equals("T-24"));
+            }
+        }
+    }
+}

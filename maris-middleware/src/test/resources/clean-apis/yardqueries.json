@@ -1,0 +1,10 @@
+{
+  "_about": "Screens of the yard tracking queries module rebuilt on the clean API, with their tests.",
+  "VHYT25I": {
+    "module": "yardqueries",
+    "api": "com.bart.maris.middleware.api.yardqueries.YardQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.yardqueries.YardQueriesShopStatusApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardqueries.YardQueriesShopStatusParityTest",
+    "uiTest": "src/features/yardqueries/ShopStatusPage.test.tsx"
+  }
+}
