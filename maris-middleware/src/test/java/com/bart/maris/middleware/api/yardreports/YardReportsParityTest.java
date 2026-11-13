@@ -50,7 +50,7 @@ class YardReportsParityTest {
                     row.put("hpmhrs", 0);
                 }
                 if (software) row.put("softver", SOFTWARE[n % SOFTWARE.length]);
-                if (load.startsWith("VHYT10") && !load.startsWith("VHYT105") && !load.startsWith("VHYT106")) row.put("lftOrientationCd", "<");
+                if (load.matches("VHYT10[01]IS-LOAD|VHYT61IS-LOAD")) row.put("lftOrientationCd", "<");
                 rows.add(row);
             }
         }
@@ -249,5 +249,13 @@ class YardReportsParityTest {
     void dalyCityShopUpdate() {
         backend("VHYTX0A", "VHYT100A-DATA", "VHYT101IS-LOAD", 0);      // as dalyCityShopInquiry
         same("VHYT101I", "VHYTX0A", "daly-city-shop", w -> w.get("value") + " " + w.get("color"), c -> c.label() + " " + c.colour(), Set.of());
+    }
+
+    @Test
+    void concordShop() {
+        backend("VHYT60A", "VHYT60A-DATA", "VHYT61IS-LOAD");
+        // VHYT61I: VHYT61IS-LOAD places cars on S7-4 and S6-6, but the screen has no widget for either
+        same("VHYT61I", "VHYT60A", "concord-shop", w -> w.get("value") + " " + w.get("color"), c -> c.label() + " " + c.colour(),
+                Set.of("S7-4/1", "S6-6/1"));
     }
 }

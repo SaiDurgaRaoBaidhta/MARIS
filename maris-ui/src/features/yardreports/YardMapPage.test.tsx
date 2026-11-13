@@ -54,6 +54,13 @@ describe("yard map page (old VHIC01 / VHIC02 and the other yard maps)", () => {
     expect(getComputedStyle(await screen.findByText("2345>")).color).not.toBe("rgb(255, 140, 0)");
   });
 
+  it("colours by home yard without a background when the map has none (VHYT61I)", async () => {
+    const shop = { ...BERRYESSA, cars: [car("S-1", 1, "<1234", { colour: "RED", background: undefined })] };
+    fakeMiddleware({ "GET /api/v1/yard-reports/maps/berryessa": () => ({ body: shop }) });
+    page();
+    expect(await screen.findByText("<1234")).toHaveStyle({ color: "rgb(255, 0, 0)" });
+  });
+
   it("shows the middleware's message when MARIS refuses", async () => {
     fakeMiddleware({ "GET /api/v1/yard-reports/maps/berryessa": () => ({ status: 422, body: { code: "BUSINESS_ERROR", detail: "YARD Is Not Found" } }) });
     page();
@@ -83,7 +90,7 @@ describe("system-wide map page (old VHSW01I)", () => {
 
 describe("routing", () => {
   it("routes every converted yard report screen to its new page", () => {
-    for (const code of ["VHIC01", "VHIC02", "VHYT80I", "VHYT81I", "VHYT105I", "VHYT106I", "VHYT70I", "VHYT71I", "VHYT90I", "VHYT91I", "VHYT100I", "VHYT101I", "VHSW01I"]) {
+    for (const code of ["VHIC01", "VHIC02", "VHYT80I", "VHYT81I", "VHYT105I", "VHYT106I", "VHYT70I", "VHYT71I", "VHYT90I", "VHYT91I", "VHYT100I", "VHYT101I", "VHYT61I", "VHSW01I"]) {
       expect(CLEAN_PAGES[code], code).toBeTypeOf("function");
     }
   });

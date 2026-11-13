@@ -28,7 +28,7 @@ public class YardReportsController {
     }
 
     @GetMapping("/maps/{map}")
-    @Operation(summary = "The cars on a yard map's tracks (berryessa VHIC01A, millbrae VHYT80A, daly-city-yard VHYTX5A, concord-yard VHYT70A, richmond-yard VHYT90A, daly-city-shop VHYTX0A)")
+    @Operation(summary = "The cars on a yard map's tracks (berryessa VHIC01A, millbrae VHYT80A, daly-city-yard VHYTX5A, concord-yard VHYT70A, richmond-yard VHYT90A, daly-city-shop VHYTX0A, concord-shop VHYT60A)")
     public YardReportsMap map(@PathVariable String map) {
         return service.map(map);
     }

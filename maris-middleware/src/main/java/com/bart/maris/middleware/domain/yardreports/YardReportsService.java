@@ -41,6 +41,7 @@ public class YardReportsService {
     /**
      * where a map's home-yard colours come from: a statement group or function and its fields; background null = a
      * fixed background, the text {@code fixedBackground} = (statement group, field) assigns, e.g. VHYT100IS-ST-13 CAR-COLOR-B-1
+     * (null: the map sets no background)
      */
     private record Colours(String function, String yardField, String textField, String background, String[] fixedBackground) {}
 
@@ -77,6 +78,9 @@ public class YardReportsService {
         SPECS.put("daly-city-shop", new Spec("VHYTX0A", "VHYT100A-CRIT", "VHYT100A-DATA", null, "VHYT100IS-LOAD",
                 new Colours("dy100Color", "HOME_YARD", "theColor", null, new String[]{"VHYT100IS-ST-13", "CAR-COLOR-B-1"}),
                 false, Dollar.WHEN_LONGER, Left.ROW));
+        // VHYT61I (update only): the shop rules as the Daly City shop, no background
+        SPECS.put("concord-shop", new Spec("VHYT60A", "VHYT60A-CRIT", "VHYT60A-DATA", null, "VHYT61IS-LOAD",
+                new Colours("dy100Color", "HOME_YARD", "theColor", null, null), false, Dollar.WHEN_LONGER, Left.ROW));
         SPECS.put("richmond-yard", new Spec("VHYT90A", "VHYT90A_CRIT", "VHYT90A_DATA", "VHYT90IS-INIT", "VHYT90IS-LOAD", "VHYT90IS-COLOR", true, Dollar.WHEN_MARKED));
     }
 

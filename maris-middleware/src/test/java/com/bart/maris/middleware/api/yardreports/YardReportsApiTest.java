@@ -211,6 +211,25 @@ class YardReportsApiTest extends ApiTestBase {
     }
 
     @Test
+    void concordShopMapUsesTheShopRulesWithoutABackground() throws Exception {
+        AtomicReference<Map<String, Object>> crit = new AtomicReference<>();
+        List<Map<String, Object>> rows = List.of(shopCar("6001", "<", "RR-01", 6, "DY", "V2"), shopCar("6002", ">", "RR-01", 7, "HY", ""),
+                shopCar("6003", ">", "SN-TF", 10, "HY", ""));
+        backend().on("VHYT60A", in -> {
+            crit.set(in.get("VHYT60A-CRIT"));
+            return reply(0, rows.size(), Map.of("VHYT60A-DATA", rows("dataRow", rows)));
+        });
+        Answer a = get("/api/v1/yard-reports/maps/concord-shop", null);
+
+        assertThat(a.status()).isEqualTo(200);
+        assertThat(called()).containsExactly("VHYT60A");
+        assertThat(crit.get()).doesNotContainKey("yrdTrkgYrd");
+        assertThat(a.body().get("cars").findValuesAsText("label")).containsExactly("$<6001", "6003>");   // RR-01 has 6 spots
+        assertThat(a.body().get("cars").findValuesAsText("colour")).containsExactly("RED", "GREEN");    // dy100Color
+        assertThat(a.body().at("/cars/0").has("background")).isFalse();                               // VHYT61I sets none
+    }
+
+    @Test
     void systemWideMapTellsWhichLocationsHaveCars() throws Exception {
         AtomicReference<Map<String, Object>> crit = new AtomicReference<>();
         List<Map<String, Object>> rows = List.of(millbraeCar("4001", "<", "BAYFAIR", 1, "HY"), millbraeCar("4002", ">", "BAYFAIR", 2, "HY"),

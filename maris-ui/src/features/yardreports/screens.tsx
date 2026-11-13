@@ -21,5 +21,6 @@ export const CLEAN_SCREENS: Record<string, () => ReactNode> = {
   VHYT91I: map("richmond-yard", "VHYT91I", "Richmond Yard Map (Update)", "condition"),
   VHYT100I: map("daly-city-shop", "VHYT100I", "Daly City Shop Map", "home"),
   VHYT101I: map("daly-city-shop", "VHYT101I", "Daly City Shop (Update)", "home"),   // the shop's update map colours by home yard too
+  VHYT61I: map("concord-shop", "VHYT61I", "Concord Shop Map (Update)", "home"),
   VHSW01I: () => <SystemWidePage />,
 };

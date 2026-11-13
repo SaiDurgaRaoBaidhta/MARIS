@@ -1,5 +1,5 @@
 /* A yard map (old screens VHIC01 / VHIC02 Berryessa, VHYT80I / 81I Millbrae, VHYT105I / 106I Daly City yard,
- * VHYT70I / 71I Concord yard, VHYT90I / 91I Richmond yard, VHYT100I / 101I Daly City shop), on the clean API. Every track with its spots, in the old map's
+ * VHYT70I / 71I Concord yard, VHYT90I / 91I Richmond yard, VHYT100I / 101I Daly City shop, VHYT61I Concord shop), on the clean API. Every track with its spots, in the old map's
  * order. The old screens' colour rules, chosen per screen in screens.tsx: by home yard (the colours come from the old
  * colour statement group, through the API), by condition (GiveAColor, most update maps), or none (VHYT81I).
  * Not carried over from the old update screens: Maint, Reports, Tower Menu and the spot clicks that open other screens. */
@@ -24,7 +24,7 @@ export type MapColours = "home" | "condition" | "none";
 
 function Spot({ car, colours }: { car?: YardCar; colours: MapColours }) {
   if (!car) return <li className="h-7 min-w-14 rounded border border-dashed border-slate-300 dark:border-line-dark" aria-label="empty spot" />;
-  const style = colours === "home" ? { color: cssColour(car.colour), backgroundColor: cssColour(car.background) }
+  const style = colours === "home" ? { color: cssColour(car.colour), backgroundColor: car.background ? cssColour(car.background) : undefined }
     : colours === "condition" ? { color: CONDITION_COLOUR[car.condition ?? ""] ?? "inherit", backgroundColor: "white" }
     : undefined;
   return (
