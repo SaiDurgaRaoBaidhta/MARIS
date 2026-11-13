@@ -851,9 +851,24 @@ function aliasTrack(code, id) {
     const nt = norm(t);
     if (nt === n) return t;
     const ns = n.replace(/^S(?=[A-Z])/, ''), nts = nt.replace(/^S(?=[A-Z])/, '');
-    if (nts === ns && (ns !== n || nts !== nt)) return t;
+    if ((nts === ns || ns === nt || n === nts) && (ns !== n || nts !== nt)) return t;   // SSTOR1 (MARIS) = STOR1 (drawing)
   }
   return id;
+}
+/* Where a MARIS track goes on the drawing: its own track, or a box of a drawn row. The old screens bind sub-locations to the
+ * boxes of one row (VHYT100IConnections: S-1A / S-1B are row S-1's boxes, SS-5A..D row SS-05's, SS-06 the exchange's last
+ * two boxes after ST-13's eight). Returns [track id, first box]. */
+const SUBLOC = { DY: { 'ST-13': ['EX', 0], 'SS-06': ['EX', 8] } };
+function placeOf(code, id) {
+  const ids = (aliasTrack(code, id), _specIds[code]);
+  const a = aliasTrack(code, id);
+  if (ids[a]) return [a, 0];
+  const m = /^(.*\D)(\d+)([A-Z])$/.exec(String(id).toUpperCase());
+  if (m) for (const t of Object.keys(ids)) {
+    const r = /^(.*\D)(\d+)$/.exec(t);
+    if (r && r[1] === m[1] && +r[2] === +m[2]) return [t, m[3].charCodeAt(0) - 65];
+  }
+  return [a, 0];
 }
 function applyRealFleet(fleet) {
   // one yard's trouble must not keep the others' cars off their maps
@@ -861,14 +876,20 @@ function applyRealFleet(fleet) {
 }
 function applyYard(code, fleet) {
   {
-    const tracks = (fleet[code] || []).map(t => ({
-      id: aliasTrack(code, t.id), cap: t.cap,
-      cars: (t.cars || []).map(c => (c ? parseCar(c, code) : null))
-    }));
     // the drawing's tracks, then MARIS's: a track MARIS has no car on stays empty, a yard with no cars shows empty (never demo cars)
     const byId = {};
     emptyTracks(code).forEach(t => { byId[t.id] = t; });
-    tracks.forEach(t => { byId[t.id] = t; });
+    (fleet[code] || []).forEach(t => {
+      const cars = (t.cars || []).map(c => (c ? parseCar(c, code) : null));
+      // a track one map draws on its own and another draws inside a row (Daly City's SS-06 and ST-13): both show its cars
+      const also = (SUBLOC[code] || {})[t.id];
+      if (also && byId[also[0]]) cars.forEach((c, i) => { if (c) byId[also[0]].cars[Math.min(also[1] + i, byId[also[0]].cap - 1)] = c; });
+      const [id, at] = placeOf(code, t.id);
+      const drawn = byId[id];
+      // a whole drawn track takes MARIS's track as it is; a sub-location fills its boxes of the drawn row
+      if (!drawn || (at === 0 && id === aliasTrack(code, t.id))) { byId[id] = { id, cap: t.cap, cars }; return; }
+      cars.forEach((c, i) => { if (c) drawn.cars[Math.min(at + i, drawn.cap - 1)] = c; });
+    });
     _realFleet[code] = Object.values(byId);
     _yardCache[code] = _realFleet[code];
     try { sessionStorage.removeItem('maris.yard.v3.' + code); } catch (e) { /* storage unavailable */ }
