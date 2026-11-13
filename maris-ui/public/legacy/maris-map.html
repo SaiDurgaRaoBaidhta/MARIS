@@ -818,21 +818,6 @@ function parseCar(spec, defHome) {
 /* digits only - "$(3131" and "3131}" are the same car 3131 */
 function carNo(s) { return String(s || '').replace(/\D/g, ''); }
 
-function genCar(r, homeCode) {
-  let num;
-  if (r() < 0.35) {
-    const n = 3001 + Math.floor(r() * 299);
-    num = r() < 0.5 ? n + ')' : '(' + n;
-  } else {
-    const n = 4001 + Math.floor(r() * 775);
-    num = r() < 0.5 ? n + 'V' : 'v' + n;
-  }
-  const home = HOME_YARDS.includes(homeCode) && r() < 0.85 ? homeCode : HOME_YARDS[Math.floor(r() * HOME_YARDS.length)];
-  const x = r();
-  const stat = x < 0.8 ? 'GO' : x < 0.88 ? 'NO GO' : x < 0.94 ? 'AWPART' : x < 0.97 ? 'PM' : 'MODHLD';
-  return car(num, home, stat);
-}
-
 /* ---------------- yard state (built from the map layouts, kept for the browser session) ---------------- */
 const _yardCache = {};
 
@@ -847,49 +832,7 @@ function specCaps(spec, caps) {
   });
 }
 
-function buildTracks(code) {
-  const y = YARDS[code];
-  const home = HOME_YARDS.includes(code) ? code : (MAPS[code] && MAPS[code].home) || 'DY';
-  const caps = { 'T-95': 30 };
-  specCaps(MAPS[code], caps);
-  specCaps(SHOPS[code], caps);
-  // yard and shop maps can share a track: merge their car lists position by position
-  const cars = {};
-  [(MAPS[code] || {}).cars, (SHOPS[code] || {}).cars].forEach(src => Object.keys(src || {}).forEach(id => {
-    const dst = cars[id] = cars[id] || [];
-    src[id].forEach((c, i) => { if (c) dst[i] = c; });
-  }));
-  const tracks = Object.keys(caps).map(id => {
-    const t = { id, cap: caps[id], cars: new Array(caps[id]).fill(null) };
-    (cars[id] || []).forEach((c, i) => { if (i < t.cap) t.cars[i] = parseCar(c, home); });
-    return t;
-  });
-  // pseudo track: real data where the screenshots show it, otherwise a seeded demo fill
-  const pt = tracks.find(t => t.id === 'T-95');
-  if (PSEUDO_TRACK[code]) PSEUDO_TRACK[code].forEach((c, i) => { pt.cars[i] = parseCar(c, home); });
-  else {
-    const r = rng(code + 'T-95');
-    const n = 8 + Math.floor(r() * 14);
-    for (let i = 0; i < n; i++) pt.cars[i] = genCar(r, home);
-  }
-  // T-95 first, then the tracks in the order they appear on the map
-  return [pt, ...tracks.filter(t => t !== pt)];
-}
-
 /* a yard with hardly any cars (no screenshot data for it): its empty tracks get a seeded sample fill, packed from the track end */
-function fillSparse(code, tracks) {
-  if ((MAPS[code] || {}).real) return tracks;                 // a yard drawn from the client's map keeps exactly its own cars
-  const real = tracks.filter(t => t.id !== 'T-95'), used = real.reduce((a, t) => a + t.cars.filter(Boolean).length, 0), cap = real.reduce((a, t) => a + t.cap, 0);
-  if (!cap || used / cap >= 0.25) return tracks;
-  const home = HOME_YARDS.includes(code) ? code : (MAPS[code] && MAPS[code].home) || 'DY';
-  real.forEach(t => {
-    if (t.cars.some(Boolean) || t.cap < 2) return;
-    const r = rng(code + ':fill:' + t.id), n = Math.round(t.cap * (0.35 + r() * 0.45));
-    for (let i = t.cap - n; i < t.cap; i++) t.cars[i] = genCar(r, home);
-  });
-  return tracks;
-}
-
 /* ---------------- real fleet data (posted from the React app, middleware program VHSW01A) ---------------- */
 /* When present it replaces the baked demo cars for that yard, in every map, inventory and report that reads yardTracks. */
 const _realFleet = {};
@@ -17416,6 +17359,8 @@ html[data-theme=dark] .wp-grid td.na { background-color: #0f2236 !important; }
     // the viewer's own shell (task bar, side menu) is hidden in the island: building it must never hold the map up
     if (fresh) { try { Taskbar.update(); if (window.__marisLauncher) window.__marisLauncher(); Menus.openMain(); } catch (e) { console.warn("MARIS map shell", e); } }
     await until(() => SESSION.signed && Menus.root());
+    // the shell's first build finishes on its own timers and closes / minimizes what is open: let it settle before the map
+    if (fresh) await new Promise(r => setTimeout(r, 300));
     const root = Menus.root(); [...WM.list].reverse().forEach(x => { if (x !== root && WM.list.includes(x)) WM.close(x); });
     m.shop ? Screens.shopMap(root, m.yard) : Screens.yardMap(root, m.yard);
     mapWin = WM.list.at(-1);

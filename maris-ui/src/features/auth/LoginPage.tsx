@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useApp } from "@/shared/lib/app-state";
 import { Icon } from "@/shared/ui/Icon";
-import { useMock } from "@/shared/api/client";
-import { signOn, USER_GROUPS } from "./api";
+import { signOn } from "./api";
 
 /* the lit track: straight from the horizon to the bottom of the panel, sleepers running towards you */
 const at = (d: number) => [720, 600 + 400 * d];
@@ -47,16 +46,14 @@ function TrackScene() {
 
 export function LoginPage() {
   const app = useApp();
-  // demo data: pick a user and use the demo password; middleware: a real MARIS group ID and password (MRS02A)
-  const [user, setUser] = useState(useMock ? "TRBLDESK" : "");
-  const [pw, setPw] = useState(useMock ? "maris" : "");
+  // a real MARIS group ID and password, checked by the middleware (MRS02A)
+  const [user, setUser] = useState("");
+  const [pw, setPw] = useState("");
   const [show, setShow] = useState(false);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const pwRef = useRef<HTMLInputElement>(null);
   const userRef = useRef<HTMLInputElement>(null);
-  const g = USER_GROUPS.find(x => x.users.includes(user.trim().toUpperCase()));
-  const upd = !!g && ["TOWER", "SHOP", "ADMIN"].includes(g.role);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -109,23 +106,15 @@ export function LoginPage() {
           <label htmlFor="lg-user" className="mb-2 block font-semibold text-navy dark:text-ink-dark">User ID</label>
           <div className="mb-5 flex h-[46px] items-center gap-3 rounded-[10px] border border-slate-300 px-4 text-slate-500 focus-within:border-bart focus-within:ring-4 focus-within:ring-bart/15 dark:border-line-dark">
             <Icon name="user" />
-            {useMock
-              ? <select id="lg-user" value={user} onChange={e => setUser(e.target.value)} className="sel-arrow h-full flex-1 bg-transparent text-[13px] text-slate-900 outline-none dark:text-ink-dark">
-                  {USER_GROUPS.map(gr => <optgroup key={gr.role} label={gr.group}>{gr.users.map(u => <option key={u} value={u}>{u}</option>)}</optgroup>)}
-                </select>
-              : <>
-                  <input id="lg-user" ref={userRef} value={user} onChange={e => setUser(e.target.value.toUpperCase())} maxLength={8} list="lg-users" autoFocus
-                    autoCapitalize="characters" spellCheck={false} className="h-full flex-1 bg-transparent text-[13px] uppercase text-slate-900 outline-none dark:text-ink-dark" />
-                  <datalist id="lg-users">{USER_GROUPS.flatMap(gr => gr.users.map(u => <option key={u} value={u}>{gr.group}</option>))}</datalist>
-                </>}
+            <input id="lg-user" ref={userRef} value={user} onChange={e => setUser(e.target.value.toUpperCase())} maxLength={8} autoFocus
+              autoCapitalize="characters" spellCheck={false} className="h-full flex-1 bg-transparent text-[13px] uppercase text-slate-900 outline-none dark:text-ink-dark" />
           </div>
           <label htmlFor="lg-pw" className="mb-2 block font-semibold text-navy dark:text-ink-dark">Password</label>
           <div className="mb-4 flex h-[46px] items-center gap-3 rounded-[10px] border border-slate-300 px-4 text-slate-500 focus-within:border-bart focus-within:ring-4 focus-within:ring-bart/15 dark:border-line-dark">
             <Icon name="lock" />
-            <input id="lg-pw" ref={pwRef} type={show ? "text" : "password"} value={pw} maxLength={useMock ? undefined : 6} onChange={e => setPw(e.target.value)} className="h-full flex-1 bg-transparent text-[13px] text-slate-900 outline-none dark:text-ink-dark" />
+            <input id="lg-pw" ref={pwRef} type={show ? "text" : "password"} value={pw} maxLength={6} onChange={e => setPw(e.target.value)} className="h-full flex-1 bg-transparent text-[13px] text-slate-900 outline-none dark:text-ink-dark" />
             <button type="button" onClick={() => { setShow(!show); pwRef.current?.focus(); }} className="font-semibold text-bart hover:text-bart-700">{show ? "Hide" : "Show"}</button>
           </div>
-          {g && <div className="rounded-lg border-l-[3px] border-bart bg-sky/70 px-3.5 py-2.5 text-slate-800 dark:bg-sky/10 dark:text-slate-200"><b>{g.group}</b> · maps open in <b>{upd ? "Update" : "Inquiry"}</b> mode</div>}
           <div role="alert" className="min-h-6 py-1 text-[13px] font-medium text-red-600">{msg}</div>
           <button type="submit" disabled={busy} className="flex h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-bart text-[16px] font-semibold text-white hover:bg-bart-600 active:translate-y-px disabled:cursor-progress">
             {busy ? "Preparing your workspace…" : <>Sign On <Icon name="arrow" /></>}

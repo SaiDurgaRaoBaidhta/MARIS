@@ -43,6 +43,8 @@ const boot = `
     // the viewer's own shell (task bar, side menu) is hidden in the island: building it must never hold the map up
     if (fresh) { try { Taskbar.update(); if (window.__marisLauncher) window.__marisLauncher(); Menus.openMain(); } catch (e) { console.warn("MARIS map shell", e); } }
     await until(() => SESSION.signed && Menus.root());
+    // the shell's first build finishes on its own timers and closes / minimizes what is open: let it settle before the map
+    if (fresh) await new Promise(r => setTimeout(r, 300));
     const root = Menus.root(); [...WM.list].reverse().forEach(x => { if (x !== root && WM.list.includes(x)) WM.close(x); });
     m.shop ? Screens.shopMap(root, m.yard) : Screens.yardMap(root, m.yard);
     mapWin = WM.list.at(-1);

@@ -7,7 +7,6 @@ import { CLEAN_PAGES } from "@/features/screens/cleanPages";
 import { mapOf } from "@/features/screens/registry";
 import { eglCode, ScreenPage } from "@/features/screens/ScreenPage";
 import { InventoryPage } from "@/features/yard-tracking/InventoryPage";
-import { useMock } from "@/shared/api/client";
 import { useApp, type Page } from "@/shared/lib/app-state";
 
 const rebuilt = (key: string) => !!CLEAN_PAGES[eglCode(key).toUpperCase()];
@@ -22,7 +21,7 @@ export function resolve(p: Page): Page {
   if (m) return { kind: "map", yard: m[2], shop: m[1] === "shop", label: p.label };
   const map = mapOf(p.key);
   if (map) return { kind: "map", ...map, label: p.label };
-  if (!useMock && rebuilt(p.key)) return p;
+  if (rebuilt(p.key)) return p;
   return p;
 }
 

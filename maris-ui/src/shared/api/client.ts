@@ -1,10 +1,8 @@
 /* fetch client. Every feature's api.ts goes through here.
- * Default: the middleware behind /api (dev: Vite proxy, prod: nginx), session cookie + CSRF token.
- * VITE_MARIS_API=mock: every feature answers from its bundled demo data instead (screen tools, demos). */
+ * The middleware behind /api (dev: Vite proxy, prod: nginx), session cookie + CSRF token. All data comes from MARIS through it. */
 import type { components } from "@/api/generated/schema";
 
 export type Schemas = components["schemas"];
-export const useMock = import.meta.env.VITE_MARIS_API === "mock";
 
 /** the middleware's API root */
 export const API = "/api/v1";
@@ -24,7 +22,7 @@ const expired = new Set<() => void>();
 export function onSessionExpired(f: () => void): () => void { expired.add(f); return () => expired.delete(f); }
 
 const cache = new Map<string, Promise<unknown>>();
-/** GET a static JSON document once per page load (layouts, demo data) */
+/** GET a static JSON document once per page load (screen layouts) */
 export function getJson<T>(url: string): Promise<T> {
   if (!cache.has(url)) cache.set(url, fetch(url).then(r => { if (!r.ok) throw new Error(`${url}: ${r.status}`); return r.json(); }));
   return cache.get(url) as Promise<T>;
