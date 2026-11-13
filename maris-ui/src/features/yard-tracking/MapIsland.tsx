@@ -5,8 +5,10 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchFleet } from "@/features/yard-tracking/api";
 import { useApp } from "@/shared/lib/app-state";
+import { splitTitle } from "@/features/screens/ScreenPage";
+import { PageHead } from "@/shared/ui/PageHead";
 
-type Msg = { source?: string; type: string; message?: string; code?: string; on?: boolean };
+type Msg = { source?: string; type: string; message?: string; code?: string; on?: boolean; title?: string };
 
 export function MapIsland({ map, navWidth }: { map: { yard: string; shop: boolean } | null; navWidth: number }) {
   const app = useApp();
@@ -14,6 +16,7 @@ export function MapIsland({ map, navWidth }: { map: { yard: string; shop: boolea
   const [wanted, setWanted] = useState(false);       // the iframe exists once a map was asked for
   const [ready, setReady] = useState(false);
   const [shown, setShown] = useState(false);
+  const [title, setTitle] = useState("");
   const [full, setFull] = useState(true);            // the map in full screen covers the page; otherwise the page shell stays
   const back = useRef(app.back); back.current = app.back;
   const toast = useRef(app.toast); toast.current = app.toast;
@@ -26,7 +29,7 @@ export function MapIsland({ map, navWidth }: { map: { yard: string; shop: boolea
     const on = (e: MessageEvent<Msg>) => {
       if (e.origin !== location.origin || e.data?.source !== "maris-map") return;
       if (e.data.type === "maris-map:ready") setReady(true);
-      if (e.data.type === "maris-map:shown") setShown(true);
+      if (e.data.type === "maris-map:shown") { setShown(true); setTitle(e.data.title || ""); }
       if (e.data.type === "maris-map:closed") { setShown(false); back.current(); }
       if (e.data.type === "maris-map:screen" && e.data.code) open.current({ kind: "screen", key: "egl:" + e.data.code, label: e.data.code });
       if (e.data.type === "maris-map:full") setFull(!!e.data.on);
@@ -58,11 +61,20 @@ export function MapIsland({ map, navWidth }: { map: { yard: string; shop: boolea
   useEffect(() => { if (ready) post({ type: "maris-map:theme", theme: app.theme }); }, [ready, app.theme]);
 
   if (!wanted) return null;
+  const [code, name] = splitTitle(title);
+  // out of full screen, as in the reference: the page header (path, title, code) and the map card under it, in the page shell
+  const page = !full && !!map;
   return (
-    <div className={`fixed bg-[#eef3f8] dark:bg-[#08121d] ${full ? "inset-0 z-[6000]" : "bottom-10 right-0 top-16 z-[4400]"} ${map ? "" : "hidden"}`}
-      style={full ? undefined : { left: navWidth }} aria-hidden={!map}>
-      {map && !shown && <p role="status" className="absolute inset-0 grid place-items-center text-slate-500">Loading the map…</p>}
-      <iframe ref={frame} src="/legacy/maris-map.html" title="Yard map" className={`size-full border-0 ${shown ? "" : "invisible"}`} />
-    </div>
+    <>
+      {page && shown && (
+        <div className="fixed right-6 top-16 z-[4400] px-6" style={{ left: navWidth }}>
+          <PageHead title={name || map.yard} code={code || undefined} />
+        </div>)}
+      <div className={`fixed bg-[#eef3f8] dark:bg-[#08121d] ${full ? "inset-0 z-[6000]" : "bottom-[52px] right-4 top-[166px] z-[4400] overflow-hidden rounded-2xl shadow-[0_0_0_1px_rgba(169,219,241,.45),0_18px_40px_-28px_rgba(11,37,69,.45)]"} ${map ? "" : "hidden"}`}
+        style={full ? undefined : { left: navWidth + 16 }} aria-hidden={!map}>
+        {map && !shown && <p role="status" className="absolute inset-0 grid place-items-center text-slate-500">Loading the map…</p>}
+        <iframe ref={frame} src="/legacy/maris-map.html" title="Yard map" className={`size-full border-0 ${shown ? "" : "invisible"}`} />
+      </div>
+    </>
   );
 }

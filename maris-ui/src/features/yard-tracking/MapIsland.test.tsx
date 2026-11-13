@@ -20,13 +20,18 @@ test("a map button opens MARIS's own screen through the middleware, not a stand-
   expect(screen.getByTestId("top")).toHaveTextContent("egl:VHYT09I");
 });
 
-test("out of full screen the map leaves the header, side menu and footer visible", async () => {
+test("out of full screen the map sits under its page header, as in the reference: path, title, code, and the page shell", async () => {
   fakeMiddleware({});
-  render(<AppProvider><MapIsland map={{ yard: "CY", shop: false }} navWidth={276} /></AppProvider>);
+  render(<AppProvider><MapIsland map={{ yard: "HY", shop: false }} navWidth={276} /></AppProvider>);
   const layer = (await screen.findByTitle("Yard map")).parentElement!;
-  act(() => { dispatchEvent(new MessageEvent("message", { origin: location.origin, data: { source: "maris-map", type: "maris-map:full", on: false } })); });
-  expect(layer.style.left).toBe("276px");
-  expect(layer).toHaveClass("top-16", "bottom-10");
-  act(() => { dispatchEvent(new MessageEvent("message", { origin: location.origin, data: { source: "maris-map", type: "maris-map:full", on: true } })); });
+  const send = (data: object) => act(() => { dispatchEvent(new MessageEvent("message", { origin: location.origin, data: { source: "maris-map", ...data } })); });
+  send({ type: "maris-map:shown", yard: "HY", shop: false, title: "VHYT07I - Hayward Yard Map - Inquiry" });
+  send({ type: "maris-map:full", on: false });
+  expect(layer.style.left).toBe("292px");
+  expect(layer).toHaveClass("top-[166px]", "bottom-[52px]", "right-4");
+  expect(screen.getByRole("heading", { name: "Hayward Yard Map - Inquiry" })).toBeInTheDocument();
+  expect(screen.getByText("VHYT07I")).toBeInTheDocument();
+  send({ type: "maris-map:full", on: true });
   expect(layer).toHaveClass("inset-0");
+  expect(screen.queryByRole("heading", { name: "Hayward Yard Map - Inquiry" })).toBeNull();
 });

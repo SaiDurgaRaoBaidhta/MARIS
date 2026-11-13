@@ -17337,7 +17337,7 @@ html[data-theme=dark] .wp-grid td.na { background-color: #0f2236 !important; }
   // nothing of the reference shell shows: only the map in its focus mode
   css.textContent = "html.island-wait body { visibility: hidden !important; } #wv-login, .taskbar, #wv-side, #wv-head, .mm-foot, .nav-crumb { display: none !important; }"
     // not in full screen the React page keeps its header, side menu and footer: the map fills the space left for it
-    + " html body.mvx-page .frame.mvx-frame:not(.nav-hidden) { left: 12px !important; right: 12px !important; top: 12px !important; bottom: 12px !important; width: auto !important; height: auto !important; }";
+    + " html body.mvx-page .frame.mvx-frame:not(.nav-hidden) { left: 0 !important; right: 0 !important; top: 0 !important; bottom: 0 !important; width: auto !important; height: auto !important; }";
   document.head.appendChild(css);
   document.documentElement.classList.add("island-wait");
   let mapWin = null;
@@ -17367,7 +17367,7 @@ html[data-theme=dark] .wp-grid td.na { background-color: #0f2236 !important; }
     m.shop ? Screens.shopMap(root, m.yard) : Screens.yardMap(root, m.yard);
     mapWin = WM.list.at(-1);
     document.documentElement.classList.remove("island-wait");
-    send({ type: "maris-map:shown", yard: m.yard, shop: m.shop });
+    send({ type: "maris-map:shown", yard: m.yard, shop: m.shop, title: (mapWin && mapWin.win.querySelector(".titlebar .ttl") || {}).textContent || "" });
   }
   // Return / Exit on the map closes its window: the React page goes back
   const close0 = WM.close.bind(WM);
