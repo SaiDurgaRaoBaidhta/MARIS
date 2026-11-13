@@ -24,7 +24,7 @@ export function splitTitle(t: string): [string, string] {
 }
 
 /** the EGL screen a key stands for: egl:VHIC30I, or a redesigned page whose title starts with the code (statveh -> VHSV01I) */
-function eglCode(key: string): string {
+export function eglCode(key: string): string {
   if (/^egl:/i.test(key)) return key.slice(4);
   const info = KNOWN[key];
   const c = info?.code || (info ? splitTitle(info.title)[0] : "");
