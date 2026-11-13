@@ -19,7 +19,9 @@ const boot = `
   const send = m => parent.postMessage(Object.assign({ source: "maris-map" }, m), location.origin);
   const css = document.createElement("style");
   // nothing of the reference shell shows: only the map in its focus mode
-  css.textContent = "html.island-wait body { visibility: hidden !important; } #wv-login, .taskbar, #wv-side, #wv-head, .mm-foot, .nav-crumb { display: none !important; }";
+  css.textContent = "html.island-wait body { visibility: hidden !important; } #wv-login, .taskbar, #wv-side, #wv-head, .mm-foot, .nav-crumb { display: none !important; }"
+    // not in full screen the React page keeps its header, side menu and footer: the map fills the space left for it
+    + " html body.mvx-page .frame.mvx-frame:not(.nav-hidden) { left: 12px !important; right: 12px !important; top: 12px !important; bottom: 12px !important; width: auto !important; height: auto !important; }";
   document.head.appendChild(css);
   document.documentElement.classList.add("island-wait");
   let mapWin = null;
@@ -72,6 +74,10 @@ const boot = `
       const b = document.querySelector(".wv-theme"); if (b && (document.documentElement.dataset.theme === "dark") !== (e.data.theme === "dark")) b.click();
     }
   });
+  // tell the React page whether the map is in full screen (the viewer marks it on <body>)
+  let full = null;
+  const fullNow = () => { const on = document.body.classList.contains("mvx-on"); if (on !== full) { full = on; send({ type: "maris-map:full", on }); } };
+  new MutationObserver(fullNow).observe(document.body, { attributes: true, attributeFilter: ["class"] });
   send({ type: "maris-map:ready" });
 })();
 </script>
