@@ -24,4 +24,16 @@ class YardQueriesLiveTest extends LiveTestBase {
             }
         }
     }
+
+    /** the history reports on the last ten days of real data: they answer, and a refused range is the old message */
+    @Test
+    void historyReports() throws Exception {
+        String to = java.time.LocalDate.now().toString(), from = java.time.LocalDate.now().minusDays(10).toString();
+        JsonNode cars = send("GET", "/api/v1/yard-queries/car-history?yard=HY&from=" + from + "&to=" + to, null);
+        assertThat(cars.get("_status").asInt()).isEqualTo(200);
+        assertThat(cars.get("maxRowsReached").asBoolean()).isEqualTo(cars.get("rows").size() >= 324);
+        JsonNode status = send("GET", "/api/v1/yard-queries/status-history?yard=HY&from=" + from + "&to=" + to, null);
+        assertThat(status.get("_status").asInt()).isEqualTo(200);
+        assertThat(send("GET", "/api/v1/yard-queries/status-history?from=" + to + "&to=" + from, null).get("_status").asInt()).isEqualTo(400);
+    }
 }
