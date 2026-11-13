@@ -11339,7 +11339,7 @@ body.m3d-pref .frame:has(> .win.map:not(.m3d-ready)) { visibility: hidden; }
   const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const txt = e => (e.textContent || "").replace(/\s+/g, " ").trim();
-  let PREF = true; try { PREF = localStorage.getItem("maris.3d") !== "off"; } catch (e) { /* storage unavailable */ }
+  let PREF = false; try { PREF = localStorage.getItem("maris.3d") === "on"; } catch (e) { /* storage unavailable */ }
 
   /* ---------- status colours (as in Yard Command) ---------- */
   const GRP = { go: { name: "GO", hex: 0x2fbf8a, css: "var(--go)" }, hi: { name: "High PM", hex: 0xf08a24, css: "var(--hi)" },
@@ -15383,7 +15383,7 @@ html[data-theme=dark] .mvx-view .bxroot .map-btn { background: #13263b !importan
     }
     const fills = () => Object.keys(SHOP_FILL).flatMap(y => SHOP_FILL[y].map(r => { const el = document.createElement("div");
       el.className = "cell c-" + r[5]; Object.assign(el.dataset, { yard: y, track: r[0], idx: r[1], st: r[3], pm: r[4] }); el.textContent = r[2]; return el; }));
-    return { want: () => store.get("map3d") !== "2d", save: on => store.set("map3d", on ? "3d" : "2d"), build, dressPlan, state: el => carState(el, ""), fills,
+    return { want: () => store.get("map3d") === "3d", save: on => store.set("map3d", on ? "3d" : "2d"), build, dressPlan, state: el => carState(el, ""), fills,
       kit: { STATUS, livery, liveryModern, carGeo, engineTex } };   // the car models and status colours, for the sign-on background
   })();
   /* 3D or Plan for one map card: called at the end of every fit */
