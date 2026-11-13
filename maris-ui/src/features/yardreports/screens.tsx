@@ -17,6 +17,9 @@ export const CLEAN_SCREENS: Record<string, () => ReactNode> = {
   VHYT81I: map("millbrae", "VHYT81I", "Millbrae Storage (Update)", "none"),
   VHYT105I: map("daly-city-yard", "VHYT105I", "Daly City Yard Map", "home"),
   VHYT106I: map("daly-city-yard", "VHYT106I", "Daly City Yard Map (Update)", "condition"),
+  // the old screens' own titles say VHY105I / VHY106I, and the UI's screen index and menus use that code
+  VHY105I: map("daly-city-yard", "VHYT105I", "Daly City Yard Map", "home"),
+  VHY106I: map("daly-city-yard", "VHYT106I", "Daly City Yard Map (Update)", "condition"),
   VHYT70I: map("concord-yard", "VHYT70I", "Concord Yard Map", "home"),
   VHYT71I: map("concord-yard", "VHYT71I", "Concord Yard Map (Update)", "condition"),
   VHYT90I: map("richmond-yard", "VHYT90I", "Richmond Yard Map", "home"),

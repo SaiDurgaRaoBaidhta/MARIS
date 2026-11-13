@@ -90,7 +90,7 @@ describe("system-wide map page (old VHSW01I)", () => {
 
 describe("routing", () => {
   it("routes every converted yard report screen to its new page", () => {
-    for (const code of ["VHIC01", "VHIC02", "VHYT80I", "VHYT81I", "VHYT105I", "VHYT106I", "VHYT70I", "VHYT71I", "VHYT90I", "VHYT91I", "VHYT100I", "VHYT101I", "VHYT61I", "VHSW01I"]) {
+    for (const code of ["VHIC01", "VHIC02", "VHYT80I", "VHYT81I", "VHYT105I", "VHYT106I", "VHY105I", "VHY106I", "VHYT70I", "VHYT71I", "VHYT90I", "VHYT91I", "VHYT100I", "VHYT101I", "VHYT61I", "VHSW01I"]) {
       expect(CLEAN_PAGES[code], code).toBeTypeOf("function");
     }
   });
