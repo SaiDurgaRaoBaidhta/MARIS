@@ -1,0 +1,31 @@
+{
+  "_about": "Screens of the car wash module rebuilt on the clean API, with their tests.",
+  "VHCWR1I": {
+    "module": "carwash",
+    "api": "com.bart.maris.middleware.api.carwash.CarWashController",
+    "apiTest": "com.bart.maris.middleware.api.carwash.CarWashApiTest",
+    "parityTest": "com.bart.maris.middleware.api.carwash.CarWashParityTest",
+    "uiTest": "src/features/carwash/CarWashPages.test.tsx"
+  },
+  "VHCWR2I": {
+    "module": "carwash",
+    "api": "com.bart.maris.middleware.api.carwash.CarWashController",
+    "apiTest": "com.bart.maris.middleware.api.carwash.CarWashApiTest",
+    "parityTest": "com.bart.maris.middleware.api.carwash.CarWashParityTest",
+    "uiTest": "src/features/carwash/CarWashPages.test.tsx"
+  },
+  "VHCWA2I": {
+    "module": "carwash",
+    "api": "com.bart.maris.middleware.api.carwash.CarWashUpdateController",
+    "apiTest": "com.bart.maris.middleware.api.carwash.CarWashUpdateApiTest",
+    "parityTest": "com.bart.maris.middleware.api.carwash.CarWashConsistWashParityTest",
+    "uiTest": "src/features/carwash/CarWashUpdatePages.test.tsx"
+  },
+  "VHCWA3I": {
+    "module": "carwash",
+    "api": "com.bart.maris.middleware.api.carwash.CarWashUpdateController",
+    "apiTest": "com.bart.maris.middleware.api.carwash.CarWashUpdateApiTest",
+    "parityTest": "com.bart.maris.middleware.api.carwash.CarWashCarsWashParityTest",
+    "uiTest": "src/features/carwash/CarWashUpdatePages.test.tsx"
+  }
+}

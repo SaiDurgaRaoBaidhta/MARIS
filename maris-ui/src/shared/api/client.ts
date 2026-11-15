@@ -14,8 +14,10 @@ export class ApiError extends Error {
   readonly status: number;
   readonly code?: string;
   readonly requestId?: string;
-  constructor(message: string, status: number, code?: string, requestId?: string) {
-    super(message); this.status = status; this.code = code; this.requestId = requestId;
+  /** the whole error body, for pages that read extra fields (e.g. car wash "invalidBoxes") */
+  readonly problem?: Record<string, unknown>;
+  constructor(message: string, status: number, code?: string, requestId?: string, problem?: Record<string, unknown>) {
+    super(message); this.status = status; this.code = code; this.requestId = requestId; this.problem = problem;
   }
 }
 
@@ -58,7 +60,8 @@ async function call<T>(method: "GET" | "POST", path: string, body?: unknown): Pr
   if (r.status === 401 && p.code === "NOT_SIGNED_ON") expired.forEach(f => f());
   const msg = p.detail || p.title || (r.status === 502 || r.status === 503 || r.status === 504
     ? "The MARIS system is not answering. Try again in a moment." : `The request failed (HTTP ${r.status}).`);
-  throw new ApiError(p.requestId && r.status >= 500 && r.status !== 501 ? `${msg} (request ${p.requestId})` : msg, r.status, p.code, p.requestId);
+  throw new ApiError(p.requestId && r.status >= 500 && r.status !== 501 ? `${msg} (request ${p.requestId})` : msg, r.status, p.code, p.requestId,
+    data as Record<string, unknown> | undefined);
 }
 
 export const get = <T>(path: string) => call<T>("GET", path);

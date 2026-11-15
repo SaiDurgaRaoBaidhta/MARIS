@@ -127,6 +127,7 @@ public final class ScreenSession {
                     case "selection", "checked" -> w.set("selection", c.value());
                     case "selectionIndex" -> w.set("selectionIndex", c.value());
                     case "selectionIndices" -> w.set("selectionIndices", c.value());
+                    case "entryObject" -> w.set("entryObject", c.value());
                     default -> w.set("object", c.value());
                 }
             }

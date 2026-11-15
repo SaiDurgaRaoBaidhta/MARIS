@@ -1,0 +1,17 @@
+{
+  "_about": "Screens of the wayside module rebuilt on the clean API, with their tests.",
+  "WS17I": {
+    "module": "wayside",
+    "api": "com.bart.maris.middleware.api.wayside.WaysideController",
+    "apiTest": "com.bart.maris.middleware.api.wayside.WaysideApiTest",
+    "parityTest": "com.bart.maris.middleware.api.wayside.WaysideParityTest",
+    "uiTest": "src/features/wayside/StockSearchPage.test.tsx"
+  },
+  "WS13I": {
+    "module": "wayside",
+    "api": "com.bart.maris.middleware.api.wayside.WaysideController",
+    "apiTest": "com.bart.maris.middleware.api.wayside.WaysideNarrativeApiTest",
+    "parityTest": "com.bart.maris.middleware.api.wayside.WaysideNarrativeParityTest",
+    "uiTest": "src/features/wayside/NarrativePage.test.tsx"
+  }
+}

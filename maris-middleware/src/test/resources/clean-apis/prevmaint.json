@@ -1,0 +1,52 @@
+{
+  "_about": "Screens of the preventive maintenance module rebuilt on the clean API, with their tests.",
+  "VHHPM1I": {
+    "module": "prevmaint",
+    "api": "com.bart.maris.middleware.api.prevmaint.PrevMaintController",
+    "apiTest": "com.bart.maris.middleware.api.prevmaint.PrevMaintApiTest",
+    "parityTest": "com.bart.maris.middleware.api.prevmaint.PrevMaintParityTest",
+    "uiTest": "src/features/prevmaint/PrevMaintPage.test.tsx"
+  },
+  "VHHPR1I": {
+    "module": "prevmaint",
+    "api": "com.bart.maris.middleware.api.prevmaint.PrevMaintController",
+    "apiTest": "com.bart.maris.middleware.api.prevmaint.PrevMaintApiTest",
+    "parityTest": "com.bart.maris.middleware.api.prevmaint.PrevMaintParityTest",
+    "uiTest": "src/features/prevmaint/PrevMaintPage.test.tsx"
+  },
+  "VHHPM2I": {
+    "module": "prevmaint",
+    "api": "com.bart.maris.middleware.api.prevmaint.PrevMaintController",
+    "apiTest": "com.bart.maris.middleware.api.prevmaint.PrevMaintApiTest",
+    "parityTest": "com.bart.maris.middleware.api.prevmaint.PrevMaintParityTest",
+    "uiTest": "src/features/prevmaint/PrevMaintPage.test.tsx"
+  },
+  "VHPMR1I": {
+    "module": "prevmaint",
+    "api": "com.bart.maris.middleware.api.prevmaint.PrevMaintController",
+    "apiTest": "com.bart.maris.middleware.api.prevmaint.PrevMaintApiTest",
+    "parityTest": "com.bart.maris.middleware.api.prevmaint.PrevMaintParityTest",
+    "uiTest": "src/features/prevmaint/PrevMaintPage.test.tsx"
+  },
+  "VHHPD1I": {
+    "module": "prevmaint",
+    "api": "com.bart.maris.middleware.api.prevmaint.PrevMaintController",
+    "apiTest": "com.bart.maris.middleware.api.prevmaint.PrevMaintApiTest",
+    "parityTest": "com.bart.maris.middleware.api.prevmaint.PrevMaintParityTest",
+    "uiTest": "src/features/prevmaint/PrevMaintPage.test.tsx"
+  },
+  "VHHPD2I": {
+    "module": "prevmaint",
+    "api": "com.bart.maris.middleware.api.prevmaint.PrevMaintController",
+    "apiTest": "com.bart.maris.middleware.api.prevmaint.PrevMaintApiTest",
+    "parityTest": "com.bart.maris.middleware.api.prevmaint.PrevMaintParityTest",
+    "uiTest": "src/features/prevmaint/PrevMaintPage.test.tsx"
+  },
+  "VHPMS01I": {
+    "module": "prevmaint",
+    "api": "com.bart.maris.middleware.api.prevmaint.PrevMaintScheduleController",
+    "apiTest": "com.bart.maris.middleware.api.prevmaint.PrevMaintScheduleApiTest",
+    "parityTest": "com.bart.maris.middleware.api.prevmaint.PrevMaintScheduleParityTest",
+    "uiTest": "src/features/prevmaint/PmSchedulePage.test.tsx"
+  }
+}

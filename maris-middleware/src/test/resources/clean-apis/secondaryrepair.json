@@ -1,0 +1,73 @@
+{
+  "_about": "Screens of the secondary repair module rebuilt on the clean API, with their tests (VHMSRI / VHMSUB1I are menus: no API).",
+  "VHSR05I": {
+    "module": "secondaryrepair",
+    "api": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairController",
+    "apiTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairApiTest",
+    "parityTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairParityTest",
+    "uiTest": "src/features/secondaryrepair/SecondaryRepairPages.test.tsx"
+  },
+  "VHSR10I": {
+    "module": "secondaryrepair",
+    "api": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairController",
+    "apiTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairApiTest",
+    "parityTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairParityTest",
+    "uiTest": "src/features/secondaryrepair/SecondaryRepairPages.test.tsx"
+  },
+  "VHSR11I": {
+    "module": "secondaryrepair",
+    "api": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairController",
+    "apiTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairApiTest",
+    "parityTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairParityTest",
+    "uiTest": "src/features/secondaryrepair/SecondaryRepairPages.test.tsx"
+  },
+  "VHSR15I": {
+    "module": "secondaryrepair",
+    "api": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairController",
+    "apiTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairApiTest",
+    "parityTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairParityTest",
+    "uiTest": "src/features/secondaryrepair/SecondaryRepairPages.test.tsx"
+  },
+  "VHSR01I": {
+    "module": "secondaryrepair",
+    "api": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairJobsController",
+    "apiTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairJobsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairNewJobsParityTest",
+    "uiTest": "src/features/secondaryrepair/SecondaryRepairJobPages.test.tsx"
+  },
+  "VHSR08I": {
+    "module": "secondaryrepair",
+    "api": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairJobsController",
+    "apiTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairJobsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairNewJobsParityTest",
+    "uiTest": "src/features/secondaryrepair/SecondaryRepairJobPages.test.tsx"
+  },
+  "VHSR02I": {
+    "module": "secondaryrepair",
+    "api": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairJobsController",
+    "apiTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairJobsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairCommentsParityTest",
+    "uiTest": "src/features/secondaryrepair/SecondaryRepairJobPages.test.tsx"
+  },
+  "VHSR09I": {
+    "module": "secondaryrepair",
+    "api": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairJobsController",
+    "apiTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairJobsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairRepairDetailParityTest",
+    "uiTest": "src/features/secondaryrepair/SecondaryRepairJobPages.test.tsx"
+  },
+  "VHSR03I": {
+    "module": "secondaryrepair",
+    "api": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairJobsController",
+    "apiTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairJobsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairLaborParityTest",
+    "uiTest": "src/features/secondaryrepair/SecondaryRepairJobPages.test.tsx"
+  },
+  "VHSR04I": {
+    "module": "secondaryrepair",
+    "api": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairOutTheDoorController",
+    "apiTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairOutTheDoorApiTest",
+    "parityTest": "com.bart.maris.middleware.api.secondaryrepair.SecondaryRepairOutTheDoorParityTest",
+    "uiTest": "src/features/secondaryrepair/OutTheDoorPage.test.tsx"
+  }
+}

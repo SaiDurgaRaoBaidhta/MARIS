@@ -42,6 +42,11 @@ public final class Programs {
         public boolean ok() { return error == null; }
     }
 
+    /** a catalog message with a program's inserts, e.g. VHCHR1I's AFCR001 with VHCHR1A's UMSGINS when it finds nothing */
+    public String catalogMessage(String code, XdControl c) {
+        return messages.resolve(code, c == null ? List.of() : c.messageInserts()).text();
+    }
+
     public LegacyBusinessException error(String program, XdControl c) {
         return new LegacyBusinessException(program, c, messages.resolve(c.messageCode(), c.messageInserts()));
     }

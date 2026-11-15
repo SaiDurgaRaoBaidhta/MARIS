@@ -1,0 +1,38 @@
+{
+  "_about": "Screens of the incidents module rebuilt on the clean API, with their tests.",
+  "VHINC01I": {
+    "module": "incidents",
+    "api": "com.bart.maris.middleware.api.incidents.IncidentsController",
+    "apiTest": "com.bart.maris.middleware.api.incidents.IncidentsTrainApiTest",
+    "parityTest": "com.bart.maris.middleware.api.incidents.IncidentsTrainParityTest",
+    "uiTest": "src/features/incidents/IncidentEntryPages.test.tsx"
+  },
+  "VHINC03I": {
+    "module": "incidents",
+    "api": "com.bart.maris.middleware.api.incidents.IncidentsController",
+    "apiTest": "com.bart.maris.middleware.api.incidents.IncidentsCarApiTest",
+    "parityTest": "com.bart.maris.middleware.api.incidents.IncidentsCarParityTest",
+    "uiTest": "src/features/incidents/IncidentEntryPages.test.tsx"
+  },
+  "VHINC06I": {
+    "module": "incidents",
+    "api": "com.bart.maris.middleware.api.incidents.IncidentsController",
+    "apiTest": "com.bart.maris.middleware.api.incidents.IncidentsCarApiTest",
+    "parityTest": "com.bart.maris.middleware.api.incidents.IncidentsRevenueParityTest",
+    "uiTest": "src/features/incidents/IncidentEntryPages.test.tsx"
+  },
+  "VHCI03I": {
+    "module": "incidents",
+    "api": "com.bart.maris.middleware.api.incidents.IncidentsTrackingChangeController",
+    "apiTest": "com.bart.maris.middleware.api.incidents.IncidentsNeverGoApiTest",
+    "parityTest": "com.bart.maris.middleware.api.incidents.IncidentsNeverGoParityTest",
+    "uiTest": "src/features/incidents/NeverGoPage.test.tsx"
+  },
+  "VHCI02I": {
+    "module": "incidents",
+    "api": "com.bart.maris.middleware.api.incidents.IncidentsTrackingChangeController",
+    "apiTest": "com.bart.maris.middleware.api.incidents.IncidentsTrackingChangeApiTest",
+    "parityTest": "com.bart.maris.middleware.api.incidents.IncidentsTrackingChangeParityTest",
+    "uiTest": "src/features/incidents/TrackingChangePage.test.tsx"
+  }
+}

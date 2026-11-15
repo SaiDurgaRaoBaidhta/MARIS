@@ -1,0 +1,24 @@
+{
+  "_about": "Vehicle incident screens of the incidents module rebuilt by agent N (file, change, maintain), with their tests.",
+  "VHINC08I": {
+    "module": "incidents",
+    "api": "com.bart.maris.middleware.api.incidents.IncidentsVehicleController",
+    "apiTest": "com.bart.maris.middleware.api.incidents.IncidentsVehicleApiTest",
+    "parityTest": "com.bart.maris.middleware.api.incidents.IncidentsVehicleCreateParityTest",
+    "uiTest": "src/features/incidents/VehicleIncidentPages.test.tsx"
+  },
+  "VHINC09I": {
+    "module": "incidents",
+    "api": "com.bart.maris.middleware.api.incidents.IncidentsVehicleController",
+    "apiTest": "com.bart.maris.middleware.api.incidents.IncidentsVehicleApiTest",
+    "parityTest": "com.bart.maris.middleware.api.incidents.IncidentsVehicleChangeParityTest",
+    "uiTest": "src/features/incidents/VehicleIncidentPages.test.tsx"
+  },
+  "VHINC10I": {
+    "module": "incidents",
+    "api": "com.bart.maris.middleware.api.incidents.IncidentsVehicleController",
+    "apiTest": "com.bart.maris.middleware.api.incidents.IncidentsVehicleApiTest",
+    "parityTest": "com.bart.maris.middleware.api.incidents.IncidentsVehicleChangeParityTest",
+    "uiTest": "src/features/incidents/VehicleIncidentPages.test.tsx"
+  }
+}

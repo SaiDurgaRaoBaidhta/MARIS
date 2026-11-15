@@ -41,7 +41,7 @@ public final class RecordPart extends Part {
         return f.startsWith("VAGen_") ? f.substring(6) : f;
     }
 
-    private Rec.Path path(String field) {
+    Rec.Path path(String field) {
         Rec.Path p = rec.find(field);
         if (p == null) p = rec.find(strip(field));
         if (p == null) p = rec.find("VAGen_" + field);
@@ -146,6 +146,29 @@ public final class RecordPart extends Part {
 
     // ---- signalling ----------------------------------------------------------------------------------------
 
+    /**
+     * "F data" also reaches the field objects F belongs to (gt2 HptField: a group's or array column's object
+     * signals its sub-fields' "F data" too), e.g. DATA_ROW_of_VHVM13B_DATA "EVENT-TYPE data" -> a drop-down's items
+     */
+    @Override
+    public void signal(String event) {
+        super.signal(event);
+        String f = fieldOf(event);
+        if (f == null || fieldObjects.isEmpty()) return;
+        for (ArrayFieldPart fo : List.copyOf(fieldObjects.values())) {
+            if (fo.listens(event) && fo.below(f) != null) fo.signal(event);
+        }
+    }
+
+    /** someone listens to "F data": the record, or a field object F belongs to (signal forwards it there) */
+    private boolean heard(String event) {
+        if (listens(event)) return true;
+        String f = fieldOf(event);
+        if (f == null) return false;
+        for (ArrayFieldPart fo : fieldObjects.values()) if (fo.listens(event) && fo.below(f) != null) return true;
+        return false;
+    }
+
     /** the whole record changed: "data", then every field's "F data" and "F" in declaration order */
     public void signalWhole() {
         allModified = true;
@@ -157,7 +180,7 @@ public final class RecordPart extends Part {
         for (FieldLayout f : fields) {
             if (f.filler()) continue;
             String n = f.name();
-            if (listens(n + " data")) signal(n + " data");
+            if (heard(n + " data")) signal(n + " data");
             if (n.startsWith("VAGen_") && listens(strip(n) + " data")) signal(strip(n) + " data");
             if (listens(n)) signal(n, get(n));
             if (n.startsWith("VAGen_") && listens(strip(n))) signal(strip(n), get(n));
@@ -175,15 +198,16 @@ public final class RecordPart extends Part {
     }
 
     private void signalOne(Rec.Path p) {
-        List<FieldLayout> targets = new ArrayList<>();
-        for (FieldLayout a : p.chain()) if (a.occurs() > 1) targets.add(a);
-        targets.add(p.field());
+        // the field, its array column(s) (value + field object), and the groups it is part of (their value only:
+        // a write to CON inside CON-DASH changes "CON-DASH data", but the group's field object stays the same)
+        List<FieldLayout> targets = new ArrayList<>(p.chain());
         for (FieldLayout f : targets) {
             modified.add(f.name().toUpperCase(Locale.ROOT));
             String n = f.name();
-            if (listens(n)) signal(n, get(n));
-            if (n.startsWith("VAGen_") && listens(strip(n))) signal(strip(n), get(n));
-            if (listens(n + " data")) signal(n + " data");
+            boolean valueOnly = f != p.field() && f.occurs() <= 1;
+            if (!valueOnly && listens(n)) signal(n, get(n));
+            if (!valueOnly && n.startsWith("VAGen_") && listens(strip(n))) signal(strip(n), get(n));
+            if (heard(n + " data")) signal(n + " data");
             if (n.startsWith("VAGen_") && listens(strip(n) + " data")) signal(strip(n) + " data");
         }
         signalAll(p.field().children());
@@ -191,16 +215,14 @@ public final class RecordPart extends Part {
 
     /** one field changed: "F", "F data" (also for its array column and sub-fields), then the record's "data" */
     public void signalField(Rec.Path p) {
-        List<FieldLayout> chain = p.chain();
-        List<FieldLayout> targets = new ArrayList<>();
-        for (FieldLayout a : chain) if (a.occurs() > 1) targets.add(a);   // the array column(s)
-        targets.add(p.field());
+        List<FieldLayout> targets = new ArrayList<>(p.chain());           // the field and the groups (and array columns) it is part of
         for (FieldLayout f : targets) {
             modified.add(f.name().toUpperCase(Locale.ROOT));
             String n = f.name();
-            if (listens(n)) signal(n, get(n));
-            if (n.startsWith("VAGen_") && listens(strip(n))) signal(strip(n), get(n));
-            if (listens(n + " data")) signal(n + " data");
+            boolean valueOnly = f != p.field() && f.occurs() <= 1;          // a group around the field: its value only
+            if (!valueOnly && listens(n)) signal(n, get(n));
+            if (!valueOnly && n.startsWith("VAGen_") && listens(strip(n))) signal(strip(n), get(n));
+            if (heard(n + " data")) signal(n + " data");
             if (n.startsWith("VAGen_") && listens(strip(n) + " data")) signal(strip(n) + " data");
         }
         signalAll(p.field().children());

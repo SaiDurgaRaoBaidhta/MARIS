@@ -1,0 +1,80 @@
+{
+  "_about": "Screens of the vehicle maintenance module rebuilt on the clean API, with their tests.",
+  "VHNAR02I": {
+    "module": "vehiclemaint",
+    "api": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintParityTest",
+    "uiTest": "src/features/vehiclemaint/VehicleMaintPages.test.tsx"
+  },
+  "VHVM12I": {
+    "module": "vehiclemaint",
+    "api": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintParityTest",
+    "uiTest": "src/features/vehiclemaint/VehicleMaintPages.test.tsx"
+  },
+  "VHVM13I": {
+    "module": "vehiclemaint",
+    "api": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintParityTest",
+    "uiTest": "src/features/vehiclemaint/VehicleMaintPages.test.tsx"
+  },
+  "VHVM02I": {
+    "module": "vehiclemaint",
+    "api": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintCarController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintCarApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintCarParityTest",
+    "uiTest": "src/features/vehiclemaint/CarPages.test.tsx"
+  },
+  "VHVM03I": {
+    "module": "vehiclemaint",
+    "api": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintCarController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintCarApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintCarParityTest",
+    "uiTest": "src/features/vehiclemaint/CarPages.test.tsx"
+  },
+  "VHVM06I": {
+    "module": "vehiclemaint",
+    "api": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintCarController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintCarApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintStatusHistoryParityTest",
+    "uiTest": "src/features/vehiclemaint/CarPages.test.tsx"
+  },
+  "VHVM08I": {
+    "module": "vehiclemaint",
+    "api": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintUpdatesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintUpdatesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintUpdatesParityTest",
+    "uiTest": "src/features/vehiclemaint/VehicleMaintUpdatePages.test.tsx"
+  },
+  "VHVM10I": {
+    "module": "vehiclemaint",
+    "api": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintUpdatesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintUpdatesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintUpdatesParityTest",
+    "uiTest": "src/features/vehiclemaint/VehicleMaintUpdatePages.test.tsx"
+  },
+  "VHVM19I": {
+    "module": "vehiclemaint",
+    "api": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintUpdatesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintUpdatesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintUpdatesParityTest",
+    "uiTest": "src/features/vehiclemaint/VehicleMaintUpdatePages.test.tsx"
+  },
+  "VHNAR01I": {
+    "module": "vehiclemaint",
+    "api": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintNarrativeController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintNarrativeApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintNarrativeParityTest",
+    "uiTest": "src/features/vehiclemaint/NarrativePage.test.tsx"
+  },
+  "VHVM11I": {
+    "module": "vehiclemaint",
+    "api": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintTrackingController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintTrackingApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclemaint.VehicleMaintTrackingParityTest",
+    "uiTest": "src/features/vehiclemaint/TrackingPage.test.tsx"
+  }
+}

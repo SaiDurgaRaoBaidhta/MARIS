@@ -78,7 +78,7 @@ public final class WidgetPart extends Part {
             case "selectedItems" -> selection.stream().filter(i -> i <= items.size()).map(i -> items.get(i - 1)).toList();
             case "selection" -> toggled != null ? toggled : (Object) BigDecimal.valueOf(selection.isEmpty() ? 0 : selection.get(0));
             case "selectionIsValid" -> !selection.isEmpty();
-            case "entryObject" -> selection.isEmpty() ? object : get("selectedItem");
+            case "entryObject", "entryString" -> selection.isEmpty() ? object : get("selectedItem");
             case "enabled" -> enabled;
             case "visible" -> visible;
             case "foregroundColor" -> fg;
@@ -102,6 +102,10 @@ public final class WidgetPart extends Part {
                 if (Objects.equals(norm(object), norm(nv))) return;          // TextView: only a really different value
                 object = nv;
                 signal("object", object);
+                if (type.equals("ComboBoxView")) {                               // a typed entry is the combo box's entry
+                    signal("entryObject", object);
+                    signal("entryString", object);
+                }
             }
             case "items" -> {
                 items = new ArrayList<>();
@@ -139,7 +143,7 @@ public final class WidgetPart extends Part {
             case "messageString" -> messageString = v == null ? "" : Conv.rtrim(Conv.string(v));
             case "buttonType" -> buttonType = Conv.number(v).intValue();
             case "iconType" -> iconType = Conv.number(v).intValue();
-            case "entryObject" -> { object = v; signal("entryObject", v); }
+            case "entryObject", "entryString" -> { object = v; signal(attr, v); }
             default -> { }
         }
     }
@@ -179,6 +183,7 @@ public final class WidgetPart extends Part {
         signal("selectionIndices", get("selectionIndices"));
         signal("selectionIndex", get("selectionIndex"));
         if (type.equals("RadioButtonSet")) signal("selection", get("selection"));
+        if (!selection.isEmpty()) signal("selectionIsValid", Boolean.TRUE);   // the old runtime's event when a valid item is selected
     }
 
     // ---- actions -------------------------------------------------------------------------------------------

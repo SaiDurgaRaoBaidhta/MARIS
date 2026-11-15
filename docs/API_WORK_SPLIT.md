@@ -7,22 +7,25 @@
 
 ## 1. What the project is
 
+
 * **MARIS** is BART's vehicle maintenance system. Its old web UI was IBM EGL Rich UI. Its **backend is unchanged** and
-  must not be changed: 640 REST services in `MARIS_RUI_Services_Web` on Tomcat (local: `http://localhost:8080`),
-  which run EGL programs against Oracle. Each service takes and returns **fixed-width records** (for example
-  `XDCONTROL`, `VHIC31A_CRIT`, `VHIC31A_DATA`).
+must not be changed: 640 REST services in `MARIS_RUI_Services_Web` on Tomcat (local: `http://localhost:8080`),
+which run EGL programs against Oracle. Each service takes and returns **fixed-width records** (for example
+`XDCONTROL`, `VHIC31A_CRIT`, `VHIC31A_DATA`).
 * `maris-modernization/` holds the new system:
   * `maris-middleware/`: Spring Boot 3.5, Java 21. It sits between the new UI and the old backend. The new UI never
-    talks to the backend directly.
+  talks to the backend directly.
   * `maris-ui/`: React 19 + TypeScript + Tailwind v4 + Vite.
   * The old EGL source (read-only, never edit) is at `~/Desktop/MARIS/MarisProd-1/MARIS_RUI/EGLSource/<module>/`.
 * The middleware reaches every old screen in one of two ways:
   1. **Screen engine (today, all 215 screens):** the middleware runs the old screen's own EGL logic and the UI draws the
+
      old layout (`/api/v1/ui/...`). It works, but its API speaks "old screen" (window ids, `Push_Button3`).
   2. **Clean API (the work in this file):** one business-shaped endpoint per function, for example
+
      `GET /api/v1/ics/messages?revenueDate=2026-11-10`. The old screen's rules are rewritten in Java, the UI gets a new
-     page, and each screen gets the five tests below. A screen moves from (1) to (2) when its clean API is done. Until
-     then it keeps working through the engine, so nothing breaks in between.
+       page, and each screen gets the five tests below. A screen moves from (1) to (2) when its clean API is done. Until
+       then it keeps working through the engine, so nothing breaks in between.
 
 ## 2. The reference implementation: ICS (done)
 
@@ -45,16 +48,16 @@ Copy this structure for every module.
 Rules the ICS module follows, and every module must follow:
 
 * **Tests first.** Write the API test and the parity test, see them fail, then write the code. The same applies to the UI
-  test and the page.
+test and the page.
 * **No copied texts or data.** Data always comes from the backend programs. The old screens' fixed texts (messages,
-  "ALL ..." labels) are read from the screen bundle with `ScreenBundle.promptText(...)` and
-  `ScreenBundle.assignedText(...)`, never typed into Java.
+"ALL ..." labels) are read from the screen bundle with `ScreenBundle.promptText(...)` and
+`ScreenBundle.assignedText(...)`, never typed into Java.
 * **Call programs** through `domain/common/Programs` (`run`, `attempt`, `rows`, `text`, `number`):
   * URC 0, 4 and 100 count as success; 100 means no rows.
   * Any other URC becomes `LegacyBusinessException`, answered as 422 with the MARIS message.
   * Bad input becomes `InvalidRequestException`, answered as 400 with the old screen's message.
 * **The parity test is the safety net.** Drive the old screen through the engine (`Parity.oldScreens()`) with the same
-  inputs, and compare the records each side sends to the backend (`Parity.lastSent(program)`).
+inputs, and compare the records each side sends to the backend (`Parity.lastSent(program)`).
 * **Never run a writing program against the real backend in a test.** Live tests are read-only.
 
 ## 3. How to find a screen's rules
@@ -62,14 +65,18 @@ Rules the ICS module follows, and every module must follow:
 For screen `XXXXI` in EGL module `<module>`:
 
 1. `MarisProd-1/MARIS_RUI/EGLSource/<module>/XXXXIConnections.egl` shows which button runs which statement group,
+
    which screen field is which record field, and which message boxes the screen has.
 2. `MarisProd-1/MARIS_RUI/EGLSource/<module>/RUIFunctions.egl` has the statement groups: the checks, the
+
    `call "PGM"(...)` statements, the messages.
 3. `maris-middleware/src/main/resources/legacy-catalog/services.json` and `records.json` list each program's parameters
+
    and the fields of its records (JSON field names, for example `revDate`).
 4. To see the old screen run against the real backend, use the engine:
+
    `POST /api/v1/ui/open {"screen":"XXXXI"}`, then `/api/v1/ui/windows/{id}/events`. The response lists the programs it
-   called.
+     called.
 
 ## 4. Module ownership
 
@@ -79,7 +86,6 @@ edit the same file.
 | Name | Middleware packages | URL prefix | UI folder |
 |---|---|---|---|
 | `<pkg>` | `domain/<pkg>/`, `api/<pkg>/`, tests in `api/<pkg>/` and `live/<Pkg>LiveTest.java` | `/api/v1/<url>/` | `maris-ui/src/features/<pkg>/` |
-
 
 ### Sai Durga Rao: 112 screens (74 read-only, 34 update)
 
@@ -123,16 +129,17 @@ Do one module at a time, on one branch, and merge it before starting the next.
 first. Make the change in its own small branch named `shared/<what>`, merge it, and tell the other person to pull it
 before continuing:
 
-* `maris-middleware/src/main/java/.../engine/**`, `legacy/**`, `security/**`, `config/**`, `api/auth/**`, `api/ui/**`,
-  `api/error/GlobalExceptionHandler.java`, `domain/common/**`, `domain/InvalidRequestException.java`,
-  `domain/LegacyBusinessException.java`
-* `maris-middleware/src/test/java/.../support/**`, `coverage/**`, `live/LiveBackendTest.java`
-* `maris-middleware/src/main/resources/**` (`application*.yml`, the generated `legacy-catalog/` and `egl-screens/`)
+* `maris-middleware/src/main/java/.../engine/`**, `legacy/*`*, `security/**`, `config/**`, `api/auth/**`, `api/ui/**`,
+`api/error/GlobalExceptionHandler.java`, `domain/common/**`, `domain/InvalidRequestException.java`,
+`domain/LegacyBusinessException.java`
+* `maris-middleware/src/test/java/.../support/`**, `coverage/*`*, `live/LiveBackendTest.java`
+* `maris-middleware/src/main/resources/`** (`application*.yml`, the generated `legacy-catalog/` and `egl-screens/`)
 * `maris-middleware/pom.xml`, `maris-ui/package.json`, `package-lock.json` (new dependencies)
-* `maris-ui/src/shared/**`, `src/app/**`, `src/test/**`, `src/features/screens/**`, `src/api/openapi.yaml`
-* `scripts/**`, `docs/TESTING.md`, `.github/**`, and this file
+* `maris-ui/src/shared/`**, `src/app/*`*, `src/test/**`, `src/features/screens/**`, `src/api/openapi.yaml`
+* `scripts/`**, `docs/TESTING.md`, `.github/*`*, and this file
 
 **Nothing else is shared**, by design:
+
 * Each module registers its own beans in its own `domain/<pkg>/<Pkg>Config.java`; there is no shared config to edit.
 * Each module lists its finished screens in its own `src/test/resources/clean-apis/<pkg>.json`.
 * Each module routes its UI pages in its own `maris-ui/src/features/<pkg>/screens.tsx`, which the UI finds by itself.
@@ -160,6 +167,7 @@ after the merge.
 4. A pull request contains one module, or one `shared/...` change, never both.
 5. When a `shared/...` branch is merged, the other person rebases their branch on `main` the same day.
 6. Turn on branch protection for `main` on GitHub: "Require a pull request" and "Require status checks to pass"
+
    (the `tests` workflow). A pull request with a failing test then cannot be merged.
 7. Commit messages start with the module, for example `vehiclequeries: VHSV01I status vehicle report (API, parity, UI)`.
 
@@ -169,8 +177,10 @@ Merging cleanly in git is not enough; the merged code has to pass all tests. Aft
 
 1. CI runs `./scripts/test-all.sh` on `main`. It must be green before anyone merges again.
 2. The other person rebases their branch on `main` the same day and runs `./scripts/test-all.sh`. If something fails,
+
    fix it on that branch before continuing; never merge red.
 3. Once a week, or before a release, one person runs `./scripts/test-all.sh --live` on `main` against the local backend,
+
    and opens a few converted screens in the UI (`npm run dev`) to check them by eye.
 
 What the tests catch after a merge, even when git reported no conflict:
@@ -186,17 +196,17 @@ What the tests catch after a merge, even when git reported no conflict:
 
 ## 8. Definition of done for one screen
 
-* [ ] API test (`api/<pkg>/<Name>ApiTest`), written first: request -> exact records sent -> JSON back. It also covers
+- [ ] API test (`api/<pkg>/<Name>ApiTest`), written first: request -> exact records sent -> JSON back. It also covers
   bad input (old message, nothing called), no rows (URC 100) and a backend error (422 with the MARIS message).
-* [ ] Parity test (`api/<pkg>/<Name>ParityTest`): the old screen in the engine and the new API send the same records
+- [ ] Parity test (`api/<pkg>/<Name>ParityTest`): the old screen in the engine and the new API send the same records
   (and, for lists, show the same rows). For an update screen it covers every button that writes, including the order
   of the program calls.
-* [ ] Live test (`live/<Pkg>LiveTest`), read-only programs only: compares the API with the old screen on the real
+- [ ] Live test (`live/<Pkg>LiveTest`), read-only programs only: compares the API with the old screen on the real
   backend, with no fixed expected numbers.
-* [ ] UI test (`features/<pkg>/*.test.tsx`), written first: the requests the page sends, the rows it shows, errors, and
+- [ ] UI test (`features/<pkg>/*.test.tsx`), written first: the requests the page sends, the rows it shows, errors, and
   the old screen's rules (fields turned off, required choices).
-* [ ] The screen is listed in `clean-apis/<pkg>.json` and routed in `features/<pkg>/screens.tsx`.
-* [ ] `./scripts/test-all.sh` passes.
+- [ ] The screen is listed in `clean-apis/<pkg>.json` and routed in `features/<pkg>/screens.tsx`.
+- [ ] `./scripts/test-all.sh` passes.
 
 ## 9. Commands
 
@@ -216,9 +226,7 @@ Running the apps: see the middleware and UI READMEs (middleware on :8090 with `-
 programs writes (in **bold**); **menu** = a menu, which stays as tiles in the new UI (no API needed). Program lists come
 from the screen layouts' metadata. Always confirm them in the EGL before writing tests.
 
-
 ### Sai Durga Rao
-
 
 #### MRSVehicleIcsReports -> `ics` (`/api/v1/ics/`), 3 screens
 
@@ -227,7 +235,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 1 | VHIC30I | VHIC30 - ICS Reports Criteria Selection Window | done | MRSTABLEMAINTENANCE, VHIC30A, VHIC30B, VHIC30C, VHIC30E, WS70A01 |
 | 2 | VHIC31I | VHIC31 - ICS / MARIS Message Received Report V.July .03.01 | done | VHIC31A |
 | 3 | VHIC32I | VHIC32I - ICS / Maris Report Sub-Menu | read-only | – |
-
 
 #### MRSVehicleQueries -> `vehiclequeries` (`/api/v1/vehicle-queries/`), 52 screens
 
@@ -286,7 +293,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 51 | VHCL01I | VHCL01 - Consist Log - Criteria | update | VHCL011, **VHCL01E**, VHSV011, VHXREVA, WS70A01 |
 | 52 | VHDVS1I | vhDVS1 - Daily Vehicle Status | update | VHDVS01, VHDVS03, **VHDVS11** |
 
-
 #### MRSVehiclePrevMaint -> `prevmaint` (`/api/v1/preventive-maintenance/`), 7 screens
 
 | # | Screen | Title | Kind | Programs it calls (writes in **bold**) |
@@ -299,7 +305,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 6 | VHPMR1I | VHPMR1 - Home Yard Vehicle PM Status | read-only | VHPMRA1 |
 | 7 | VHPMS01I | VHPMS01I - PM Scheduling / Rescheduling | update | VHHPMA3, **VHPMS**, VHPMSA1, VHPMSA2, VHPMSA3, VHXREVA |
 
-
 #### MRSVehicleCarWash -> `carwash` (`/api/v1/car-wash/`), 4 screens
 
 | # | Screen | Title | Kind | Programs it calls (writes in **bold**) |
@@ -309,7 +314,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 3 | VHCWR2I | VHCWR2I - Car Wash Overdue for Home Yard Report | read-only | MRSVEHICLEQUERIES |
 | 4 | VHCWA3I | VHCWA3 - Dummy Consist Wash - Add | update | MRSVEHICLEINCDEVENT, MRSVEHICLEINCIDENT, VHCWA3A, VHCWA3B, **VHCWA3D**, **VHCWA3E**, VHXREVC |
 
-
 #### MRSVehicleCarBright -> `carbright` (`/api/v1/car-bright/`), 3 screens
 
 | # | Screen | Title | Kind | Programs it calls (writes in **bold**) |
@@ -318,14 +322,12 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 2 | VHCBR2I | VHcbr2I - Printer Selection Screen | read-only | VHCBR02, WS70A01 |
 | 3 | VHCBP1I | VHCBP1I - Car Thorough Clean Processing Screen | update | MRSVEHICLEINCDEVENT, **VHCBP1A**, VHCBR2C |
 
-
 #### MRSWaysideMaintenance -> `wayside` (`/api/v1/wayside/`), 2 screens
 
 | # | Screen | Title | Kind | Programs it calls (writes in **bold**) |
 |---|---|---|---|---|
 | 1 | WS13I | WS13 -- Add Narrative | read-only | MRSWAYSIDEINCIDENT, WSX2A01, WSX3A |
 | 2 | WS17I | WS17I - Search Stock No Table | read-only | MRSWAYSIDEREPAIR, WS17A05 |
-
 
 #### MRSVehicleIncdEvent -> `incidentevents` (`/api/v1/incident-events/`), 6 screens
 
@@ -337,7 +339,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 4 | VHIE03I | VHIE03I - Revenue Event Log | update | MRSVEHICLEMENU, **VHEVL1F**, **VHEVLX**, **VHEVLY**, VHIE01B, VHIE03A, VHIE03B, VHIE03C, VHIE03D, VHIE03E, VHIE03F, VHIE03G, VHIE03H, **VHIE04A**, **VHIE04B**, VHIE04C, VHIE04D, VHINC1A, VHINC1B, **VHINC1X**, VHINC3A, VHINC6A, **VHINC8E**, VHINCE, VHINXA, **VHINXB**, **VHINXC** |
 | 5 | VHIE04I | VHIE04I - Event Log Detail | update | **VHEVL1F**, **VHEVLX**, **VHEVLY**, VHIE03B, VHIE03C, VHIE03D, **VHIE04B**, VHIE04C, VHINC1A, VHINC1B, VHINC3A, VHINC6A, **VHINC8E**, VHINCE, VHINXA, **VHINXB**, **VHINXC** |
 | 6 | VHIE07I | VHIE07 - Search Event and Incident Data | update | VHIE07A, VHIE07B, **VHIE07C** |
-
 
 #### MRSVehicleIncident -> `incidents` (`/api/v1/incidents/`), 8 screens
 
@@ -352,7 +353,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 7 | VHINC09I | VHINC09I - Vehicle Tracking (Incident Veh - Update) | update | VHINC1A, **VHINC1C**, VHINC1D, VHINC9A |
 | 8 | VHINC10I | VHINC10I - Vehicle Tracking (Incident Veh - Update) V1 MARCH 01.01 | update | MRSVEHICLEMENU, VHINC1D, VHINC9A, **VHINCXB**, **VHINCXC**, VHXREVA |
 
-
 #### MRSVehicleRepair -> `repair` (`/api/v1/repair/`), 4 screens
 
 | # | Screen | Title | Kind | Programs it calls (writes in **bold**) |
@@ -361,7 +361,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 2 | VHRV02I | VHRV02I - Vehicle Tracking - Repair Component Screen | update | VHRV02A, **VHRV02B**, **VHRV02C**, **VHRV02D**, VHRV02E, VHRV02F |
 | 3 | VHRV03I | VHRV03I - Vehicle Repair Tracking (RVE) | update | MRSVEHICLEINCIDENT, VHRV01A, VHRV01F, **VHRV03A** |
 | 4 | VHRV04I | VHRV04I - Vehicle Repair Tracking Maintenance | update | MRSVEHICLEINCIDENT, VHRV01A, **VHRV01B**, VHRV01C, VHRV01D, VHRV01E, VHRV01F, **VHRV4A1**, **VHRV4A2** |
-
 
 #### MRSSecondaryRepair -> `secondaryrepair` (`/api/v1/secondary-repair/`), 12 screens
 
@@ -380,7 +379,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 11 | VHMSRI | VHMSRI - Secondary Repair Menu | menu | – |
 | 12 | VHMSUB1I | VHMSUB1I - Secondary Repair Sub Menu | menu | – |
 
-
 #### MRSVehicleMaintenance -> `vehiclemaint` (`/api/v1/vehicle-maintenance/`), 11 screens
 
 | # | Screen | Title | Kind | Programs it calls (writes in **bold**) |
@@ -397,9 +395,7 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 10 | VHVM11I | VHVM11I - Vehicle Parts Status / Mod Tracking | update | VHVM11A, **VHVM11B**, **VHVM11C**, VHVM11E, VHVM11F, VHVM11G, VHVM11H, **VHVM11J**, **VHVM11K**, VHVM11L, VHVM1A5, VHVMDTA |
 | 11 | VHVM19I | VHVM19I - Consist History Table Maintenance | update | MRSYARDTRACKINGQUERIES, VHVM19A, **VHVM19B** |
 
-
 ### Sai Teja
-
 
 #### MRSYardTrackingReport -> `yardreports` (`/api/v1/yard-reports/`), 16 screens
 
@@ -422,7 +418,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 15 | VHIC03I | VHIC03I - Move Pseudo Train to another Yard | update | **VHIC03A**, VHYT09A |
 | 16 | VHYT53I | VHYT53I - Configure Pseudo(s) 08-23-04 | update | VHYT53B, VHYT53C, VHYT53D, VHYT53E, **VHYT53F**, **VHYT53G**, **VHYT53H**, **VHYT53K**, VHYT53L, VHYT53M |
 
-
 #### MrsYardTrackingQueries -> `yardqueries` (`/api/v1/yard-queries/`), 7 screens
 
 | # | Screen | Title | Kind | Programs it calls (writes in **bold**) |
@@ -435,7 +430,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 6 | VHYT32I | VHYT32 - REASON OUT OF SERVICE - DETAIL or SUMMARY | update | VHYT32A, **VHYT32B**, VHYT32C, **VHYT32D** |
 | 7 | VHYT34I | VHYT34 - Make/Break Overrides | update | VHYT34A, **VHYT34B**, VHYT34C, VHYT34D, VHYT34E, **VHYT34F**, **VHYT34G**, VHYT34H, VHYT34J, VHYT34K, VHYT34L, VHYT34M, VHYT34N, VHYT34P |
 
-
 #### MRSConfigurTrackQuery -> `configqueries` (`/api/v1/config-queries/`), 4 screens
 
 | # | Screen | Title | Kind | Programs it calls (writes in **bold**) |
@@ -444,7 +438,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 2 | VHCF21I | VHCF21I - ADD/SCRAP COMPONENT | update | VHCF21A, VHCF21B, VHCF21C, **VHCF21D**, VHCF21E |
 | 3 | VHCF35I | VHCF35I - Truck Build GUI V1 08-29-2008 CGJ | update | VHCF35B, VHCF35C, VHCF35D, **VHCF35G**, **VHCF35H**, VHCF37F |
 | 4 | VHCF37I | VHCF37I - Truck Rebuilt View GUI | update | VHCF35B, VHCF35C, VHCF35D, **VHCF35G**, **VHCF35H**, VHCF37F |
-
 
 #### MRSYardTracking -> `yardtracking` (`/api/v1/yard-tracking/`), 34 screens
 
@@ -485,7 +478,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 33 | VHYTM4I | VHYTM4I - Yard Tracking Update Menu | menu | – |
 | 34 | VHYTM6I | VHYTM6I | menu | VH01A02 |
 
-
 #### MRSConfigureTracking -> `configtracking` (`/api/v1/config-tracking/`), 3 screens
 
 | # | Screen | Title | Kind | Programs it calls (writes in **bold**) |
@@ -493,7 +485,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 1 | VFCF05I | VHCF05I - Print | read-only | VHCF05A, WS70A01 |
 | 2 | VHCF01I | VHCF01I - Vehicle Component / Configuration Tracking Inventory - 02-20 | update | MRSVEHICLEMENU, VHCF01A, VHCF01B, VHCF01C, VHCF01D, VHCF01F, VHCF01G, VHCF01H, VHCF01J, VHCF01K, VHCF01L, VHCF01M, VHCF01N, VHCF01P, **VHCF01Q**, **VHCF01S**, **VHCF01T**, **VHCF01U**, VHCF01V, VHCF01W, VHCF01X, **VHCF01Y** |
 | 3 | VHCF06I | VHCF06I - Secondary Repair - Axle Configuration | update | VHCF01J, VHCF01P, VHCF06A, VHCF06C, VHCF06D, VHCF06E, **VHCF06F**, **VHCF06G**, **VHCF06H**, **VHCF06I**, **VHCF06J**, VHCF06K, **VHCF06L**, **VHCF06M** |
-
 
 #### MRSVehicleConsist -> `consist` (`/api/v1/consist/`), 10 screens
 
@@ -510,7 +501,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 9 | VHSC01I | VHSC01I - Split Consist | update | MRSVEHICLEINCIDENT, VH01A02, VHMT016, VHSC2A1, VHSC2A2, **VHSCX**, VHSCY, VHTS1A9, VHTS2A2, VHTS2A3, VHXCONB, VHXREVA |
 | 10 | VHTR01I | VHTR01I - Pseudo Train Reconfigure | update | VHLT010, VHLT011, VHLT013, VHLT014, VHLT015, VHLT016, **VHLT017**, **VHLT018**, VHLT019, VHSC2A1, VHTR011, VHTR012, VHTR013, VHTR014, VHTR015, **VHTR016**, VHTR01A, VHXREVC |
 
-
 #### MRSTableMaintenanceApp2 -> `tables2` (`/api/v1/tables-2/`), 5 screens
 
 | # | Screen | Title | Kind | Programs it calls (writes in **bold**) |
@@ -521,7 +511,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 4 | VHCCS06I | VHCCS06I | update | VHCCS6A, **VHCCS6B**, **VHCCS6C**, **VHCCS6D**, VHCCS6E |
 | 5 | VHCCS07I | VHCCS07I - Msgs Rcv Errors Jan. 03. | update | VHCCS7A, **VHCCS7B**, **VHCCS7C**, **VHCCS7D** |
 
-
 #### MRSTableMaintenanceApp3 -> `tables3` (`/api/v1/tables-3/`), 4 screens
 
 | # | Screen | Title | Kind | Programs it calls (writes in **bold**) |
@@ -531,9 +520,7 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 3 | VHCF51I | VHCF51I - MRS_Serial_No_Hrs 4-05 | update | VHCF51A, **VHCF51B** |
 | 4 | VHCF52I | VHCF52I - MRS_Serial_Geo_Dat 05-05 | update | VHCF52A, **VHCF52B**, VHCF52C |
 
-
 ### Not assigned (shared parts)
-
 
 #### MRSCommonCode, 3 screens
 
@@ -543,7 +530,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 2 | XPRINTI |  | read-only | – |
 | 3 | XXM0I |  | read-only | – |
 
-
 #### MRSMainMenu, 4 screens
 
 | # | Screen | Title | Kind | Programs it calls (writes in **bold**) |
@@ -552,7 +538,6 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 2 | MRS02I | MRS00 -- New Maris Signon | read-only | MRS02A |
 | 3 | MRS99I | MRS99 -- About the New Maris System | read-only | – |
 | 4 | MRSX0I |  | read-only | – |
-
 
 #### MRSVehicleMenu, 13 screens
 
@@ -572,10 +557,9 @@ from the screen layouts' metadata. Always confirm them in the EGL before writing
 | 12 | VHMVSI | VHMVSI - Vehicle Shops Main Menu | menu | VH01A01, VH01A02 |
 | 13 | VHMYTI | VHMYTI - Yard Tracking Report Menu | menu | – |
 
-
 ## 11. Screens with no clean API to build
 
-* The 14 `mf:*` screens (for example VHCF03I, VHSR12I) were never moved to the web in the old system: their EGL is
-  marked TODO, and there is no logic or service to call.
-* The `web:*` and `rc:*` pages are ColdFusion / report pages outside the EGL backend. They need their own source code
-  first.
+* The 14 `mf:`* screens (for example VHCF03I, VHSR12I) were never moved to the web in the old system: their EGL is
+marked TODO, and there is no logic or service to call.
+* The `web:`* and `rc:`* pages are ColdFusion / report pages outside the EGL backend. They need their own source code
+first.

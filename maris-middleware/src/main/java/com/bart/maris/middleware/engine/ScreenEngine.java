@@ -1,5 +1,6 @@
 package com.bart.maris.middleware.engine;
 
+import com.bart.maris.middleware.engine.runtime.Conv;
 import com.bart.maris.middleware.engine.runtime.Interp;
 import com.bart.maris.middleware.engine.runtime.Rec;
 import com.bart.maris.middleware.engine.screen.ScreenInstance;
@@ -119,7 +120,11 @@ public class ScreenEngine {
                     wire.add(b);
                     recordArg.add(next++);
                 }
-                case PRIMITIVE -> { wire.add(""); recordArg.add(-1); }
+                case PRIMITIVE -> {                                             // a string parameter: the argument's text
+                    wire.add(next < args.size() ? Conv.rtrim(Conv.text(args.get(next).data, 0, args.get(next).data.length)) : "");
+                    next++;
+                    recordArg.add(-1);
+                }
                 case PROGRAM_RETURN -> { wire.add(null); recordArg.add(-1); }
             }
         }

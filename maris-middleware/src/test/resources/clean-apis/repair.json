@@ -1,0 +1,31 @@
+{
+  "_about": "Screens of the repair module rebuilt on the clean API, with their tests.",
+  "VHRV01I": {
+    "module": "repair",
+    "api": "com.bart.maris.middleware.api.repair.RepairController",
+    "apiTest": "com.bart.maris.middleware.api.repair.RepairApiTest",
+    "parityTest": "com.bart.maris.middleware.api.repair.RepairParityTest",
+    "uiTest": "src/features/repair/RepairPages.test.tsx"
+  },
+  "VHRV02I": {
+    "module": "repair",
+    "api": "com.bart.maris.middleware.api.repair.RepairController",
+    "apiTest": "com.bart.maris.middleware.api.repair.RepairApiTest",
+    "parityTest": "com.bart.maris.middleware.api.repair.RepairParityTest",
+    "uiTest": "src/features/repair/RepairPages.test.tsx"
+  },
+  "VHRV03I": {
+    "module": "repair",
+    "api": "com.bart.maris.middleware.api.repair.RepairController",
+    "apiTest": "com.bart.maris.middleware.api.repair.RepairApiTest",
+    "parityTest": "com.bart.maris.middleware.api.repair.RepairParityTest",
+    "uiTest": "src/features/repair/RepairPages.test.tsx"
+  },
+  "VHRV04I": {
+    "module": "repair",
+    "api": "com.bart.maris.middleware.api.repair.RepairController",
+    "apiTest": "com.bart.maris.middleware.api.repair.RepairApiTest",
+    "parityTest": "com.bart.maris.middleware.api.repair.RepairParityTest",
+    "uiTest": "src/features/repair/RepairPages.test.tsx"
+  }
+}
