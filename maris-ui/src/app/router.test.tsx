@@ -10,7 +10,7 @@ describe("resolve: which page a screen key opens", () => {
     expect(resolve({ kind: "screen", key: "yardmap:CY", label: "Concord yard" })).toEqual({ kind: "map", yard: "CY", shop: false, label: "Concord yard" });
     expect(resolve({ kind: "screen", key: "egl:VHYT70I", label: "Concord yard" })).toEqual({ kind: "map", yard: "CY", shop: false, label: "Concord yard" });
     expect(resolve({ kind: "screen", key: "egl:VHIC01", label: "Berryessa" })).toEqual({ kind: "map", yard: "BS", shop: false, label: "Berryessa" });
-    expect(resolve({ kind: "screen", key: "egl:VHYT101I", label: "Daly City shop" })).toEqual({ kind: "map", yard: "DY", shop: true, label: "Daly City shop" });
+    expect(resolve({ kind: "screen", key: "egl:VHYT101I", label: "Daly City shop" })).toEqual({ kind: "map", yard: "DY", shop: true, label: "Daly City shop", mode: "update" });   // VHYT101I is the update map
   });
 
   it("keeps the drawn map for a directly opened map", () => {

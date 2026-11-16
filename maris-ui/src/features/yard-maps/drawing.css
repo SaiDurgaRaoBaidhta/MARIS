@@ -1,0 +1,179 @@
+/* The yard / shop map drawing's own styles, taken from the old map viewer (maris-map.html, focus mode) so the React maps
+ * look exactly the same. Every rule is scoped to .ym-scope. Generated (scratchpad maptest/buildcss.py); edit with care. */
+.ym-scope { --amber: #f5a623; --blue: #2b5c9e; --cr-blue: #2b5c9e; --cy: #2f3cc0; --dy: #e2401d; --hy: #2f9a3a; --ink: #1b2a41; --legend-ry: #c4916a; --line: #e3e9f1; --link: #0080c0; --navy: #1e3a5f; --ry: #b0673d; }
+html[data-theme="dark"] .ym-scope { --amber: #f5a623; --blue: #2b5c9e; --cr-blue: #2b5c9e; --cy: #2f3cc0; --dy: #e2401d; --hy: #2f9a3a; --ink: #1b2a41; --legend-ry: #c4916a; --line: #e3e9f1; --link: #4fb8ea; --navy: #1e3a5f; --ry: #b0673d; }
+.ym-scope .cell.wash { background: rgb(74, 134, 216); border-color: rgb(47, 99, 179); }
+.ym-scope .canvas { position: relative; }
+.ym-scope a.ln, .ym-scope .ln { color: var(--link); text-decoration: underline; cursor: pointer; font-size: 13px; line-height: 15px; }
+.ym-scope .ln:hover { color: rgb(192, 32, 26); }
+.ym-scope .map-svg { position: absolute; left: 0px; top: 0px; pointer-events: none; overflow: visible; }
+.ym-scope .map-title { position: absolute; font-family: "Century Gothic", "Trebuchet MS", Arial, sans-serif; color: rgb(43, 43, 43); white-space: nowrap; line-height: 1.15; }
+.ym-scope .mtxt { position: absolute; white-space: nowrap; font: 10px / 12px Arial, sans-serif; color: rgb(42, 42, 42); }
+.ym-scope .mtxt.lbl-sm, .ym-scope .mtxt.lbl-b { font-weight: bold; }
+.ym-scope .mtxt.gothic { font: 18px / 22px "Century Gothic", "Trebuchet MS", Arial, sans-serif; color: rgb(51, 51, 51); }
+.ym-scope .lbl-red { color: rgb(208, 38, 27); }
+.ym-scope .lbl-green { color: rgb(47, 154, 47); }
+.ym-scope .tlabel { position: absolute; font: bold 11px "Courier New", Courier, monospace; color: rgb(74, 59, 51); background: linear-gradient(rgb(255, 255, 255), rgb(231, 231, 231)); border: 1px solid rgb(168, 183, 196); box-shadow: rgba(0, 0, 0, 0.08) 0px 1px 0px; display: flex; align-items: center; justify-content: center; cursor: pointer; white-space: nowrap; overflow: hidden; }
+.ym-scope .mbox { position: absolute; display: flex; align-items: center; justify-content: center; font: bold 9px Arial; color: rgb(19, 32, 107); background: rgb(215, 236, 248); border: 2px solid rgb(63, 138, 216); }
+.ym-scope .cell { position: absolute; background: linear-gradient(rgb(255, 255, 255), rgb(228, 232, 236)); border: 1px solid rgb(168, 183, 196); font: bold 11px "Courier New", Courier, monospace; display: flex; align-items: center; padding-left: 3px; white-space: nowrap; overflow: hidden; cursor: pointer; }
+.ym-scope .cell:hover, .ym-scope .tlabel:not(.plain):hover, .ym-scope .tag[data-open]:hover { outline: rgb(47, 99, 179) solid 2px; z-index: 2; }
+.ym-scope .yardmap.tiny .cell { font-size: 10px; justify-content: center; padding: 0px; }
+.ym-scope .c-GO { color: rgb(17, 17, 17); }
+.ym-scope .c-USE { color: rgb(47, 60, 192); }
+.ym-scope .c-NOGO { color: rgb(224, 40, 28); }
+.ym-scope .shop .cell { font: 13px Arial, sans-serif; padding-left: 6px; background: linear-gradient(rgb(255, 255, 255), rgb(236, 239, 242)); border-color: rgb(180, 194, 207); }
+.ym-scope .shop .mtxt { font-size: 9px; color: rgb(68, 68, 68); }
+.ym-scope .shop .mtxt:not(.gothic) { background: rgb(220, 235, 245); padding: 0px 2px; line-height: 1.2 !important; }
+.ym-scope .shop .mtxt.gothic { font-size: 18px; color: rgb(51, 51, 51); }
+.ym-scope .c-CY { color: var(--cy); }
+.ym-scope .cell.turn { justify-content: center; }
+.ym-scope .c-DY { color: var(--dy); }
+.ym-scope .c-RY { color: var(--ry); }
+.ym-scope .c-HY { color: var(--hy); }
+.ym-scope .c-XX { color: rgb(90, 74, 138); }
+.ym-scope .legend-box { position: absolute; font-weight: bold; white-space: nowrap; }
+.ym-scope .legend-box .cc { background: rgb(196, 196, 196); color: rgb(34, 34, 34); font-weight: normal; padding: 0px 6px; display: inline-block; width: 110px; }
+.ym-scope .legend-box .go { color: rgb(17, 17, 17); font-weight: normal; }
+.ym-scope .legend-box .pm { color: rgb(192, 96, 42); font-weight: normal; }
+.ym-scope .legend-box .us { color: rgb(47, 60, 192); font-weight: normal; }
+.ym-scope .legend-box .ng { color: rgb(224, 40, 28); font-weight: normal; }
+.ym-scope .legend-box .hd { color: var(--navy); }
+.ym-scope .legend-box .cy { color: var(--cy); }
+.ym-scope .legend-box .dy { color: var(--dy); }
+.ym-scope .legend-box .ry { color: var(--legend-ry); }
+.ym-scope .legend-box .hy { color: var(--hy); }
+.ym-scope .tag { position: absolute; background: rgb(242, 182, 64); font: bold 11px Arial, sans-serif; color: rgb(58, 44, 16); padding: 1px 4px; white-space: nowrap; transform-origin: left center; }
+.ym-scope .tag[data-open] { cursor: pointer; }
+.ym-scope .ln, .ym-scope a.ln { color: var(--blue); }
+.ym-scope .ln:hover { color: var(--amber); }
+.ym-scope .legend-box.legend-card { border: 1px solid var(--line); border-radius: 8px; box-shadow: rgba(15, 30, 61, 0.05) 0px 1px 2px; background: rgb(255, 255, 255) !important; padding: 8px 12px !important; }
+.ym-scope .legend-box .cc { margin-bottom: 2px; background: none !important; padding: 0px !important; width: auto !important; color: var(--navy) !important; font-weight: 600 !important; }
+.ym-scope .ln, .ym-scope a.ln { color: rgb(0, 128, 192); }
+.ym-scope .ln:hover { color: rgb(13, 58, 102); }
+.ym-scope .tlabel { background: linear-gradient(rgb(255, 255, 255), rgb(238, 242, 247)); border-color: rgb(180, 193, 211); }
+.ym-scope .cell { background: linear-gradient(rgb(255, 255, 255), rgb(238, 242, 247)); border-color: rgb(180, 193, 211); }
+.ym-scope .shop .cell { background: linear-gradient(rgb(255, 255, 255), rgb(241, 244, 248)); }
+.ym-scope .cell:hover, .ym-scope .tlabel:not(.plain):hover, .ym-scope .tag[data-open]:hover { outline-color: rgb(0, 153, 216); }
+.ym-scope .legend-box.legend-card { border-color: rgb(226, 232, 240); border-radius: 10px; box-shadow: rgba(11, 37, 69, 0.25) 0px 6px 16px -10px; }
+html[data-theme="dark"] .ym-scope .cell, html[data-theme="dark"] .ym-scope .tlabel { color: rgb(219, 230, 241); background: rgb(19, 38, 59) !important; border-color: rgb(42, 64, 90) !important; }
+html[data-theme="dark"] .ym-scope .cell.c-GO { color: rgb(230, 237, 245) !important; }
+html[data-theme="dark"] .ym-scope .cell.c-USE, html[data-theme="dark"] .ym-scope .c-USE { color: rgb(123, 140, 255) !important; }
+html[data-theme="dark"] .ym-scope .cell.c-NOGO, html[data-theme="dark"] .ym-scope .c-NOGO { color: rgb(255, 107, 107) !important; }
+html[data-theme="dark"] .ym-scope .cell.c-XX { color: rgb(184, 166, 255) !important; }
+html[data-theme="dark"] .ym-scope .mtxt, html[data-theme="dark"] .ym-scope .map-title { color: rgb(201, 214, 228) !important; }
+html[data-theme="dark"] .ym-scope .legend-box.legend-card { background: rgb(16, 33, 58) !important; border-color: rgb(34, 54, 75) !important; color: rgb(219, 230, 241) !important; }
+html[data-theme="dark"] .ym-scope .shop .mtxt:not(.gothic) { background: rgb(13, 26, 41) !important; }
+.ym-scope .map-svg .trk-in { stroke: rgb(220, 235, 245); }
+html[data-theme="dark"] .ym-scope .map-svg .trk-in { stroke: rgb(13, 26, 41); }
+.ym-scope .map-svg .trk, .ym-scope .map-svg .trk-in { stroke-linecap: butt; stroke-linejoin: round; }
+.ym-scope .mv-body { position: relative; padding: 18px; overflow: auto; background-color: rgb(247, 249, 252); background-image: radial-gradient(rgb(223, 229, 238) 1px, transparent 1.3px); background-size: 18px 18px; }
+.ym-scope .mv-body .fit { margin: 0px auto; }
+.ym-scope .mv .bxroot .win, .ym-scope .mv .bxroot .canvas, .ym-scope .mv .bxroot .client { background: transparent !important; box-shadow: none !important; border: 0px !important; }
+.ym-scope .mv .bxroot .map-title { display: none !important; }
+.ym-scope .mv .bxroot .mv-rail { position: absolute; height: 4px; border-radius: 2px; background: rgb(211, 220, 232); pointer-events: none; }
+.ym-scope .mv .bxroot .mv-rail::after { content: ""; position: absolute; left: 0px; right: 0px; top: 1.5px; height: 1px; background: rgb(185, 198, 214); }
+.ym-scope .mv .bxroot .cell, .ym-scope .mv .bxroot .k-inp.ro, .ym-scope .mv .bxroot .k-btn.mv-slot { letter-spacing: -0.01em; color: var(--ink); background: rgb(255, 255, 255) !important; border: 1px solid rgb(214, 223, 235) !important; border-radius: 6px !important; box-shadow: rgba(16, 36, 64, 0.06) 0px 1px 2px !important; font: 600 11px "Roboto Mono", ui-monospace, Menlo, monospace !important; padding-left: 8px !important; }
+.ym-scope .mv .bxroot .shop .cell, .ym-scope .mv .bxroot .cell { overflow: hidden; }
+.ym-scope .mv .bxroot .shop .cell { font-size: 13px !important; }
+.ym-scope .mv .bxroot .cell::before { content: ""; position: absolute; left: 0px; top: 0px; bottom: 0px; width: 3px; background: var(--acc, transparent); }
+.ym-scope .mv .bxroot .cell.c-GO:not(:empty) { --acc: #2b5c9e; }
+.ym-scope .mv .bxroot .cell.c-NOGO { --acc: #d92d20; background: rgb(253, 240, 239) !important; border-color: rgb(244, 199, 195) !important; color: rgb(180, 35, 24) !important; }
+.ym-scope .mv .bxroot .cell.wash { background: rgb(74, 134, 216) !important; border-color: rgb(47, 99, 179) !important; color: rgb(255, 255, 255) !important; }
+.ym-scope .mv .bxroot .cell.c-HY { --acc: #2f9a3a; }
+.ym-scope .mv .bxroot .cell.c-CY { --acc: #3552c8; }
+.ym-scope .mv .bxroot .cell.c-DY { --acc: #e2401d; }
+.ym-scope .mv .bxroot .cell.c-RY { --acc: #c4916a; }
+.ym-scope .mv .bxroot .cell:empty, .ym-scope .mv .bxroot .k-inp.ro:placeholder-shown, .ym-scope .mv .bxroot .cell.mv-empty, .ym-scope .mv .bxroot .mv-slot.mv-empty, .ym-scope .mv .bxroot .k-inp.mv-empty { background: rgba(255, 255, 255, 0.55) !important; border: 1px dashed rgb(195, 207, 221) !important; box-shadow: none !important; }
+.ym-scope .mv .bxroot .cell:hover, .ym-scope .mv .bxroot .k-inp.ro:hover { outline-offset: 1px; z-index: 3; outline: 2px solid var(--blue) !important; }
+.ym-scope .mv .bxroot .cell.turn { justify-content: center; padding-left: 0px !important; }
+.ym-scope .mv .bxroot .tag, .ym-scope .mv .bxroot .tlabel, .ym-scope .mv .bxroot .mv-trk { letter-spacing: 0.02em; background: var(--navy) !important; color: rgb(255, 255, 255) !important; border: 0px !important; border-radius: 6px !important; box-shadow: rgba(16, 36, 64, 0.18) 0px 1px 2px !important; font: 600 10.5px "Roboto Mono", ui-monospace, Menlo, monospace !important; }
+.ym-scope .mv .bxroot .tag { padding: 2px 6px !important; }
+.ym-scope .mv .bxroot .tlabel:hover, .ym-scope .mv .bxroot .tag[data-open]:hover, .ym-scope .mv .bxroot .k-btn.mv-trk:hover { background: var(--blue) !important; outline: 0px !important; }
+.ym-scope .mv .bxroot .mtxt { font-weight: 500; letter-spacing: 0.02em; color: rgb(107, 122, 144) !important; background: none !important; font-family: Roboto, Arial, sans-serif !important; }
+.ym-scope .mv .bxroot .mtxt.lbl-sm { font-weight: 700; letter-spacing: 0.08em; }
+.ym-scope .mv .bxroot .mtxt.lbl-red { color: rgb(217, 45, 32) !important; }
+.ym-scope .mv .bxroot .mbox { border-radius: 6px; background: rgb(232, 240, 252) !important; border: 1px solid rgb(156, 184, 228) !important; color: var(--navy) !important; font-family: Roboto, Arial, sans-serif !important; }
+.ym-scope .mv .bxroot .mtxt.lbl-green { color: rgb(47, 154, 58) !important; }
+.ym-scope .mv .bxroot .mtxt.gothic { letter-spacing: 0px; color: var(--navy) !important; font-weight: 600 !important; }
+@media print { .ym-scope .mv-body { background: rgb(255, 255, 255); } }
+.ym-scope .mv .bxroot .tag { letter-spacing: 0.01em; line-height: 14px; overflow: visible; width: auto !important; padding: 1px 5px !important; font-family: Roboto, Arial, sans-serif !important; font-weight: 700 !important; }
+.ym-scope .mv .bxroot .cell.c-HY { color: rgb(47, 154, 58) !important; }
+.ym-scope .mv .bxroot .cell.c-CY { color: rgb(53, 82, 200) !important; }
+.ym-scope .mv .bxroot .cell.c-DY { color: rgb(226, 64, 29) !important; }
+.ym-scope .mv .bxroot .cell.c-RY { color: rgb(176, 103, 61) !important; }
+.ym-scope .mv .bxroot .cell.c-NOGO:not(:empty):not(.mv-empty), .ym-scope .mv .bxroot .cell.m3-ng:not(:empty):not(.mv-empty) { background: rgb(253, 240, 239) !important; border-color: rgb(240, 185, 180) !important; }
+.ym-scope .mv .bxroot .cell.wash { background: rgb(74, 134, 216) !important; border: 1px solid rgb(47, 99, 179) !important; box-shadow: none !important; }
+.ym-scope .mvx-view .bxroot .cell.c-XX { color: rgb(90, 106, 128) !important; }
+.ym-scope .mv .bxroot .tag { font-size: 12px !important; }
+.ym-scope .mv .bxroot .shop .cell { font-size: 13px !important; font-weight: 600 !important; }
+.ym-scope .mv .bxroot .shop .cell:empty, .ym-scope .mv .bxroot .shop .cell.mv-empty { background: rgb(255, 255, 255) !important; border: 1px solid rgb(205, 215, 228) !important; box-shadow: rgba(16, 36, 64, 0.04) 0px 1px 1px !important; }
+.ym-scope .mv.fs .mv-body { flex: 1 1 auto; }
+.ym-scope .mv-view .mv:not(.is3d) .mv-body { background-color: rgb(211, 221, 233); background-image: linear-gradient(rgba(30, 58, 95, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(30, 58, 95, 0.07) 1px, transparent 1px); background-size: 24px 24px; box-shadow: rgba(20, 42, 71, 0.06) 0px 1px 0px inset; }
+.ym-scope .mv .bxroot .cell:not(:empty):not(.mv-empty), .ym-scope .mv .bxroot .k-inp.ro:not(:placeholder-shown):not(.mv-empty), .ym-scope .mv .bxroot .mv-slot:not(.mv-empty) { background: rgb(255, 255, 255) !important; border: 1px solid rgb(198, 210, 225) !important; box-shadow: rgba(20, 42, 71, 0.06) 0px 1px 0px, rgba(20, 42, 71, 0.1) 0px 3px 8px !important; }
+.ym-scope .mv .bxroot .cell::before { width: 4px; }
+.ym-scope .mv .bxroot .cell:empty, .ym-scope .mv .bxroot .cell.mv-empty, .ym-scope .mv .bxroot .shop .cell:empty, .ym-scope .mv .bxroot .shop .cell.mv-empty, .ym-scope .mv .bxroot .k-inp.ro:placeholder-shown, .ym-scope .mv .bxroot .k-inp.mv-empty, .ym-scope .mv .bxroot .mv-slot.mv-empty { background: rgb(255, 255, 255) !important; border: 1px dashed rgb(147, 165, 188) !important; box-shadow: none !important; }
+.ym-scope .mv .bxroot .cell:empty::before, .ym-scope .mv .bxroot .cell.mv-empty::before { display: none; }
+.ym-scope .mv .bxroot .mv-rail { background: rgb(195, 207, 221); }
+.ym-scope .mv .bxroot .mv-rail::after { background: rgb(159, 176, 197); }
+.ym-scope .mv .bxroot .mtxt { color: rgb(63, 81, 107) !important; }
+.ym-scope .mv .bxroot .cell:hover, .ym-scope .mv .bxroot .k-inp.ro:hover { outline-offset: 1px; outline: 2px solid var(--cr-blue, #2b5c9e) !important; }
+.ym-scope .mvx-view .mvwin { position: relative; }
+.ym-scope .mvx-view .mvwin > .canvas { margin: 0px !important; zoom: normal !important; }
+.ym-scope .mvx-view .mv-body { box-sizing: border-box; }
+.ym-scope .fit { overflow: hidden; }
+.ym-scope .fit > .bxroot { transform-origin: 0px 0px; }
+.ym-scope .mvx-view .bxroot .mtxt, html[data-theme="dark"] .ym-scope .mvx-view .bxroot .mtxt, html[data-theme="dark"] .ym-scope .mvx-view .bxroot .shop .mtxt:not(.gothic) { background: none !important; box-shadow: none !important; border: 0px !important; color: rgb(63, 81, 107) !important; }
+html[data-theme="dark"] .ym-scope .mvx-view .bxroot .mtxt.lbl-red { color: rgb(217, 45, 32) !important; }
+html[data-theme="dark"] .ym-scope .mvx-view .bxroot .mtxt.lbl-green { color: rgb(47, 154, 58) !important; }
+html[data-theme="dark"] .ym-scope .mvx-view .bxroot .mtxt.gothic { color: rgb(30, 58, 95) !important; }
+.ym-scope .mvx-view .map-svg .trk { stroke: rgb(111, 134, 166) !important; }
+.ym-scope .mvx-view .map-svg .trk-in { stroke: rgb(211, 221, 233) !important; }
+.ym-scope .mvx-view .map-svg [stroke="#3f8ad9"] { stroke-opacity: 0 !important; }
+.ym-scope .mvx-view .mv:not(.is3d) .mv-body { touch-action: none; overscroll-behavior: contain; }
+html[data-theme="dark"] .ym-scope .mvx-view .map-lines { filter: brightness(1.7); }
+.ym-scope .mvx-view .map-svg [stroke="#3f8ad6"] { stroke-opacity: 0 !important; }
+.ym-scope .mvx-view .mv:not(.is3d) .map-svg .trk, .ym-scope .mvx-view .mv:not(.is3d) .map-svg [stroke="#3f8ad7"], .ym-scope .mvx-view .mv:not(.is3d) .bxroot .map-svg path[stroke="#8ea2bc"], .ym-scope .mvx-view .mv:not(.is3d) .bxroot .map-svg line[stroke="#8ea2bc"] { stroke: rgb(123, 138, 160) !important; stroke-width: 1.3px !important; }
+.ym-scope .mvx-view .mv:not(.is3d) .map-svg .trk-in { stroke: rgb(212, 226, 238) !important; }
+.ym-scope .mvx-view .mv:not(.is3d) .bxroot .tag, .ym-scope .mvx-view .mv:not(.is3d) .bxroot .tlabel, .ym-scope .mvx-view .mv:not(.is3d) .bxroot .mv-trk { background: rgb(227, 177, 85) !important; color: rgb(43, 34, 16) !important; border: 0px !important; border-radius: 1px !important; box-shadow: none !important; font-weight: 600 !important; }
+.ym-scope .mvx-view .mv:not(.is3d) .bxroot .tag[data-open]:hover, .ym-scope .mvx-view .mv:not(.is3d) .bxroot .tlabel:hover { background: rgb(240, 196, 108) !important; color: rgb(43, 34, 16) !important; }
+.ym-scope .mvx-view .mv:not(.is3d) .bxroot .legend-box { width: max-content !important; min-height: 0px !important; background: none !important; border: 0px !important; box-shadow: none !important; border-radius: 0px !important; }
+.ym-scope .mvx-view .mv:not(.is3d) .bxroot .cell, .ym-scope .mvx-view .mv:not(.is3d) .bxroot .cell.mv-empty, .ym-scope .mvx-view .mv:not(.is3d) .bxroot .cell:empty { border: 1px solid rgb(180, 191, 204) !important; border-radius: 2px !important; background: linear-gradient(rgb(255, 255, 255), rgb(238, 241, 244)) !important; box-shadow: none !important; }
+.ym-scope .mvx-view .mv:not(.is3d) .bxroot .mtxt { z-index: 3; }
+.ym-scope .mvx-view .mv:not(.is3d) .bxroot .canvas .mtxt:not(.gothic):not(.map-title) { padding: 0px 2px; border-radius: 2px; background: rgba(212, 225, 238, 0.92) !important; }
+.ym-scope .mvx-view .mv:not(.is3d) .map-lines { filter: brightness(0) saturate(100%) invert(58%) sepia(9%) saturate(841%) hue-rotate(176deg) brightness(91%) contrast(86%) !important; }
+.ym-scope .mvx-view .bxroot .cell::before { display: none !important; }
+.ym-scope .mvx-view .bxroot .cell, .ym-scope .mvx-view .bxroot .cell:not(:empty):not(.mv-empty) { justify-content: center; text-align: center; background: rgb(255, 255, 255) !important; border-color: rgb(214, 223, 235) !important; padding-left: 0px !important; }
+.ym-scope .mvx-view .bxroot .ln { text-decoration: underline; text-underline-offset: 2px; cursor: pointer; color: rgb(43, 92, 158) !important; font-family: Roboto, Arial, sans-serif !important; }
+.ym-scope .mvx-view .bxroot .legend-box { background: rgba(255, 255, 255, 0.9) !important; border: 1px solid rgb(214, 223, 235) !important; border-radius: 10px !important; box-shadow: rgba(16, 36, 64, 0.08) 0px 1px 3px !important; }
+.ym-scope .mvx-view .mv-body { border-radius: 14px; }
+.ym-scope .mvx-view .mv .bxroot .map-title { letter-spacing: 0.02em; display: block !important; color: rgb(19, 36, 59) !important; font-family: "Gill Sans", "Gill Sans MT", Calibri, Roboto, Arial, sans-serif !important; font-weight: 400 !important; background: none !important; }
+.ym-scope .mvx-view .bxroot .legend-box { background: rgb(199, 227, 240) !important; border: 0px !important; border-radius: 2px !important; box-shadow: none !important; font-family: Tahoma, Verdana, "Segoe UI", sans-serif !important; font-weight: 700 !important; }
+.ym-scope .mvx-view .bxroot .legend-box .hd, .ym-scope .mvx-view .bxroot .legend-box .cc { color: rgb(0, 0, 90) !important; }
+.ym-scope .mvx-view .bxroot .legend-box .cy { color: rgb(65, 72, 196) !important; }
+.ym-scope .mvx-view .bxroot .legend-box .dy { color: rgb(218, 56, 50) !important; }
+.ym-scope .mvx-view .bxroot .legend-box .ry { color: rgb(176, 125, 93) !important; }
+.ym-scope .mvx-view .bxroot .legend-box .hy { color: rgb(85, 174, 88) !important; }
+.ym-scope .mvx-view .bxroot .cell.c-CY { color: rgb(65, 72, 196) !important; }
+.ym-scope .mvx-view .bxroot .cell.c-DY { color: rgb(218, 56, 50) !important; }
+.ym-scope .mvx-view .bxroot .cell.c-RY { color: rgb(176, 125, 93) !important; }
+.ym-scope .mvx-view .bxroot .cell.c-HY { color: rgb(85, 174, 88) !important; }
+.ym-scope .mvx-view .mv.fs .mv-body { border-radius: 0px; }
+.ym-scope .mvx-view .mv:not(.is3d) .bxroot .canvas .mtxt { translate: var(--nx, 0) var(--ny, 0); }
+.ym-scope .mvx-view .mv:not(.is3d) .map-svg.authored .trk { stroke: rgb(111, 134, 166) !important; stroke-width: 15px !important; }
+.ym-scope .mvx-view .mv:not(.is3d) .map-svg.authored .trk-in { stroke: rgb(223, 231, 240) !important; stroke-width: 12.4px !important; }
+html[data-theme="dark"] .ym-scope .mvx-view .mv:not(.is3d) .map-svg.authored .trk { stroke: rgb(127, 151, 184) !important; }
+html[data-theme="dark"] .ym-scope .mvx-view .mv:not(.is3d) .map-svg.authored .trk-in { stroke: rgb(19, 38, 59) !important; }
+.ym-scope .mvx-view .mv:not(.is3d) .map-svg.bmp-art .trk, .ym-scope .mvx-view .mv:not(.is3d) .map-svg.bmp-art .trk-in { opacity: 0 !important; }
+.ym-scope .map-svg [data-rail] { stroke-opacity: 0 !important; }
+.ym-scope .mvx-view .bxroot .ln, html[data-theme="dark"] .ym-scope .mvx-view .bxroot .ln { font-weight: 600; color: rgb(18, 58, 107) !important; text-shadow: none !important; }
+.ym-scope .cell.c-GO, .ym-scope .mv .bxroot .cell.c-GO, .ym-scope .mvx-view .bxroot .cell.c-GO { color: rgb(17, 17, 17) !important; }
+.ym-scope .cell.c-HPM, .ym-scope .mv .bxroot .cell.c-HPM, .ym-scope .mvx-view .bxroot .cell.c-HPM { color: rgb(164, 82, 74) !important; }
+.ym-scope .cell.c-USE, .ym-scope .mv .bxroot .cell.c-USE, .ym-scope .mvx-view .bxroot .cell.c-USE { color: rgb(58, 70, 200) !important; }
+.ym-scope .cell.c-NOGO, .ym-scope .mv .bxroot .cell.c-NOGO, .ym-scope .mvx-view .bxroot .cell.c-NOGO { color: rgb(224, 40, 28) !important; }
+.ym-scope .mvx-view .bxroot .cell.c-GO, .ym-scope .mvx-view .bxroot .cell.c-HPM, .ym-scope .mvx-view .bxroot .cell.c-USE, .ym-scope .mvx-view .bxroot .cell.c-NOGO { background: rgb(255, 255, 255) !important; border-color: rgb(211, 219, 229) !important; }
+.ym-scope .legend-box .cc { color: rgb(19, 36, 59) !important; font-weight: 700; }
+.ym-scope .legend-box .go { color: rgb(17, 17, 17) !important; }
+.ym-scope .legend-box .pm { color: rgb(164, 82, 74) !important; }
+.ym-scope .legend-box .us { color: rgb(58, 70, 200) !important; }
+.ym-scope .legend-box .ng { color: rgb(224, 40, 28) !important; }
+html[data-theme="dark"] .ym-scope .cell.c-GO, html[data-theme="dark"] .ym-scope .legend-box .go, html[data-theme="dark"] .ym-scope .legend-box .cc { color: rgb(230, 237, 245) !important; }

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { MENUS } from "@/features/menu/api";
 import { AppProvider, useApp } from "@/shared/lib/app-state";
-import { MapIsland } from "@/features/yard-tracking/MapIsland";
+import { YardMapPage } from "@/features/yard-maps/YardMapPage";
 import { resolve, Router } from "./router";
 import { Footer } from "./shell/Footer";
 import { Header } from "./shell/Header";
@@ -20,7 +20,7 @@ function Workspace() {
       <Sidebar menus={MENUS} mini={mini} />
       <main className={`min-h-screen px-6 pb-16 pt-16 transition-[margin] duration-200 print:m-0 print:p-0 ${mini ? "ml-[72px]" : "ml-[276px]"}`}><Router /></main>
       <Footer />
-      <MapIsland map={(p => p.kind === "map" ? { yard: p.yard, shop: p.shop } : null)(resolve(app.stack[app.stack.length - 1]))} navWidth={mini ? 72 : 276} />
+      {(p => p.kind === "map" ? <YardMapPage map={{ yard: p.yard, shop: p.shop, mode: p.mode }} navWidth={mini ? 72 : 276} /> : null)(resolve(app.stack[app.stack.length - 1]))}
     </>
   );
 }

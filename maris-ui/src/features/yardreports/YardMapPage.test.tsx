@@ -96,9 +96,9 @@ describe("routing", () => {
     }
   });
 
-  it("sends the map screens to the drawn map island anyway, and only non-map pages to their rebuilt page", () => {
+  it("sends the map screens to the drawn map anyway, and only non-map pages to their rebuilt page", () => {
     for (const code of ["VHIC01", "VHYT80I", "VHY105I", "VHYT70I", "VHYT71I", "VHYT90I", "VHYT100I", "VHYT101I", "VHYT61I"]) {
-      expect(resolve({ kind: "screen", key: `egl:${code}`, label: code })).toEqual({ kind: "map", yard: expect.any(String), shop: expect.any(Boolean), label: code });
+      expect(resolve({ kind: "screen", key: `egl:${code}`, label: code })).toMatchObject({ kind: "map", yard: expect.any(String), shop: expect.any(Boolean), label: code });
     }
     expect(resolve({ kind: "screen", key: "egl:VHSW01I", label: "System wide" })).toEqual({ kind: "screen", key: "egl:VHSW01I", label: "System wide" });
   });

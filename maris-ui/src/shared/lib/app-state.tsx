@@ -12,7 +12,7 @@ export type Page =
   | { kind: "home" }
   | { kind: "menu"; section: string }
   | { kind: "screen"; key: string; label: string; yard?: string }
-  | { kind: "map"; yard: string; shop: boolean; label: string };
+  | { kind: "map"; yard: string; shop: boolean; label: string; mode?: "inquiry" | "update" };
 
 export const pageLabel = (p: Page) => p.kind === "home" ? "Home" : p.kind === "menu" ? p.section : p.label;
 

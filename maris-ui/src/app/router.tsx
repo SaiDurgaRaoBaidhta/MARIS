@@ -7,6 +7,7 @@ import { CLEAN_PAGES } from "@/features/screens/cleanPages";
 import { mapOf } from "@/features/screens/registry";
 import { eglCode, ScreenPage } from "@/features/screens/ScreenPage";
 import { InventoryPage } from "@/features/yard-tracking/InventoryPage";
+import { mapMode } from "@/features/yard-maps/mapMode";
 import { useApp, type Page } from "@/shared/lib/app-state";
 
 const rebuilt = (key: string) => !!CLEAN_PAGES[eglCode(key).toUpperCase()];
@@ -20,7 +21,7 @@ export function resolve(p: Page): Page {
   const m = /^(yardmap|shop):([A-Z]{2})/.exec(p.key);
   if (m) return { kind: "map", yard: m[2], shop: m[1] === "shop", label: p.label };
   const map = mapOf(p.key);
-  if (map) return { kind: "map", ...map, label: p.label };
+  if (map) return mapMode(eglCode(p.key)) === "update" ? { kind: "map", ...map, label: p.label, mode: "update" } : { kind: "map", ...map, label: p.label };
   if (rebuilt(p.key)) return p;
   return p;
 }
@@ -31,7 +32,7 @@ export function Router() {
   switch (page.kind) {
     case "home": return <HomePage />;
     case "menu": { const s = MENUS.sections.find(x => x.cap === page.section); return s ? <MenuPage key={s.cap} section={s} /> : null; }
-    case "map": return null;   // drawn full screen by <MapIsland> (app/App.tsx)
+    case "map": return null;   // drawn full screen by <YardMapPage> (app/App.tsx)
     case "screen":
       if (page.key === "web:inv") return <InventoryPage key={page.yard} initialYard={page.yard} />;
       if (page.key === "screenindex") return <ScreenIndexPage />;
