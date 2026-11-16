@@ -74,12 +74,27 @@ public final class ArrayFieldPart extends Part {
         return 0;
     }
 
+    /** a sub-field of this field in the owning record (null when the name is not below this field) */
+    Rec.Path below(String field) {
+        Rec.Path p = owner.path(field);
+        return p != null && p.field() != path.field() && p.chain().contains(path.field()) ? p : null;
+    }
+
     @Override
     public Object get(String attr) {
         return switch (attr) {
             case "self", "value" -> this;
             case "size" -> BigDecimal.valueOf(size());
-            default -> null;
+            // a single (non-array) field object's own value, e.g. txtTime <-> TIME-CAR-BRIT-HH-MM_of_TIME-CAR-BRIT_of_VHCBP1IW (VHCBP1I)
+            case "data" -> occurs() <= 1 ? owner.get(path.field().name() + " data") : null;
+            default -> {
+                // "SUB data": a sub-field's value (one value in a group, the column of values in an array)
+                String f = RecordPart.fieldOf(attr);
+                if (f != null) yield below(f) != null ? owner.get(attr) : null;
+                // a bare sub-field name: that sub-field as an object, e.g. REPR-LOC_of_DISP-REPR-DATA_of_VHRV01IW (VHRV01I)
+                Rec.Path sub = below(attr);
+                yield sub != null ? owner.fieldObject(sub) : null;
+            }
         };
     }
 
@@ -88,7 +103,15 @@ public final class ArrayFieldPart extends Part {
         if (attr.equals("self") || attr.equals("value")) {
             if (value instanceof List<?> l) owner.write(path, l);
             signal("self", this);
+            return;
         }
+        if (attr.equals("data") && occurs() <= 1) {                       // a single field object's own value
+            owner.set(path.field().name() + " data", value);
+            signal("data", get("data"));
+            return;
+        }
+        String f = RecordPart.fieldOf(attr);
+        if (f != null && below(f) != null) owner.set(attr, value);
     }
 
     @Override

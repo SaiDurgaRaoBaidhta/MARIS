@@ -6,5 +6,33 @@
     "apiTest": "com.bart.maris.middleware.api.configqueries.ConfigQueriesComponentsApiTest",
     "parityTest": "com.bart.maris.middleware.api.configqueries.ConfigQueriesComponentsParityTest",
     "uiTest": "src/features/configqueries/ComponentsPage.test.tsx"
+  },
+  "VHCF21I": {
+    "module": "configqueries",
+    "api": "com.bart.maris.middleware.api.configqueries.ConfigQueriesUpdatesController",
+    "apiTest": "com.bart.maris.middleware.api.configqueries.ConfigQueriesUpdatesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.configqueries.ConfigQueriesComponentAddParityTest",
+    "uiTest": "src/features/configqueries/ConfigUpdatePages.test.tsx"
+  },
+  "VHCF37I": {
+    "module": "configqueries",
+    "api": "com.bart.maris.middleware.api.configqueries.ConfigQueriesUpdatesController",
+    "apiTest": "com.bart.maris.middleware.api.configqueries.ConfigQueriesUpdatesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.configqueries.ConfigQueriesTruckParityTest",
+    "uiTest": "src/features/configqueries/ConfigUpdatePages.test.tsx"
+  },
+  "VHCF35I": {
+    "module": "configqueries",
+    "api": "com.bart.maris.middleware.api.configqueries.ConfigQueriesUpdatesController",
+    "apiTest": "com.bart.maris.middleware.api.configqueries.ConfigQueriesUpdatesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.configqueries.ConfigQueriesTruckParityTest",
+    "uiTest": "src/features/configqueries/ConfigUpdatePages.test.tsx"
+  },
+  "VHCF06I": {
+    "module": "configqueries",
+    "api": "com.bart.maris.middleware.api.configqueries.ConfigQueriesUpdatesController",
+    "apiTest": "com.bart.maris.middleware.api.configqueries.ConfigQueriesUpdatesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.configqueries.ConfigQueriesAxleParityTest",
+    "uiTest": "src/features/configqueries/ConfigUpdatePages.test.tsx"
   }
 }

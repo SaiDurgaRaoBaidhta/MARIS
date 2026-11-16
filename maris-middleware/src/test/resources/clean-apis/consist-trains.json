@@ -1,0 +1,24 @@
+{
+  "_about": "Lay-up (VHLT01I) and reconfigure (VHTR01I with its confirmation VHTR02I) on the clean API (agent T2).",
+  "VHLT01I": {
+    "module": "consist",
+    "api": "com.bart.maris.middleware.api.consist.ConsistTrainsController",
+    "apiTest": "com.bart.maris.middleware.api.consist.ConsistTrainsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.consist.ConsistLayUpParityTest",
+    "uiTest": "src/features/consist/TrainPages.test.tsx"
+  },
+  "VHTR01I": {
+    "module": "consist",
+    "api": "com.bart.maris.middleware.api.consist.ConsistTrainsController",
+    "apiTest": "com.bart.maris.middleware.api.consist.ConsistTrainsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.consist.ConsistReconfigureParityTest",
+    "uiTest": "src/features/consist/TrainPages.test.tsx"
+  },
+  "VHTR02I": {
+    "module": "consist",
+    "api": "com.bart.maris.middleware.api.consist.ConsistTrainsController",
+    "apiTest": "com.bart.maris.middleware.api.consist.ConsistTrainsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.consist.ConsistReconfigureParityTest",
+    "uiTest": "src/features/consist/TrainPages.test.tsx"
+  }
+}

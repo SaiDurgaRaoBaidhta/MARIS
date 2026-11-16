@@ -27,5 +27,19 @@
     "apiTest": "com.bart.maris.middleware.api.yardqueries.YardQueriesReportsApiTest",
     "parityTest": "com.bart.maris.middleware.api.yardqueries.YardQueriesReportsParityTest",
     "uiTest": "src/features/yardqueries/ReportsPage.test.tsx"
+  },
+  "VHYT26I": {
+    "module": "yardqueries",
+    "api": "com.bart.maris.middleware.api.yardqueries.YardQueriesYardLocationController",
+    "apiTest": "com.bart.maris.middleware.api.yardqueries.YardQueriesYardLocationApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardqueries.YardQueriesYardLocationParityTest",
+    "uiTest": "src/features/yardqueries/YardLocationPage.test.tsx"
+  },
+  "VHYT32I": {
+    "module": "yardqueries",
+    "api": "com.bart.maris.middleware.api.yardqueries.YardQueriesYardLocationController",
+    "apiTest": "com.bart.maris.middleware.api.yardqueries.YardQueriesYardLocationApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardqueries.YardQueriesOutOfServiceParityTest",
+    "uiTest": "src/features/yardqueries/OutOfServicePage.test.tsx"
   }
 }

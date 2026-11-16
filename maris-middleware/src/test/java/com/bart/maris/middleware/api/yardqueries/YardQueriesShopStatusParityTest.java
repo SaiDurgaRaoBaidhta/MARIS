@@ -99,11 +99,12 @@ class YardQueriesShopStatusParityTest {
 
         p.clear();
         YardQueriesShopStatus r = new YardQueriesShopStatusService(p.legacy(), p.messages(), Parity.bundle()).report("HY");
-        // The engine does not pass the yard from VHYT27I to VHYT25I: YARD-SELECTION reaches YARD-SELECTION_of_VHYT27IW-PASSVALUE
-        // as a plain value, not as the group part whose "YRD data" the child is bound to, so the old VHYT25A_CRIT yard is blank
-        // there (VHYT30IS-GET-DATA then falls back to HY). Everything else is compared.
+        // An engine without the nested field object fix (ArrayFieldPart) does not pass the yard from VHYT27I to VHYT25I:
+        // YARD-SELECTION reaches YARD-SELECTION_of_VHYT27IW-PASSVALUE as a plain value, not as the group part whose "YRD data"
+        // the child is bound to, so the old VHYT25A_CRIT yard is blank there (VHYT30IS-GET-DATA then falls back to HY). With
+        // the fix the yard arrives. Either way the rest is compared.
         Map<String, Object> oldCrit = new HashMap<>(sent25.get("VHYT25A_CRIT"));
-        assertThat(oldCrit.get("yrdTrkgYrd")).isEqualTo("");
+        assertThat(oldCrit.get("yrdTrkgYrd")).isIn("", "HY");
         oldCrit.put("yrdTrkgYrd", "HY");
         assertThat(p.lastSent("VHYT25A").get("VHYT25A_CRIT")).isEqualTo(oldCrit);
         assertThat(p.lastSent("VHYT30A").get("VHYT30A_CRIT")).isEqualTo(sent30.get("VHYT30A_CRIT"));

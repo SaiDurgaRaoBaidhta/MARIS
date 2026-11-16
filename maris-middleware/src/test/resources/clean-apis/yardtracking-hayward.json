@@ -1,0 +1,10 @@
+{
+  "_about": "The Hayward yard update map (VHYT05I) on the clean API (agent T2).",
+  "VHYT05I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingHaywardController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingHaywardApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingHaywardParityTest",
+    "uiTest": "src/features/yardtracking/HaywardYardPage.test.tsx"
+  }
+}

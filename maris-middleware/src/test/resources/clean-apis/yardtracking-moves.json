@@ -1,0 +1,24 @@
+{
+  "_about": "Yard tracking car moves (agent T5): VHYT11I car move, VHYT13I orientation, VHYT24I yard car list hard copy.",
+  "VHYT11I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingMoveController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMoveApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMoveParityTest",
+    "uiTest": "src/features/yardtracking/MovePages.test.tsx"
+  },
+  "VHYT13I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingMoveController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMoveApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMoveParityTest",
+    "uiTest": "src/features/yardtracking/MovePages.test.tsx"
+  },
+  "VHYT24I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingMoveController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMoveApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMoveParityTest",
+    "uiTest": "src/features/yardtracking/MovePages.test.tsx"
+  }
+}

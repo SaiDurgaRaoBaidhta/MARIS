@@ -1,0 +1,38 @@
+{
+  "_about": "Yard tracking maps (agent T1): VHYT40I/41I Dublin-Pleasanton, VHYT50I/51I Pittsburg-Bay Point, VHYT04I Hayward shop.",
+  "VHYT40I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingMapsController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMapsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMapsParityTest",
+    "uiTest": "src/features/yardtracking/TrackingMapPage.test.tsx"
+  },
+  "VHYT41I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingMapsController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMapsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMapsParityTest",
+    "uiTest": "src/features/yardtracking/TrackingMapPage.test.tsx"
+  },
+  "VHYT50I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingMapsController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMapsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMapsParityTest",
+    "uiTest": "src/features/yardtracking/TrackingMapPage.test.tsx"
+  },
+  "VHYT51I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingMapsController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMapsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMapsParityTest",
+    "uiTest": "src/features/yardtracking/TrackingMapPage.test.tsx"
+  },
+  "VHYT04I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingMapsController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMapsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMapsParityTest",
+    "uiTest": "src/features/yardtracking/TrackingMapPage.test.tsx"
+  }
+}

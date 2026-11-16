@@ -1,0 +1,52 @@
+{
+  "_about": "Screens of the consist module rebuilt on the clean API, with their tests (consist maintenance: the old screens' rules run by ConsistRuleRunner).",
+  "VHMT01I": {
+    "module": "consist",
+    "api": "com.bart.maris.middleware.api.consist.ConsistMaintenanceController",
+    "apiTest": "com.bart.maris.middleware.api.consist.ConsistMaintenanceApiTest",
+    "parityTest": "com.bart.maris.middleware.api.consist.ConsistMaintenanceParityTest",
+    "uiTest": "src/features/consist/ConsistMaintenancePages.test.tsx"
+  },
+  "VHCM01I": {
+    "module": "consist",
+    "api": "com.bart.maris.middleware.api.consist.ConsistMaintenanceController",
+    "apiTest": "com.bart.maris.middleware.api.consist.ConsistMaintenanceApiTest",
+    "parityTest": "com.bart.maris.middleware.api.consist.ConsistMaintenanceParityTest",
+    "uiTest": "src/features/consist/ConsistMaintenancePages.test.tsx"
+  },
+  "VHCT01I": {
+    "module": "consist",
+    "api": "com.bart.maris.middleware.api.consist.ConsistMaintenanceController",
+    "apiTest": "com.bart.maris.middleware.api.consist.ConsistMaintenanceApiTest",
+    "parityTest": "com.bart.maris.middleware.api.consist.ConsistMaintenanceParityTest",
+    "uiTest": "src/features/consist/ConsistMaintenancePages.test.tsx"
+  },
+  "VHCC01I": {
+    "module": "consist",
+    "api": "com.bart.maris.middleware.api.consist.ConsistMaintenanceController",
+    "apiTest": "com.bart.maris.middleware.api.consist.ConsistMaintenanceApiTest",
+    "parityTest": "com.bart.maris.middleware.api.consist.ConsistMaintenanceParityTest",
+    "uiTest": "src/features/consist/ConsistMaintenancePages.test.tsx"
+  },
+  "VHTS01I": {
+    "module": "consist",
+    "api": "com.bart.maris.middleware.api.consist.ConsistMaintenanceController",
+    "apiTest": "com.bart.maris.middleware.api.consist.ConsistMaintenanceApiTest",
+    "parityTest": "com.bart.maris.middleware.api.consist.ConsistMaintenanceParityTest",
+    "uiTest": "src/features/consist/ConsistMaintenancePages.test.tsx"
+  },
+  "VHSC01I": {
+    "module": "consist",
+    "api": "com.bart.maris.middleware.api.consist.ConsistMaintenanceController",
+    "apiTest": "com.bart.maris.middleware.api.consist.ConsistMaintenanceApiTest",
+    "parityTest": "com.bart.maris.middleware.api.consist.ConsistMaintenanceParityTest",
+    "uiTest": "src/features/consist/ConsistMaintenancePages.test.tsx"
+  },
+  "VHCY01I": {
+    "module": "consist",
+    "api": "com.bart.maris.middleware.api.consist.ConsistMaintenanceController",
+    "apiTest": "com.bart.maris.middleware.api.consist.ConsistMaintenanceApiTest",
+    "parityTest": "com.bart.maris.middleware.api.consist.ConsistCarLocationParityTest",
+    "uiTest": "src/features/consist/ConsistMaintenancePages.test.tsx"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "_about": "Pseudo trains (agent T4): VHYT09I pseudo status train + VHYT01I its printer window, VHYT07I Hayward yard map, VHYT12I verify / reset a pseudo train.",
+  "VHYT09I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingPseudoController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingPseudoApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingPseudoTrainParityTest",
+    "uiTest": "src/features/yardtracking/PseudoTrainPages.test.tsx"
+  },
+  "VHYT01I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingPseudoController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingPseudoApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingPseudoTrainParityTest",
+    "uiTest": "src/features/yardtracking/PseudoTrainPages.test.tsx"
+  },
+  "VHYT07I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingPseudoController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingPseudoApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingHaywardMapParityTest",
+    "uiTest": "src/features/yardtracking/PseudoTrainPages.test.tsx"
+  },
+  "VHYT12I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingPseudoController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingPseudoApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingConsistVerifyParityTest",
+    "uiTest": "src/features/yardtracking/PseudoTrainPages.test.tsx"
+  }
+}

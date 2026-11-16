@@ -1,0 +1,52 @@
+{
+  "_about": "Yard tracking (agent T7): VHYT60I Concord shop, VHYT96I Richmond shop, VHYT31I shop activity and its prints VHYT23I / VHYT22I, VHYT52I pseudo correction, VHYT54I force clear.",
+  "VHYT60I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingShopMapsController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingShopMapsParityTest",
+    "uiTest": "src/features/yardtracking/TrackingMapPage.test.tsx"
+  },
+  "VHYT96I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingShopMapsController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingShopMapsParityTest",
+    "uiTest": "src/features/yardtracking/TrackingMapPage.test.tsx"
+  },
+  "VHYT31I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscParityTest",
+    "uiTest": "src/features/yardtracking/YardTrackingMiscPages.test.tsx"
+  },
+  "VHYT23I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscParityTest",
+    "uiTest": "src/features/yardtracking/YardTrackingMiscPages.test.tsx"
+  },
+  "VHYT22I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscParityTest",
+    "uiTest": "src/features/yardtracking/YardTrackingMiscPages.test.tsx"
+  },
+  "VHYT52I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscParityTest",
+    "uiTest": "src/features/yardtracking/YardTrackingMiscPages.test.tsx"
+  },
+  "VHYT54I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscParityTest",
+    "uiTest": "src/features/yardtracking/YardTrackingMiscPages.test.tsx"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "_about": "Track windows of the yard tracking module (agent T3): one track's cars and the windows it opens, rebuilt on the clean API with their tests.",
+  "VHYT08I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingTrackController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingTrackApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingTrackParityTest",
+    "uiTest": "src/features/yardtracking/TrackPages.test.tsx"
+  },
+  "VHYT02I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingTrackController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingTrackApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingTrackReportParityTest",
+    "uiTest": "src/features/yardtracking/TrackPages.test.tsx"
+  },
+  "VHYT06I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingTrackController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingTrackApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingTrackReasonParityTest",
+    "uiTest": "src/features/yardtracking/TrackPages.test.tsx"
+  },
+  "VHYT14I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingTrackController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingTrackApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingTrackFixOrderParityTest",
+    "uiTest": "src/features/yardtracking/TrackPages.test.tsx"
+  }
+}

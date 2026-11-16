@@ -145,8 +145,9 @@ public final class Interp {
             case For f -> {
                 Ref v = lookupLocal(f.var());
                 if (v == null) {
-                    v = newLocal(f.var(), new TypeRef("int", 9, 0));
-                    frames.peek().put(key(f.var()), v instanceof RecRef rr ? rr.rec : v);
+                    Ref made = newLocal(f.var(), new TypeRef("int", 9, 0));
+                    frames.peek().put(key(f.var()), made instanceof RecRef rr ? rr.rec : made);
+                    v = lookupLocal(f.var());                       // the counter as a field (an INT), not as record text
                 }
                 BigDecimal by = f.by() == null ? BigDecimal.ONE : Conv.number(eval(f.by()));
                 store(v, eval(f.from()));
@@ -164,10 +165,11 @@ public final class Interp {
                     Ref r = e instanceof Name n ? resolve(n) : null;
                     if (r instanceof RecRef rr) args.add(rr.rec);
                     else if (r instanceof FieldRef fr) args.add(fieldAsRecord(fr));
-                    else throw new EngineException("call " + c.program() + ": argument is not a record");
+                    else args.add(textAsRecord(Conv.string(eval(e))));      // a literal for a service's string parameter
                 }
                 host.callProgram(c.program(), args, this);
                 for (int i = 0; i < c.args().size(); i++) {               // copy back fields passed as records
+                    if (!(c.args().get(i) instanceof Name)) continue;
                     Ref r = resolve((Name) c.args().get(i));
                     if (r instanceof FieldRef fr) {
                         System.arraycopy(args.get(i).data, 0, fr.rec.data, fr.offset(), fr.field().bytes());
@@ -188,7 +190,7 @@ public final class Interp {
             case LocalDecl d -> {
                 Ref v = newLocal(d.name(), d.type());
                 frames.peek().put(key(d.name()), v instanceof RecRef rr ? rr.rec : v);
-                if (d.init() != null) store(v, eval(d.init()));
+                if (d.init() != null) store(lookupLocal(d.name()), eval(d.init()));   // through its field, like every later write
             }
             case Exit x -> throw new ExitSignal(x.what().equals("function") ? "function" : x.what());
         }
@@ -506,10 +508,23 @@ public final class Interp {
         for (int i = 1; i <= dims.get(d).occurs(); i++) { idx[d] = i; iterate(fr, dims, idx, d + 1, each); }
     }
 
+    /** a text passed to a program's string parameter (e.g. call "printDnC"(..., "CT", ...)) */
+    private static Rec textAsRecord(String text) {
+        int n = Math.max(1, text.length());
+        FieldLayout f = new FieldLayout("ARG", "arg", com.bart.maris.middleware.legacy.layout.FieldType.CHAR, n, 0, n, 1, 0, false, List.of());
+        Rec r = new Rec("ARG", new RecordLayout("ARG", "field", n, List.of(f)));
+        byte[] b = text.getBytes(java.nio.charset.StandardCharsets.ISO_8859_1);
+        System.arraycopy(b, 0, r.data, 0, b.length);
+        return r;
+    }
+
     /** the bytes of a field passed to a program as if it were a record */
     private Rec fieldAsRecord(FieldRef fr) {
         FieldLayout f = fr.field();
-        Rec r = new Rec(f.name(), new RecordLayout(f.name(), "field", f.bytes(), f.children().isEmpty() ? List.of(f) : f.children()));
+        List<FieldLayout> fields = f.children().isEmpty()                    // a single field starts the record (its offset is the parent's)
+                ? List.of(new FieldLayout(f.name(), f.json(), f.type(), f.length(), f.decimals(), f.bytes(), 1, 0, f.filler(), List.of()))
+                : f.children();
+        Rec r = new Rec(f.name(), new RecordLayout(f.name(), "field", f.bytes(), fields));
         System.arraycopy(fr.rec.data, fr.offset(), r.data, 0, f.bytes());
         return r;
     }
@@ -726,20 +741,20 @@ public final class Interp {
     /** vgLib.findStr(source, sourceIndex, sourceLength, searchString): 0 found (index updated), 1 not found */
     private Object findStr(Call c) {
         Ref src = resolve((Name) c.args().get(0));
-        Ref idxRef = resolve((Name) c.args().get(1));
+        Ref idxRef = c.args().get(1) instanceof Name n1 ? resolve(n1) : null;       // a literal start index is allowed (VHCY01I)
         int len = Conv.number(eval(c.args().get(2))).intValue();
         String search = Conv.rtrim(Conv.string(eval(c.args().get(3))));
-        int start = Conv.number(read(idxRef)).intValue();
+        int start = idxRef != null ? Conv.number(read(idxRef)).intValue() : Conv.number(eval(c.args().get(1))).intValue();
         if (src instanceof FieldRef fr && fr.dims() > 0) {
             List<FieldRef> els = elementsFrom(new FieldRef(fr.rec, fr.path, fr.isArray() ? append(fr.idx, start) : fr.idx, null, null));
             for (int i = 0; i < Math.min(len, els.size()); i++) {
-                if (Conv.compare(read(els.get(i)), search) == 0) { store(idxRef, BigDecimal.valueOf(start + i)); return BigDecimal.ZERO; }
+                if (Conv.compare(read(els.get(i)), search) == 0) { if (idxRef != null) store(idxRef, BigDecimal.valueOf(start + i)); return BigDecimal.ZERO; }
             }
             return BigDecimal.ONE;
         }
         String s = Conv.string(read(src));
         int at = s.indexOf(search, Math.max(0, start - 1));
-        if (at >= 0 && at < start - 1 + len) { store(idxRef, BigDecimal.valueOf(at + 1)); return BigDecimal.ZERO; }
+        if (at >= 0 && at < start - 1 + len) { if (idxRef != null) store(idxRef, BigDecimal.valueOf(at + 1)); return BigDecimal.ZERO; }
         return BigDecimal.ONE;
     }
 
