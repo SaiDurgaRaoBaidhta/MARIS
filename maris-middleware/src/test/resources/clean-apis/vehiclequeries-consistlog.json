@@ -1,0 +1,45 @@
+{
+  "_about": "Vehicle queries screens rebuilt by agent B: the consist log and the daily vehicle status, with their tests.",
+  "VHCL01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistLogController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistLogApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistLogParityTest",
+    "uiTest": "src/features/vehiclequeries/ConsistLogPage.test.tsx"
+  },
+  "VHCL02I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistLogController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistLogApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistLogParityTest",
+    "uiTest": "src/features/vehiclequeries/ConsistLogPage.test.tsx"
+  },
+  "VHDVS1I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistLogController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistLogApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesDailyStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/DailyStatusPage.test.tsx"
+  },
+  "VHDVS2I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistLogController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistLogApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesDailyStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/DailyStatusPage.test.tsx"
+  },
+  "VHDVS3I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistLogController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistLogApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesDailyStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/DailyStatusPage.test.tsx"
+  },
+  "VHDVS4I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistLogController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistLogApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesDailyStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/DailyStatusPage.test.tsx"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "_about": "Screens of the incident events module rebuilt on the clean API, with their tests.",
+  "VHIE01I": {
+    "module": "incidentevents",
+    "api": "com.bart.maris.middleware.api.incidentevents.IncidentEventsController",
+    "apiTest": "com.bart.maris.middleware.api.incidentevents.IncidentEventsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.incidentevents.IncidentEventsParityTest",
+    "uiTest": "src/features/incidentevents/IncidentEventsPages.test.tsx"
+  },
+  "VHIE02I": {
+    "module": "incidentevents",
+    "api": "com.bart.maris.middleware.api.incidentevents.IncidentEventsController",
+    "apiTest": "com.bart.maris.middleware.api.incidentevents.IncidentEventsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.incidentevents.IncidentEventsParityTest",
+    "uiTest": "src/features/incidentevents/IncidentEventsPages.test.tsx"
+  },
+  "VHIE06I": {
+    "module": "incidentevents",
+    "api": "com.bart.maris.middleware.api.incidentevents.IncidentEventsController",
+    "apiTest": "com.bart.maris.middleware.api.incidentevents.IncidentEventsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.incidentevents.IncidentEventsParityTest",
+    "uiTest": "src/features/incidentevents/IncidentEventsPages.test.tsx"
+  },
+  "VHIE03I": {
+    "module": "incidentevents",
+    "api": "com.bart.maris.middleware.api.incidentevents.IncidentEventsWorksheetController",
+    "apiTest": "com.bart.maris.middleware.api.incidentevents.IncidentEventsWorksheetApiTest",
+    "parityTest": "com.bart.maris.middleware.api.incidentevents.IncidentEventsWorksheetParityTest",
+    "uiTest": "src/features/incidentevents/WorksheetPages.test.tsx"
+  },
+  "VHIE04I": {
+    "module": "incidentevents",
+    "api": "com.bart.maris.middleware.api.incidentevents.IncidentEventsWorksheetController",
+    "apiTest": "com.bart.maris.middleware.api.incidentevents.IncidentEventsWorksheetApiTest",
+    "parityTest": "com.bart.maris.middleware.api.incidentevents.IncidentEventsWorksheetParityTest",
+    "uiTest": "src/features/incidentevents/WorksheetPages.test.tsx"
+  },
+  "VHIE07I": {
+    "module": "incidentevents",
+    "api": "com.bart.maris.middleware.api.incidentevents.IncidentEventsWorksheetController",
+    "apiTest": "com.bart.maris.middleware.api.incidentevents.IncidentEventsWorksheetApiTest",
+    "parityTest": "com.bart.maris.middleware.api.incidentevents.IncidentEventsSymptomHistoryParityTest",
+    "uiTest": "src/features/incidentevents/WorksheetPages.test.tsx"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "_about": "Screens of the car bright module rebuilt on the clean API, with their tests.",
+  "VHCBR1I": {
+    "module": "carbright",
+    "api": "com.bart.maris.middleware.api.carbright.CarBrightController",
+    "apiTest": "com.bart.maris.middleware.api.carbright.CarBrightApiTest",
+    "parityTest": "com.bart.maris.middleware.api.carbright.CarBrightParityTest",
+    "uiTest": "src/features/carbright/CarCleaningPage.test.tsx"
+  },
+  "VHCBR2I": {
+    "module": "carbright",
+    "api": "com.bart.maris.middleware.api.carbright.CarBrightController",
+    "apiTest": "com.bart.maris.middleware.api.carbright.CarBrightApiTest",
+    "parityTest": "com.bart.maris.middleware.api.carbright.CarBrightParityTest",
+    "uiTest": "src/features/carbright/CarCleaningPage.test.tsx"
+  },
+  "VHCBP1I": {
+    "module": "carbright",
+    "api": "com.bart.maris.middleware.api.carbright.CarBrightController",
+    "apiTest": "com.bart.maris.middleware.api.carbright.CarBrightThoroughCleanApiTest",
+    "parityTest": "com.bart.maris.middleware.api.carbright.CarBrightThoroughCleanParityTest",
+    "uiTest": "src/features/carbright/ThoroughCleanPage.test.tsx"
+  }
+}

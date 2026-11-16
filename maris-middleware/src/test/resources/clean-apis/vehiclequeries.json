@@ -1,0 +1,325 @@
+{
+  "_about": "Screens of the vehicle queries module rebuilt on the clean API, with their tests.",
+  "VHCP01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesBatchParityTest",
+    "uiTest": "src/features/vehiclequeries/BatchReportPage.test.tsx"
+  },
+  "VHDP01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesBatchParityTest",
+    "uiTest": "src/features/vehiclequeries/BatchReportPage.test.tsx"
+  },
+  "VHFO01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesBatchParityTest",
+    "uiTest": "src/features/vehiclequeries/BatchReportPage.test.tsx"
+  },
+  "VHMC01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesBatchParityTest",
+    "uiTest": "src/features/vehiclequeries/BatchReportPage.test.tsx"
+  },
+  "VHMR01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesBatchParityTest",
+    "uiTest": "src/features/vehiclequeries/BatchReportPage.test.tsx"
+  },
+  "VHMR02I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesBatchParityTest",
+    "uiTest": "src/features/vehiclequeries/BatchReportPage.test.tsx"
+  },
+  "VHMR03I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesBatchParityTest",
+    "uiTest": "src/features/vehiclequeries/BatchReportPage.test.tsx"
+  },
+  "VHNG01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesBatchParityTest",
+    "uiTest": "src/features/vehiclequeries/BatchReportPage.test.tsx"
+  },
+  "VHOT01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesBatchParityTest",
+    "uiTest": "src/features/vehiclequeries/BatchReportPage.test.tsx"
+  },
+  "VHPS01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesBatchParityTest",
+    "uiTest": "src/features/vehiclequeries/BatchReportPage.test.tsx"
+  },
+  "VHRC03I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesBatchParityTest",
+    "uiTest": "src/features/vehiclequeries/BatchReportPage.test.tsx"
+  },
+  "VHPT01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesBatchParityTest",
+    "uiTest": "src/features/vehiclequeries/BatchReportPage.test.tsx"
+  },
+  "VHYTOTI": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesBatchParityTest",
+    "uiTest": "src/features/vehiclequeries/BatchReportPage.test.tsx"
+  },
+  "VHCSH1I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesCarStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/CarStatusHistoryPage.test.tsx"
+  },
+  "VHCSH2I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesCarStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/CarStatusHistoryPage.test.tsx"
+  },
+  "VHHF01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesHomeYardFleetParityTest",
+    "uiTest": "src/features/vehiclequeries/HomeYardFleetPage.test.tsx"
+  },
+  "VHHF02I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesHomeYardFleetParityTest",
+    "uiTest": "src/features/vehiclequeries/HomeYardFleetPage.test.tsx"
+  },
+  "VHCHR1I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesCarHoursParityTest",
+    "uiTest": "src/features/vehiclequeries/CarHoursPage.test.tsx"
+  },
+  "VHFR01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesFleetReportParityTest",
+    "uiTest": "src/features/vehiclequeries/FleetReportPage.test.tsx"
+  },
+  "VHRC01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesRepeaterCarsParityTest",
+    "uiTest": "src/features/vehiclequeries/RepeaterCarsPage.test.tsx"
+  },
+  "VHRC02I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesRepeaterCarsParityTest",
+    "uiTest": "src/features/vehiclequeries/RepeaterCarsPage.test.tsx"
+  },
+  "VHYS01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesHomeYardStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/StatusReportPage.test.tsx"
+  },
+  "VHYS02I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesHomeYardStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/StatusReportPage.test.tsx"
+  },
+  "VHYS03I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesHomeYardStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/StatusReportPage.test.tsx"
+  },
+  "VHYS04I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesHomeYardStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/StatusReportPage.test.tsx"
+  },
+  "VHYS05I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesHomeYardStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/StatusReportPage.test.tsx"
+  },
+  "VHYS06I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesYardStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/StatusReportPage.test.tsx"
+  },
+  "VHYS07I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesYardStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/StatusReportPage.test.tsx"
+  },
+  "VHYS08I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesYardStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/StatusReportPage.test.tsx"
+  },
+  "VHYS09I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesYardStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/StatusReportPage.test.tsx"
+  },
+  "VHYS10I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesYardStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/StatusReportPage.test.tsx"
+  },
+  "VHSV01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesVehicleStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/VehiclePages.test.tsx"
+  },
+  "VHSV02I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesVehicleStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/VehiclePages.test.tsx"
+  },
+  "VHSV04I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesVehicleStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/VehiclePages.test.tsx"
+  },
+  "VHSV05I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesVehicleStatusParityTest",
+    "uiTest": "src/features/vehiclequeries/VehiclePages.test.tsx"
+  },
+  "VHSV06I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesCarInquiryParityTest",
+    "uiTest": "src/features/vehiclequeries/CarInquiryPage.test.tsx"
+  },
+  "VHSV07I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesCarInquiryParityTest",
+    "uiTest": "src/features/vehiclequeries/CarInquiryPage.test.tsx"
+  },
+  "VHST05I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistTrackingController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistTrackingApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistTrackingParityTest",
+    "uiTest": "src/features/vehiclequeries/ConsistTrackingPage.test.tsx"
+  },
+  "VHST02I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistTrackingController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistTrackingApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistTrackingParityTest",
+    "uiTest": "src/features/vehiclequeries/ConsistTrackingPage.test.tsx"
+  },
+  "VHST04I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistTrackingController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistTrackingApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistTrackingParityTest",
+    "uiTest": "src/features/vehiclequeries/ConsistTrackingPage.test.tsx"
+  },
+  "VHST01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistTrackingController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistTrackingApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistTrackingParityTest",
+    "uiTest": "src/features/vehiclequeries/ConsistTrackingPage.test.tsx"
+  },
+  "VHST03I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistTrackingController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistTrackingApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesConsistTrackingParityTest",
+    "uiTest": "src/features/vehiclequeries/ConsistTrackingPage.test.tsx"
+  },
+  "VHCO01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesMiscController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesMiscApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesMiscParityTest",
+    "uiTest": "src/features/vehiclequeries/MiscPages.test.tsx"
+  },
+  "VHDC01I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesMiscController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesMiscApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesMiscParityTest",
+    "uiTest": "src/features/vehiclequeries/MiscPages.test.tsx"
+  },
+  "VHSCM1I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesMiscController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesMiscApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesMiscParityTest",
+    "uiTest": "src/features/vehiclequeries/MiscPages.test.tsx"
+  },
+  "VHCHG1I": {
+    "module": "vehiclequeries",
+    "api": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesMiscController",
+    "apiTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesMiscApiTest",
+    "parityTest": "com.bart.maris.middleware.api.vehiclequeries.VehicleQueriesMiscParityTest",
+    "uiTest": "src/features/vehiclequeries/MiscPages.test.tsx"
+  }
+}

@@ -13,5 +13,13 @@
     "apiTest": "com.bart.maris.middleware.api.ics.IcsApiTest",
     "parityTest": "com.bart.maris.middleware.api.ics.IcsParityTest",
     "uiTest": "src/features/ics/IcsReportPage.test.tsx"
+  },
+  "VHIC32I": {
+    "module": "ics",
+    "api": "com.bart.maris.middleware.api.ics.IcsController",
+    "apiTest": "com.bart.maris.middleware.api.ics.IcsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.ics.IcsMenuParityTest",
+    "uiTest": "src/features/ics/IcsReportPage.test.tsx",
+    "_note": "menu without programs: its one button opens VHIC30I, so it routes to the ICS report page"
   }
 }

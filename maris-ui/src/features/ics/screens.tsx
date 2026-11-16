@@ -6,4 +6,5 @@ import { IcsReportPage } from "./IcsReportPage";
 export const CLEAN_SCREENS: Record<string, () => ReactNode> = {
   VHIC30I: () => <IcsReportPage />,   // ICS reports: criteria
   VHIC31I: () => <IcsReportPage />,   // ICS reports: the report (shown on the same page)
+  VHIC32I: () => <IcsReportPage />,   // ICS reports menu: its only button opens VHIC30I
 };
