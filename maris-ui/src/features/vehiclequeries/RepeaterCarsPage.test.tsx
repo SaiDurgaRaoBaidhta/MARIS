@@ -14,7 +14,7 @@ describe("Repeater cars (old VHRC01I / VHRC02I)", () => {
   it("starts on the old screen's yard and lists a car's incidents", async () => {
     const mw = fakeMiddleware({ ...base, "GET /api/v1/vehicle-queries/repeater-cars": () => ({ body: LIST }) });
     render(<AppProvider><RepeaterCarsPage /></AppProvider>);
-    expect(await screen.findByLabelText("Home Yard")).toHaveValue("ALL");
+    await waitFor(() => expect(screen.getByLabelText("Home Yard")).toHaveValue("ALL"));   // the value arrives after the first render
     await userEvent.selectOptions(screen.getByLabelText("Home Yard"), "CY");
     await userEvent.type(screen.getByLabelText("Cars"), "1101");
     await userEvent.click(screen.getByRole("button", { name: "Display" }));

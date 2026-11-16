@@ -24,7 +24,7 @@ describe("Car hours test update (old VHVM08I)", () => {
     await show(<CarHoursTestPage />);
     await userEvent.type(await screen.findByLabelText("Enter Car Number"), "1101");
     await userEvent.click(screen.getByRole("button", { name: "Search" }));
-    expect(await screen.findByLabelText("Current Location")).toHaveValue("HY01");
+    await waitFor(() => expect(screen.getByLabelText("Current Location")).toHaveValue("HY01"));   // the value arrives after the first render
     await userEvent.type(screen.getByLabelText("Enter the Test Hours"), "25");
     expect(screen.getByLabelText("New Hours to Next PM")).toHaveValue("15");
     expect(screen.getByLabelText("New Hours From Last PM")).toHaveValue("235");

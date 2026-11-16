@@ -23,7 +23,7 @@ describe("ICS reports page (old VHIC30I / VHIC31I)", () => {
   it("loads the options: the revenue date, the lists and the printers", async () => {
     fakeMiddleware({ "GET /api/v1/ics/options": () => ({ body: OPTIONS }) });
     page();
-    expect(await screen.findByLabelText("Revenue date")).toHaveValue("2026-11-12");
+    await waitFor(() => expect(screen.getByLabelText("Revenue date")).toHaveValue("2026-11-12"));   // the value arrives after the first render
     expect(screen.getByLabelText("Yard")).toHaveValue("ALL");
     expect(within(screen.getByLabelText("Printer")).getByRole("option", { name: "DUBLIN TMZ (DUBLNHP1)" })).toBeInTheDocument();
   });

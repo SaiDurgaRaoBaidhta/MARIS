@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { AppProvider } from "@/shared/lib/app-state";
@@ -29,7 +29,7 @@ describe("Vehicle parts status / mod tracking (old VHVM11I)", () => {
     await userEvent.click(screen.getByRole("button", { name: "List" }));
     expect(mw.calls(`${B}/search`)[0].body).toMatchObject({ dateFrom: "01-01-2025", dateTo: "11-15-2026", sortOrder: "1" });
     await userEvent.click(await within(screen.getByRole("region", { name: "Events" })).findByText("123456789"));
-    expect(await screen.findByLabelText("Comments")).toHaveValue("OLD");
+    await waitFor(() => expect(screen.getByLabelText("Comments")).toHaveValue("OLD"));   // the value arrives after the first render
     await userEvent.clear(screen.getByLabelText("Comments"));
     await userEvent.type(screen.getByLabelText("Comments"), "NEW");
     await userEvent.click(screen.getByRole("button", { name: "Update" }));

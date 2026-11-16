@@ -20,7 +20,7 @@ describe("Vehicle status (old VHSV01I / VHSV02I)", () => {
       "GET /api/v1/vehicle-queries/vehicle-status/incidents/29990010/narrative": () => ({ body: ["DOOR STUCK"] }),
       "GET /api/v1/vehicle-queries/vehicle-status/consist": () => ({ body: { consist: "201-03", cars: ["<1101", "1102>"] } }) });
     render(<AppProvider><VehicleStatusPage /></AppProvider>);
-    expect(await screen.findByLabelText("From Date")).toHaveValue("2026-10-01");
+    await waitFor(() => expect(screen.getByLabelText("From Date")).toHaveValue("2026-10-01"));   // the value arrives after the first render
     await userEvent.click(screen.getByLabelText("Open/Deferred Incidents"));
     await userEvent.selectOptions(screen.getByLabelText("Deferred Items"), "ALL");
     await userEvent.type(screen.getByLabelText("Car Number"), "1101");

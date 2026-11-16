@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { AppProvider } from "@/shared/lib/app-state";
@@ -23,7 +23,7 @@ describe("Sub job out the door (old VHSR04I)", () => {
     await userEvent.clear(screen.getByLabelText("Doc No."));
     await userEvent.type(screen.getByLabelText("Doc No."), "2");
     await userEvent.click(screen.getByRole("button", { name: "Find" }));
-    expect(await screen.findByLabelText("Date Out")).toHaveValue("2026-11-14");
+    await waitFor(() => expect(screen.getByLabelText("Date Out")).toHaveValue("2026-11-14"));   // the value arrives after the first render
     expect(screen.getByLabelText("Qty Out")).toHaveValue("1");
     await userEvent.selectOptions(screen.getByLabelText("Diagnostic Fault"), "F02");
     await userEvent.selectOptions(screen.getByLabelText("Diagnostic Work Type"), "BENCH");
