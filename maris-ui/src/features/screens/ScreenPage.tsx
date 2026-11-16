@@ -5,7 +5,6 @@ import { useWindowHeight } from "@/shared/hooks/useWindowHeight";
 import { useApp } from "@/shared/lib/app-state";
 import { fillTokens } from "@/shared/lib/tokens";
 import { PageHead } from "@/shared/ui/PageHead";
-import { useMock } from "@/shared/api/client";
 import { fetchScreen, runAction } from "./api";
 import { liveScreens } from "./live";
 import { LiveScreenPage } from "./LiveScreenPage";
@@ -24,7 +23,7 @@ export function splitTitle(t: string): [string, string] {
 }
 
 /** the EGL screen a key stands for: egl:VHIC30I, or a redesigned page whose title starts with the code (statveh -> VHSV01I) */
-function eglCode(key: string): string {
+export function eglCode(key: string): string {
   if (/^egl:/i.test(key)) return key.slice(4).split("?")[0];   // links may carry ?field=value for the child page
   const info = KNOWN[key];
   const c = info?.code || (info ? splitTitle(info.title)[0] : "");
@@ -36,9 +35,9 @@ const eglKey = (code: string) => Object.keys(KNOWN).find(k => k.toUpperCase() ==
 export function ScreenPage({ screenKey, label }: { screenKey: string; label: string }) {
   const code = eglCode(screenKey);
   const clean = CLEAN_PAGES[code.toUpperCase()];
-  const [live, setLive] = useState<string | false | null>(useMock || !code ? false : null);
+  const [live, setLive] = useState<string | false | null>(!code ? false : null);
   useEffect(() => {
-    if (useMock || !code) { setLive(false); return; }
+    if (!code) { setLive(false); return; }
     setLive(null);
     // menus stay tiles (the new UI's navigation); every other screen the engine knows, with an EGL layout, runs live
     Promise.all([liveScreens(), fetchScreen(layoutKey(eglKey(code))).catch(() => null)])
@@ -47,7 +46,7 @@ export function ScreenPage({ screenKey, label }: { screenKey: string; label: str
         setLive(name && d && !d.menu ? name : false);
       });
   }, [code, screenKey]);
-  if (clean && !useMock) return <>{clean()}</>;
+  if (clean) return <>{clean()}</>;
   if (live === null) return <><PageHead title={label} /><p className="p-8 text-slate-500" role="status">Loading…</p></>;
   return live ? <LiveScreenPage screen={live} label={label} /> : <StaticScreenPage screenKey={screenKey} label={label} />;
 }

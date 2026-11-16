@@ -1,0 +1,31 @@
+{
+  "_about": "Shop administration maps and the shop car move (agent T6): VHYT10I Hayward shop, VHYT95I Richmond shop, VHYT03I car move, VHYT42I its reason check.",
+  "VHYT10I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingShopAdminController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingShopAdminApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingShopAdminParityTest",
+    "uiTest": "src/features/yardtracking/ShopAdminPages.test.tsx"
+  },
+  "VHYT95I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingShopAdminController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingShopAdminApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingShopAdminParityTest",
+    "uiTest": "src/features/yardtracking/ShopAdminPages.test.tsx"
+  },
+  "VHYT03I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingShopAdminController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingShopAdminApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingShopAdminParityTest",
+    "uiTest": "src/features/yardtracking/ShopAdminPages.test.tsx"
+  },
+  "VHYT42I": {
+    "module": "yardtracking",
+    "api": "com.bart.maris.middleware.api.yardtracking.YardTrackingShopAdminController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingShopAdminApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingShopAdminParityTest",
+    "uiTest": "src/features/yardtracking/ShopAdminPages.test.tsx"
+  }
+}

@@ -7,7 +7,6 @@ npm install
 npm run dev        # http://localhost:5173, /api proxied to the middleware on http://localhost:8090
 npm run build      # type-check + production build in dist/
 npm run gen:api    # src/api/openapi.yaml -> src/api/generated/schema.ts
-VITE_MARIS_API=mock npm run dev   # demo data only, no middleware (the screen tools use this)
 ```
 
 By default the UI talks to `maris-middleware` (start it first: see its README). Sign on with a real MARIS
@@ -30,7 +29,7 @@ widgets committed edits), sends clicks and selections, follows the windows the o
 old screens' message prompts. Under the screen it lists the MARIS programs the last step called, with their times.
 
 MARIS sends no track capacity through its services, so the dashboard shows tracks in use and the busiest yard
-instead of track space used. The yard and shop maps still draw their built-in demo drawings.
+instead of track space used. The yard and shop maps draw their tracks from the map drawings and their cars from MARIS (/api/v1/fleet).
 
 ## Layout
 
@@ -42,7 +41,7 @@ maris-ui/
 ├── Dockerfile            # build -> nginx
 ├── nginx.conf.template   # MIDDLEWARE_UPSTREAM
 ├── index.html
-├── public/               # screens/*.json (layouts), data/ (mock fleet, map drawings), fonts, logo
+├── public/               # screens/*.json (layouts), data/ (map drawings), fonts, logo
 ├── tools/                # regenerate the JSON from the prototype; check-screens.mjs
 └── src/
     ├── main.tsx
@@ -50,7 +49,7 @@ maris-ui/
     ├── api/              # openapi.yaml (middleware contract), generated/schema.ts
     ├── shared/
     │   ├── ui/           # Icon + icon set, PageHead, Dialog, Toasts
-    │   ├── api/          # client.ts: fetch client, mock / http switch, Schemas
+    │   ├── api/          # client.ts: fetch client (the middleware behind /api), Schemas
     │   ├── hooks/        # useElementWidth
     │   └── lib/          # app-state.tsx (session, page stack, theme, toasts), tokens.ts
     ├── features/         # one per module, each with its api.ts and types.ts
@@ -69,7 +68,6 @@ maris-ui/
 
 ```
 docker build -t maris-ui .                                   # call the middleware (default)
-docker build -t maris-ui --build-arg VITE_MARIS_API=mock .   # demo data only
 docker run -p 8080:80 -e MIDDLEWARE_UPSTREAM=http://middleware:8090 maris-ui
 ```
 
@@ -89,7 +87,7 @@ The prototype had 211 MARIS desktop screens (from the EGL source) and about 50 h
 
 The contract is `src/api/openapi.yaml`: `POST /api/signon`, `GET /api/fleet` and `POST /api/screens/{screen}/actions/{control}`. The UI's API types are generated from it (`npm run gen:api`), so change the YAML first and regenerate. Each feature calls the back end only through its `api.ts` (`features/auth/api.ts`, `features/yard-tracking/api.ts`, `features/screens/api.ts`), and those go through `shared/api/client.ts`.
 
-By default every call is answered by a mock. Build or run with `VITE_MARIS_API=http` to call `/api` instead. Screen layouts, menus and map drawings are part of the UI and stay static.
+Every call goes to the middleware behind `/api`; all data comes from MARIS through it (there is no demo mode). Screen layouts, menus and map drawings are part of the UI and stay static.
 
 A push button that calls server programs sends:
 

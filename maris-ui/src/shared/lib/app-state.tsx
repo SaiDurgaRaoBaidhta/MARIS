@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { currentSession, signOff as endSession } from "@/features/auth/api";
 import type { Session } from "@/features/auth/types";
-import { onSessionExpired, useMock } from "@/shared/api/client";
+import { onSessionExpired } from "@/shared/api/client";
 import { Dialog } from "@/shared/ui/Dialog";
 import { Toasts, type Toast } from "@/shared/ui/Toasts";
 
@@ -39,7 +39,7 @@ const HOME: Page[] = [{ kind: "home" }];
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
-  const [restoring, setRestoring] = useState(!useMock);   // asking the middleware for a session kept across a reload
+  const [restoring, setRestoring] = useState(true);   // asking the middleware for a session kept across a reload
   const [stack, setStack] = useState<Page[]>(HOME);
   const [theme, setTheme] = useState<"light" | "dark">(() => document.documentElement.dataset.theme === "dark" ? "dark" : "light");
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -61,7 +61,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (useMock) return;
     currentSession().then(s => { if (s) setSession(s); }).catch(() => { /* sign on again */ }).finally(() => setRestoring(false));
   }, []);
   const signedOn = useRef(false); signedOn.current = !!session;

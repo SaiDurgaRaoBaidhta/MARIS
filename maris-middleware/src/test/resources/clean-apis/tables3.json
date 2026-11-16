@@ -1,0 +1,15 @@
+{
+  "_about": "Screens of the table maintenance (app 3) module rebuilt on the clean API, with their tests.",
+  "VHCF49I": { "module": "tables3", "api": "com.bart.maris.middleware.api.tables3.Tables3Controller",
+    "apiTest": "com.bart.maris.middleware.api.tables3.Tables3SerialsApiTest", "parityTest": "com.bart.maris.middleware.api.tables3.Tables3SerialsParityTest",
+    "uiTest": "src/features/tables3/ComponentSerialsPage.test.tsx" },
+  "VHCF50I": { "module": "tables3", "api": "com.bart.maris.middleware.api.tables3.Tables3Controller",
+    "apiTest": "com.bart.maris.middleware.api.tables3.Tables3SerialsApiTest", "parityTest": "com.bart.maris.middleware.api.tables3.Tables3SerialsParityTest",
+    "uiTest": "src/features/tables3/ComponentSerialsPage.test.tsx" },
+  "VHCF51I": { "module": "tables3", "api": "com.bart.maris.middleware.api.tables3.Tables3Controller",
+    "apiTest": "com.bart.maris.middleware.api.tables3.Tables3SerialsApiTest", "parityTest": "com.bart.maris.middleware.api.tables3.Tables3SerialsParityTest",
+    "uiTest": "src/features/tables3/ComponentSerialsPage.test.tsx" },
+  "VHCF52I": { "module": "tables3", "api": "com.bart.maris.middleware.api.tables3.Tables3Controller",
+    "apiTest": "com.bart.maris.middleware.api.tables3.Tables3SerialsApiTest", "parityTest": "com.bart.maris.middleware.api.tables3.Tables3SerialsParityTest",
+    "uiTest": "src/features/tables3/ComponentSerialsPage.test.tsx" }
+}

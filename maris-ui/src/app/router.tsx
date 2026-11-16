@@ -3,18 +3,26 @@ import { HomePage } from "@/features/home/HomePage";
 import { MENUS } from "@/features/menu/api";
 import { MenuPage } from "@/features/menu/MenuPage";
 import { ScreenIndexPage } from "@/features/screen-index/ScreenIndexPage";
+import { CLEAN_PAGES } from "@/features/screens/cleanPages";
 import { mapOf } from "@/features/screens/registry";
-import { ScreenPage } from "@/features/screens/ScreenPage";
+import { eglCode, ScreenPage } from "@/features/screens/ScreenPage";
 import { InventoryPage } from "@/features/yard-tracking/InventoryPage";
 import { useApp, type Page } from "@/shared/lib/app-state";
 
-/** the page for a screen key, wherever it was reached from (side bar, menu tile, a button's wiring): map screens open the drawn map */
+const rebuilt = (key: string) => !!CLEAN_PAGES[eglCode(key).toUpperCase()];
+
+/** the page for a screen key, wherever it was reached from (side bar, menu tile, a button's wiring): every yard / shop map
+ *  opens the drawn map (the reference viewer's island), even one rebuilt on the clean API; only non-map screens that a module
+ *  rebuilt (a module's features/<module>/screens.tsx) open their new page. A map opened directly (Home, footer) too. */
 export function resolve(p: Page): Page {
+  if (p.kind === "map") return p;
   if (p.kind !== "screen") return p;
   const m = /^(yardmap|shop):([A-Z]{2})/.exec(p.key);
   if (m) return { kind: "map", yard: m[2], shop: m[1] === "shop", label: p.label };
   const map = mapOf(p.key);
-  return map ? { kind: "map", ...map, label: p.label } : p;
+  if (map) return { kind: "map", ...map, label: p.label };
+  if (rebuilt(p.key)) return p;
+  return p;
 }
 
 export function Router() {

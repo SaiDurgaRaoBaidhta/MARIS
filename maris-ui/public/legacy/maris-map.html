@@ -749,18 +749,16 @@ function isoToday() { const d = new Date(); return d.getFullYear() + '-' + pad2(
 function nowHM() { const d = new Date(); return pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
 function nowHMS() { const d = new Date(); return nowHM() + ':' + pad2(d.getSeconds()); }
 
-/* ---------------- session / user groups (from the AS-IS document) ---------------- */
-const USER_GROUPS = [
-  { group: 'Vehicle Trouble Desk Supervisor', role: 'VTD', users: ['TRBLDESK', 'VEHSUPR'] },
-  { group: 'Transportation', role: 'TRANS', users: ['CENTRAL', 'TRANS'] },
-  { group: 'Transportation Tower Foreworker', role: 'TOWER', users: ['CYTOWER', 'DYTOWER', 'HYTOWER', 'RYTOWER', 'DUBTMZ', 'MILTMZ', 'PITTMZ', 'SVBTMZ', 'TOWERS'] },
-  { group: 'Shop Supervisor', role: 'SHOP', users: ['CYSHOP', 'DYSHOP', 'HYSHOP', 'RYSHOP', 'SHOPSUPR'] },
-  { group: 'MARIS Administrator', role: 'ADMIN', users: ['MAXADMIN'] }
-];
+/* ---------------- session / user groups ---------------- */
+/* The real session (user, role, group, update) is injected from the React app (maris-map:open message) — the middleware's
+ * signed-on group, not a demo list. The island's own sign-on screens stay hidden. */
+const USER_GROUPS = [];
 
 const SESSION = {
-  user: 'TRBLDESK',
+  user: '',
   role: 'VTD',
+  group: '',                      // the middleware's group description, shown where the old demo list named the group
+  yard: null,                     // the group's own yard (YRD_TRKG_YRD), for its home menu button
   /* yard/shop maps open read-only (Inquiry) for the trouble desk, editable (Update) for towers, shops and admin */
   forced: null,
   get update() { return this.forced != null ? this.forced : (this.role === 'TOWER' || this.role === 'SHOP' || this.role === 'ADMIN'); }
@@ -820,21 +818,6 @@ function parseCar(spec, defHome) {
 /* digits only - "$(3131" and "3131}" are the same car 3131 */
 function carNo(s) { return String(s || '').replace(/\D/g, ''); }
 
-function genCar(r, homeCode) {
-  let num;
-  if (r() < 0.35) {
-    const n = 3001 + Math.floor(r() * 299);
-    num = r() < 0.5 ? n + ')' : '(' + n;
-  } else {
-    const n = 4001 + Math.floor(r() * 775);
-    num = r() < 0.5 ? n + 'V' : 'v' + n;
-  }
-  const home = HOME_YARDS.includes(homeCode) && r() < 0.85 ? homeCode : HOME_YARDS[Math.floor(r() * HOME_YARDS.length)];
-  const x = r();
-  const stat = x < 0.8 ? 'GO' : x < 0.88 ? 'NO GO' : x < 0.94 ? 'AWPART' : x < 0.97 ? 'PM' : 'MODHLD';
-  return car(num, home, stat);
-}
-
 /* ---------------- yard state (built from the map layouts, kept for the browser session) ---------------- */
 const _yardCache = {};
 
@@ -849,61 +832,95 @@ function specCaps(spec, caps) {
   });
 }
 
-function buildTracks(code) {
-  const y = YARDS[code];
-  const home = HOME_YARDS.includes(code) ? code : (MAPS[code] && MAPS[code].home) || 'DY';
-  const caps = { 'T-95': 30 };
-  specCaps(MAPS[code], caps);
-  specCaps(SHOPS[code], caps);
-  // yard and shop maps can share a track: merge their car lists position by position
-  const cars = {};
-  [(MAPS[code] || {}).cars, (SHOPS[code] || {}).cars].forEach(src => Object.keys(src || {}).forEach(id => {
-    const dst = cars[id] = cars[id] || [];
-    src[id].forEach((c, i) => { if (c) dst[i] = c; });
-  }));
-  const tracks = Object.keys(caps).map(id => {
-    const t = { id, cap: caps[id], cars: new Array(caps[id]).fill(null) };
-    (cars[id] || []).forEach((c, i) => { if (i < t.cap) t.cars[i] = parseCar(c, home); });
-    return t;
-  });
-  // pseudo track: real data where the screenshots show it, otherwise a seeded demo fill
-  const pt = tracks.find(t => t.id === 'T-95');
-  if (PSEUDO_TRACK[code]) PSEUDO_TRACK[code].forEach((c, i) => { pt.cars[i] = parseCar(c, home); });
-  else {
-    const r = rng(code + 'T-95');
-    const n = 8 + Math.floor(r() * 14);
-    for (let i = 0; i < n; i++) pt.cars[i] = genCar(r, home);
-  }
-  // T-95 first, then the tracks in the order they appear on the map
-  return [pt, ...tracks.filter(t => t !== pt)];
-}
-
 /* a yard with hardly any cars (no screenshot data for it): its empty tracks get a seeded sample fill, packed from the track end */
-function fillSparse(code, tracks) {
-  if ((MAPS[code] || {}).real) return tracks;                 // a yard drawn from the client's map keeps exactly its own cars
-  const real = tracks.filter(t => t.id !== 'T-95'), used = real.reduce((a, t) => a + t.cars.filter(Boolean).length, 0), cap = real.reduce((a, t) => a + t.cap, 0);
-  if (!cap || used / cap >= 0.25) return tracks;
-  const home = HOME_YARDS.includes(code) ? code : (MAPS[code] && MAPS[code].home) || 'DY';
-  real.forEach(t => {
-    if (t.cars.some(Boolean) || t.cap < 2) return;
-    const r = rng(code + ':fill:' + t.id), n = Math.round(t.cap * (0.35 + r() * 0.45));
-    for (let i = t.cap - n; i < t.cap; i++) t.cars[i] = genCar(r, home);
-  });
-  return tracks;
+/* ---------------- real fleet data (posted from the React app, middleware program VHSW01A) ---------------- */
+/* When present it replaces the baked demo cars for that yard, in every map, inventory and report that reads yardTracks. */
+const _realFleet = {};
+/* The DB names a sub-location its own way (Berryessa's storage tails are SSTOR1..3, the map binds STOR1..3):
+ * match a track id exactly, then ignoring punctuation / case, then with a leading S (station) added or dropped. */
+function specTrackIds(spec, ids) {
+  ((spec && spec.items) || []).forEach(it => { const [type, t] = it; if (type === 'row' || type === 'col' || type === 'cell' || type === 'cells') ids[t] = true; });
+}
+const _specIds = {};
+function aliasTrack(code, id) {
+  const ids = _specIds[code] || (_specIds[code] = (() => { const s = {}; specTrackIds(MAPS[code], s); specTrackIds(SHOPS[code], s); return s; })());
+  if (ids[id]) return id;
+  const norm = s => String(s).toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const n = norm(id);
+  for (const t of Object.keys(ids)) {
+    const nt = norm(t);
+    if (nt === n) return t;
+    const ns = n.replace(/^S(?=[A-Z])/, ''), nts = nt.replace(/^S(?=[A-Z])/, '');
+    if ((nts === ns || ns === nt || n === nts) && (ns !== n || nts !== nt)) return t;   // SSTOR1 (MARIS) = STOR1 (drawing)
+  }
+  return id;
+}
+/* Where a MARIS track goes on the drawing: its own track, or a box of a drawn row. The old screens bind sub-locations to the
+ * boxes of one row (VHYT100IConnections: S-1A / S-1B are row S-1's boxes, SS-5A..D row SS-05's, SS-06 the exchange's last
+ * two boxes after ST-13's eight). Returns [track id, first box]. */
+/* Generated from the old screens (tools/egl-map-boxes.mjs, tools/match-map-boxes.mjs): for each yard, a MARIS track (its name
+ * without punctuation) -> per map that shows it, the drawn [track, box] of each of its positions. */
+const MAP_BOXES = {"RY":{"YT":[],"TF01":[[["TF-01",0],["TF-01",1],["TF-01",2],["TF-01",3],["TF-01",4],["TF-01",5],["TF-01",6],["TF-01",7],["TF-01",8],["TF-01",9]]],"TF02":[[["TF-02",0],["TF-02",1],["TF-02",2],["TF-02",3],["TF-02",4],["TF-02",5],["TF-02",6],["TF-02",7],["TF-02",8],["TF-02",9]]],"TF03":[[["TF-03",0],["TF-03",1],["TF-03",2],["TF-03",3],["TF-03",4],["TF-03",5],["TF-03",6],["TF-03",7],["TF-03",8],["TF-03",9]]],"TF04":[[["TF-04",0],["TF-04",1],["TF-04",2],["TF-04",3],["TF-04",4],["TF-04",5],["TF-04",6],["TF-04",7],["TF-04",8],["TF-04",9]]],"TF05":[[["TF-05",0],["TF-05",1],["TF-05",2],["TF-05",3],["TF-05",4],["TF-05",6],["TF-05",7],["TF-05",8],["TF-05",9],["TF-05",10],["TF-05",11],["TF-05",12],["TF-05",13],["TF-05",14],["TF-05",15],["TF-05",16]]],"RT92":[[["RT-92",0],["RT-92",1],["RT-92",2],["RT-92",3]],[["RT-92",0],["RT-92",1],["RT-92",2],["RT-92",3]]],"ST06":[[["ST-06",0],["ST-06",1],["ST-06",2],["ST-06",3],["ST-06",4],["ST-06",5],["ST-06",6],["ST-06",7],["ST-06",8],["ST-06",9],["ST-06",10],["ST-06",11],["ST-06",12],["ST-06",13],["ST-06",14],null]],"ST07":[[["ST-07",0],["ST-07",1],["ST-07",2],["ST-07",3],["ST-07",4],["ST-07",5],["ST-07",6],["ST-07",7],["ST-07",8],["ST-07",9],["ST-07",10],["ST-07",11],["ST-07",12],["ST-07",13],["ST-07",14]]],"ST08":[[["ST-08",0],["ST-08",1],["ST-08",2],["ST-08",3],["ST-08",4],["ST-08",5],["ST-08",6],["ST-08",7],["ST-08",8],["ST-08",9],["ST-08",10],["ST-08",11],["ST-08",12],["ST-08",13],["ST-08",14],["ST-08",15]]],"ST09":[[["ST-09",0],["ST-09",1],["ST-09",2],["ST-09",3],["ST-09",4],["ST-09",5],["ST-09",6],["ST-09",7],["ST-09",8],["ST-09",9],["ST-09",10],["ST-09",11],["ST-09",12],["ST-09",13],["ST-09",14],["ST-09",15],["ST-09",16],["ST-09",17],["ST-09",18]]],"ST10":[[["ST-10",0],["ST-10",1],["ST-10",2],["ST-10",3],["ST-10",4],["ST-10",5],["ST-10",6],["ST-10",7],["ST-10",8],["ST-10",9]]],"RR01":[[["RR-01",0],["RR-01",1],["RR-01",2],["RR-01",3],["RR-01",4]],[["RR-01",0],["RR-01",1],["RR-01",2],["RR-01",3],["RR-01",4]]],"RR02":[[["RR-02",0],["RR-02",1],["RR-02",2],["RR-02",3],["RR-02",4]],[["RR-02",0],["RR-02",1],["RR-02",2],["RR-02",3],["RR-02",4]]],"RR03":[[["RR-03",0],["RR-03",1],["RR-03",2],["RR-03",3],["RR-03",4],["RR-03",5],["RR-03",6],["RR-03",7]],[["RR-03",0],["RR-03",1],["RR-03",2],["RR-03",3],["RR-03",4],["RR-03",5],["RR-03",6],["EX-2",0]]],"ST11":[[["ST-11",0],["ST-11",1],["ST-11",2],["ST-11",3],["ST-11",4],["ST-11",5],["ST-11",6],["ST-11",7],["ST-11",8],["ST-11",9],["ST-11",10]]],"ST12":[[["ST-12",0],["ST-12",1],["ST-12",2],["ST-12",3],["ST-12",4],["ST-12",5],["ST-12",6],["ST-12",7],["ST-12",8],["ST-12",9],["ST-12",10],["ST-12",11]]],"ST13":[[["ST-13",0],["ST-13",1],["ST-13",2],["ST-13",3],["ST-13",4],["ST-13",5],["ST-13",6],["ST-13",7],["ST-13",8],["ST-13",9],["ST-13",10],["ST-13",11],["ST-13",12],["ST-13",13],["ST-13",14]]],"ST14":[[["ST-14",0],["ST-14",1],["ST-14",2],["ST-14",3],["ST-14",4],["ST-14",5],["ST-14",6],["ST-14",7],["ST-14",8],["ST-14",9],["ST-14",10],["ST-14",11],["ST-14",12],["ST-14",13],["ST-14",14],null,null]],"ST15":[[["ST-15",0],["ST-15",1],["ST-15",2],["ST-15",3],["ST-15",4],["ST-15",5],["ST-15",6],["ST-15",7],["ST-15",8],["ST-15",9],["ST-15",10],["ST-15",11],["ST-15",12],["ST-15",13],["ST-15",14],["ST-15",15],["ST-15",16]]],"ST16":[[["ST-16",0],["ST-16",1],["ST-16",2],["ST-16",3],["ST-16",4],["ST-16",5],["ST-16",6],["ST-16",7],["ST-16",8],["ST-16",9],["ST-16",10],["ST-16",11],["ST-16",12],["ST-16",13],["ST-16",14],["ST-16",15],["ST-16",16]]],"ST17":[[["ST-17",0],["ST-17",1],["ST-17",2],["ST-17",3],["ST-17",4],["ST-17",5],["ST-17",6],["ST-17",7],["ST-17",8],["ST-17",9],["ST-17",10],["ST-17",11],["ST-17",12],["ST-17",13],["ST-17",14],["ST-17",15],["ST-17",16],["ST-17",17]]],"ST18":[[["ST-18",0],["ST-18",1],["ST-18",2],["ST-18",3],["ST-18",4],["ST-18",5],["ST-18",6],["ST-18",7],["ST-18",8],["ST-18",9]]],"RT91":[[["RT-91",0],["RT-91",1]]],"TR1":[[["TR-1",0],["TR-1",1],["TR-1",2],["TR-1",3]],[["TR-1",0],["TR-1",1],["TR-1",2],["TR-1",3]]],"S1":[[["S-1",0],["S-1",1]]],"S2":[[["S-2",0],["S-2",1]]],"S3":[[["S-3",0],["S-3",1]]],"3A":[[["S-3",5]]],"3B":[[["S-3",4]]],"3C":[[["S-3",3]]],"3D":[[["S-3",2]]],"1A":[[["S-1",5]]],"2A":[[["S-2",5]]],"BP1A":[[["BP-1",0]]],"RRP2A":[[["RRP-2",0]]],"RRP2B":[[["RRP-2",1]]],"1B":[[["S-1",4]]],"2B":[[["S-2",4]]],"BP1B":[[["BP-1",1]]],"RRP3B":[[["RRP-3",1]]],"RRP3C":[[["RRP-3",2]]],"RRP2C":[[["RRP-2",2]]],"1C":[[["S-1",3]]],"2C":[[["S-2",3]]],"BP2A":[[["BP-2",0]]],"RRP3A":[[["RRP-3",0]]],"S8BP":[[["S3-BP",0]]],"1D":[[["S-1",2]]],"2D":[[["S-2",2]]],"SA1":[[["S-1",0],["S-1",1]]],"SA2":[[["S-2",0]]],"SA3":[[["S-3",0],["S-3",1]]],"TA1":[[["TA",0]]],"TA2":[[["TA",1]]],"TA3":[[["TA",2]]],"WT1":[[["WT-1",0]]],"BP1C":[[["BP-1",2]]],"BPIT02":[[["BPC",1]]],"BPIT03":[[["BPC",2]]],"BPIT04":[[["BPC",3]]],"BPIT05":[[["BPC",4]]],"BPIT06":[[["BPC",5]]],"WT0":[[["WT-0",0]]],"TA4":[[["TA",3]]],"BP0A":[[["BP-0",0]]],"TA5":[[["TA",4]]],"TA6":[[["TA",5]]]},"DY":{"DTF01":[[["DTF-01",0],["DTF-01",1],["DTF-01",2],["DTF-01",3],["DTF-01",4],["DTF-01",5],["DTF-01",6],["DTF-01",7],["DTF-01",8],["DTF-01",9]]],"DTF02":[[["DTF-02",0],["DTF-02",1],["DTF-02",2],["DTF-02",3],["DTF-02",4],["DTF-02",5],["DTF-02",6],["DTF-02",7],["DTF-02",8],["DTF-02",9],["DTF-02",10],["DTF-02",11],["DTF-02",12],["DTF-02",13]]],"DTF03":[[["DTF-03",0],["DTF-03",1],["DTF-03",2],["DTF-03",3],["DTF-03",4],["DTF-03",5],["DTF-03",6],["DTF-03",7],["DTF-03",8],["DTF-03",9],["DTF-03",10],["DTF-03",11],["DTF-03",12]]],"DTF04":[[["DTF-04",0],["DTF-04",1],["DTF-04",2],["DTF-04",3],["DTF-04",4],["DTF-04",5],["DTF-04",6],["DTF-04",7],["DTF-04",8],["DTF-04",9]]],"RR1A":[[["RR-1A",0],["RR-1A",1]],[["RR-1A",0],["RR-3",0]]],"RT2":[[["RT-2",0],["RT-2",1],["RT-2",2],["RT-2",3]]],"YT":[],"ST03":[[["ST-03",3],["ST-03",2],["ST-03",1],["ST-03",0]]],"ST04":[[["ST-04",7],["ST-04",6],["ST-04",5],["ST-04",4],["ST-04",3],["ST-04",2],["ST-04",1],["ST-04",0]]],"ST05":[[["ST-05",9],["ST-05",8],["ST-05",7],["ST-05",6],["ST-05",5],["ST-05",4],["ST-05",3],["ST-05",2],["ST-05",1],["ST-05",0]]],"ST06":[[["ST-06",12],["ST-06",11],["ST-06",10],["ST-06",9],["ST-06",8],["ST-06",7],["ST-06",6],["ST-06",5],["ST-06",4],["ST-06",3],["ST-06",2],["ST-06",1],["ST-06",0]]],"ST07":[[["ST-07",12],["ST-07",11],["ST-07",10],["ST-07",9],["ST-07",8],["ST-07",7],["ST-07",6],["ST-07",5],["ST-07",4],["ST-07",3],["ST-07",2],["ST-07",1],["ST-07",0]]],"ST08":[[["ST-08",12],["ST-08",11],["ST-08",10],["ST-08",9],["ST-08",8],["ST-08",7],["ST-08",6],["ST-08",5],["ST-08",4],["ST-08",3],["ST-08",2],["ST-08",1],["ST-08",0]]],"ST09":[[["ST-09",11],["ST-09",10],["ST-09",9],["ST-09",8],["ST-09",7],["ST-09",6],["ST-09",5],["ST-09",4],["ST-09",3],["ST-09",2],["ST-09",1],["ST-09",0]]],"ST10":[[["ST-10",11],["ST-10",10],["ST-10",9],["ST-10",8],["ST-10",7],["ST-10",6],["ST-10",5],["ST-10",4],["ST-10",3],["ST-10",2],["ST-10",1],["ST-10",0]]],"ST11":[[["ST-11",13],["ST-11",12],["ST-11",11],["ST-11",10],["ST-11",9],["ST-11",8],["ST-11",7],["ST-11",6],["ST-11",5],["ST-11",4],["ST-11",3],["ST-11",2],["ST-11",1],["ST-11",0]]],"ST13":[[["ST-13",7],["ST-13",6],["ST-13",5],["ST-13",4],["ST-13",3],["ST-13",2],["ST-13",1],["ST-13",0]],[["EX",0],["EX",1],["EX",2],["EX",3],["EX",4],["EX",5],["EX",6],["EX",7]]],"ST12":[[["ST-12",12],["ST-12",11],["ST-12",10],["ST-12",9],["ST-12",8],["ST-12",7],["ST-12",6],["ST-12",5],["ST-12",4],["ST-12",3],["ST-12",2],["ST-12",1],["ST-12",0]]],"RT1":[[["RT-1",0],["RT-1",1],["RT-1",2],["RT-1",3],["RT-1",4],["RT-1",5],["RT-1",6]]],"SS06":[[["SS-06",1],["SS-06",0]],[["EX",8],["EX",9]]],"BPIT02":[[["BPC",1]]],"BPIT03":[[["BPC",2]]],"BPIT04":[[["BPC",3]]],"BPIT05":[[["BPC",4]]],"BPIT06":[[["BPC",5]]],"RR1BP":[[["RR-1BP",0]]],"RR2BP":[[["RR-2BP",0]]],"S1A":[[["S-1",0]]],"S1B":[[["S-1",1]]],"S1WP":[[["S-1WP",0]]],"S2A":[[["S-2",0]]],"S2B":[[["S-2",1]]],"S2WP":[[["S-2WP",0]]],"S3A":[[["S-3",0]]],"S3B":[[["S-3",1]]],"S3N":[[["S-3N",0]]],"SS2A":[[["SS-2",0]]],"SS2B":[[["SS-2",1]]],"SS3A":[[["SS-03",0]]],"SS3B":[[["SS-03",1]]],"SS4A":[[["SS-04",0]]],"SS4B":[[["SS-04",1]]],"SS5A":[[["SS-05",0]]],"SS5B":[[["SS-05",1]]],"SS5C":[[["SS-05",2]]],"SS5D":[[["SS-05",3]]],"WT3A":[[["WT-3",0]]],"WT3B":[[["WT-3",1]]],"WT3C":[[["WT-3",2]]],"WT1":[[["WT-1",0]]],"RR2A":[[["RR-2",0]]],"RR2B":[[["RR-2",1]]],"RR3A":[[["RR-3",1]]],"RR3B":[[["RR-3",2]]],"RR1B":[[["RR-1",0]]]},"HY":{"COLOR":[[["T-10",0],["T-10",1],["T-10",2],["T-10",3],["T-10",4],["T-10",5],["T-10",6],["T-10",7],["T-10",8],["T-10",9],["T-10",10],["T-10",11],["T-10",12],["T-10",13],["T-10",14],["T-10",15],["T-10",16],["T-10",17],["T-10",18],["T-10",19],["T-10",20]]],"COLORT11":[[["T-11",0],["T-11",1],["T-11",2],["T-11",3],["T-11",4],["T-11",5],["T-11",6],["T-11",7],["T-11",8],["T-11",9],["T-11",10],["T-11",11],["T-11",12],["T-11",13],["T-11",14],["T-11",15],["T-11",16],["T-11",17]]],"COLORT2":[[["TT-1",0],["TT-1",1],["TT-1",2],["TT-1",3],["TT-1",4],["TT-1",5],["TT-1",6],["TT-1",7]]],"T12":[[["T-12",0],["T-12",1],["T-12",2],["T-12",3],["T-12",4],["T-12",5],["T-12",6],["T-12",7],["T-12",8],["T-12",9],["T-12",10],["T-12",11],["T-12",12],["T-12",13],["T-12",14]]],"TF01":[[["TF-01",0],["TF-01",1],["TF-01",2],["TF-01",3],["TF-01",4],["TF-01",5],["TF-01",6],["TF-01",7],["TF-01",8],["TF-01",9]]],"TF02":[[["TF-02",0],["TF-02",1],["TF-02",2],["TF-02",3],["TF-02",4],["TF-02",5],["TF-02",6],["TF-02",7],["TF-02",8],["TF-02",9]]],"TT":[[["TT",0],["TT",1],["TT",2],["TT",3],["TT",4],["TT",5],["TT",6],["TT",7],["TT",8],["TT",9]],[["TT",0],["TT",1],["TT",2],["TT",3],["TT",4],["TT",5],["TT",6],["TT",7],["TT",8],["TT",9]]],"R91":[[["R91",0],["R91",1],["R91",2],["R91",3],["R91",4],["R91",5],["R91",6],["R91",7]]],"R92":[[["R92",0],["R92",1],["R92",2],["R92",3]]],"R93":[[["R93",0],["R93",1],["R93",2]]],"TF03":[[["TF-03",0],["TF-03",1],["TF-03",2],["TF-03",3],["TF-03",4],["TF-03",5],["TF-03",6],["TF-03",7],["TF-03",8],["TF-03",9]]],"TF04":[[["TF-04",0],["TF-04",1],["TF-04",2],["TF-04",3],["TF-04",4],["TF-04",5],["TF-04",6],["TF-04",7],["TF-04",8],["TF-04",9]]],"TF05":[[["TF-05",0],["TF-05",1],["TF-05",2],["TF-05",3],["TF-05",4],["TF-05",5],["TF-05",6],["TF-05",7],["TF-05",8],["TF-05",9]]],"TF06":[[["TF-06",0],["TF-06",1],["TF-06",2],["TF-06",3],["TF-06",4],["TF-06",5],["TF-06",6],["TF-06",7],["TF-06",8],["TF-06",9]]],"TF07":[[["TF-07",0],["TF-07",1],["TF-07",2],["TF-07",3],["TF-07",4],["TF-07",5],["TF-07",6],["TF-07",7],["TF-07",8],["TF-07",9]]],"TF08":[[["TF-08",0],["TF-08",1],["TF-08",2],null,null,null,null,null,null,null]],"T13":[[["T-13",0],["T-13",1],["T-13",2],["T-13",3],["T-13",4],["T-13",5],["T-13",6],["T-13",7],["T-13",8],["T-13",9],["T-13",10],["T-13",11]]],"T14":[[["T-14",0],["T-14",1],["T-14",2],["T-14",3],["T-14",4],["T-14",5],["T-14",6],["T-14",7],["T-14",8],["T-14",9],["T-14",10],["T-14",11]]],"T15":[[["T-15",0],["T-15",1],["T-15",2],["T-15",3],["T-15",4],["T-15",5],["T-15",6],["T-15",7],["T-15",8],["T-15",9],["T-15",10],["T-15",11]]],"T16":[[["T-16",0],["T-16",1],["T-16",2],["T-16",3],["T-16",4],["T-16",5],["T-16",6],["T-16",7],["T-16",8],["T-16",9],["T-16",10],["T-16",11],["T-16",12],["T-16",13],["T-16",14],["T-16",15],["T-16",16],["T-16",17],["T-16",18],["T-16",19]]],"T17":[[["T-17",0],["T-17",1],["T-17",2],["T-17",3],["T-17",4],["T-17",5],["T-17",6],["T-17",7],["T-17",8],["T-17",9],["T-17",10],["T-17",11],["T-17",12],["T-17",13],["T-17",14],["T-17",15],["T-17",16],["T-17",17],["T-17",18],["T-17",19]]],"T18":[[["T-18",0],["T-18",1],["T-18",2],["T-18",3],["T-18",4],["T-18",5],["T-18",6],["T-18",7],["T-18",8],["T-18",9],["T-18",10],["T-18",11],["T-18",12],["T-18",13],["T-18",14],["T-18",15],["T-18",16],["T-18",17],["T-18",18],["T-18",19]]],"T19":[[["T-19",0],["T-19",1],["T-19",2],["T-19",3],["T-19",4],["T-19",5],["T-19",6],["T-19",7],["T-19",8],["T-19",9],["T-19",10],["T-19",11],["T-19",12],["T-19",13],["T-19",14],["T-19",15]]],"T20":[[["T-20",0],["T-20",1],["T-20",2],["T-20",3],["T-20",4],["T-20",5],["T-20",6],["T-20",7],["T-20",8],["T-20",9],["T-20",10],["T-20",11],["T-20",12],["T-20",13],["T-20",14],["T-20",15]]],"T21":[[["T-21",0],["T-21",1],["T-21",2],["T-21",3],["T-21",4],["T-21",5],["T-21",6],["T-21",7],["T-21",8],["T-21",9],["T-21",10],["T-21",11],["T-21",12]]],"T22":[[["T-22",0],["T-22",1],["T-22",2],["T-22",3],["T-22",4],["T-22",5],["T-22",6],["T-22",7],["T-22",8],["T-22",9],["T-22",10],null]],"T23":[[["T-23",0],["T-23",1],["T-23",2],["T-23",3],["T-23",4],["T-23",5],["T-23",6],["T-23",7],null,null,null,null,null,null,null,null,null,null,null,null,null]],"YT":[],"T25":[[["S-25",0],["S-25",1],["S-25",2],["S-25",3],["S-25",4],["S-25",5],["S-25",6],["S-25",7],["S-25",8],["S-25",9]]],"T24":[[["T-24",0],["T-24",1],["T-24",2],["T-24",3],["T-24",4],null,null,null],[["T-24",0],["T-24",1],["T-24",2],["T-24",3],["T-24",4]]],"T23A":[[["T-23A",0],["T-23A",1]],[["T-23A",0],["T-23A",1],["T-23A",2]]],"BPIT01":[[["APC",0]]],"BPIT02":[[["APC",1]]],"BPIT03":[[["APC",2]]],"BPIT04":[[["APC",3]]],"BPIT05":[[["APC",4]]],"BPIT06":[[["APC",5]]],"BPIT07":[[["APC",6]]],"BPIT08":[[["APC",7]]],"BPIT09":[[["APC",8]]],"BPIT10":[[["APC",9]]],"BPIT11":[[["APC",10]]],"BPIT12":[[["APC",11]]],"BPIT13":[[["APC",12]]],"BPIT14":[[["APC",13]]],"BPIT15":[[["APC",14]]],"BPIT16":[[["APC",15]]],"BPIT17":[[["APC",16]]],"BPIT18":[[["APC",17]]],"BPIT19":[[["APC",18]]],"BPIT20":[[["APC",19]]],"BPIT21":[[["APC",20]]],"BPIT22":[[["APC",21]]],"BPIT23":[[["APC",22]]],"BPIT24":[[["APC",23]]],"1N1":[[["1N",0]]],"1N2":[[["1N",1]]],"ES1":[[["ES-1",0]]],"ES2":[[["ES-2",0]]],"ES1N":[[["ES1-N",0]]],"ES2N":[[["ES2-N",0]]],"ES1S":[[["ES-1",1]]],"ES2S":[[["ES-2",1]]],"STA":[[["ST-A",0]]],"STB":[[["ST-B",0]]],"STC":[[["ST-C",0]]],"STD":[[["ST-D",0]]],"3S":[[["3S",0]]],"2S":[[["2S",0]]],"1S1":[[["1S",0]]],"1S2":[[["1S",1]]],"2N":[[["2N",0],["2N",1]]],"3N":[[["3N",0],["3N",1],["3N",2]]],"1B":[[["S1",1]]],"1C":[[["S1",2]]],"WTN":[[["WT-N",0]]],"WTS":[[["WT-S",0]]],"TCA":[[["TC-A",0]]],"TCB":[[["TC-B",0]]],"SI1A":[[["SI",0]]],"SI1B":[[["SI",1]]],"2A":[[["S2",0]]],"2B":[[["S2",1]]],"2C":[[["S2",2]]],"3A":[[["S3",0]]],"3B":[[["S3",1]]],"3C":[[["S3",2]]],"TT1":[[["TT-1",0],["TT-1",1],["TT-1",2],["TT-1",3],["TT-1",4],["TT-1",5],["TT-1",6],["TT-1",7]]],"S25":[[["S-25",0],["S-25",1],["S-25",2],["S-25",3],["S-25",4],["S-25",5],["S-25",6],["S-25",7],["S-25",8],["S-25",9]]],"SI1C":[[["SI",2]]],"SI1E":[[["SI",4]]],"SI1D":[[["SI",3]]]},"CY":{"TF01":[[["TF-01",0],["TF-01",1],["TF-01",2],["TF-01",3],["TF-01",4],["TF-01",5],["TF-01",6],["TF-01",7],["TF-01",8],["TF-01",9]]],"TF02":[[["TF-02",0],["TF-02",1],["TF-02",2],["TF-02",3],["TF-02",4],["TF-02",5],["TF-02",6],["TF-02",7],["TF-02",8],["TF-02",9]]],"TF03":[[["TF-03",0],["TF-03",1],["TF-03",2],["TF-03",3],["TF-03",4],["TF-03",5],["TF-03",6],["TF-03",7],["TF-03",8],["TF-03",9]]],"TF04":[[["TF-04",0],["TF-04",1],["TF-04",2],["TF-04",3],["TF-04",4],["TF-04",5],["TF-04",6],["TF-04",7],["TF-04",8],["TF-04",9]]],"TF05":[[["TF-05",0],["TF-05",1],["TF-05",2],["TF-05",3],["TF-05",4],["TF-05",5],["TF-05",6],["TF-05",7],["TF-05",8],["TF-05",9]]],"TF06":[[["TF-06",0],["TF-06",1],["TF-06",2],["TF-06",3],["TF-06",4],["TF-06",5],["TF-06",6],["TF-06",7],["TF-06",8],["TF-06",9]]],"TF07":[[["TF-07",0],["TF-07",1],["TF-07",2],["TF-07",3],["TF-07",4],["TF-07",5],["TF-07",6],["TF-07",7],["TF-07",8],["TF-07",10]]],"RR01":[[["RR-01",5],["RR-01",4],["RR-01",3],["RR-01",2],["RR-01",1],["RR-01",0]],[["RR-01",5],["RR-01",4],["RR-01",3],["RR-01",2],["RR-01",1],["RR-01",0]]],"RR02":[[["RR-02",6],["RR-02",5],["RR-02",4],["RR-02",3],["RR-02",2],["RR-02",1],["RR-02",0]],[["RR-02",6],["RR-02",5],["RR-02",4],["RR-02",3],["RR-02",2],["RR-02",1],["RR-02",0]]],"R90":[[["R90",0],["R90",1],["R90",2],["R90",3],["R90",4],["R90",5],["R90",6],["R90",7],["R90",8],["R90",9]]],"R91":[[["R91",0],["R91",1],["R91",2],["R91",3],["R91",4],["R91",5],["R91",6],["R91",7],["R91",8],["R91",9]]],"R92":[[["R92",0],["R92",1],["R92",2]]],"R93":[[["R93",0]]],"YT":[],"ST07":[[["ST-07",0],["ST-07",1],["ST-07",2],["ST-07",3],["ST-07",4]]],"ST08":[[["ST-08",0],["ST-08",1],["ST-08",2],["ST-08",3],["ST-08",4],["ST-08",5],["ST-08",6]]],"ST09":[[["ST-09",0],["ST-09",1],["ST-09",2],["ST-09",3],["ST-09",4],["ST-09",5],["ST-09",6],["ST-09",7],["ST-09",8]]],"ST10":[[["ST-10",0],["ST-10",1],["ST-10",2],["ST-10",3],["ST-10",4],["ST-10",5],["ST-10",6],["ST-10",7],["ST-10",8],["ST-10",9],["ST-10",10]]],"ST11":[[["ST-11",0],["ST-11",1],["ST-11",2],["ST-11",3],["ST-11",4],["ST-11",5],["ST-11",6],["ST-11",7],["ST-11",8],["ST-11",9],["ST-11",10],["ST-11",11]]],"ST12":[[["ST-12",0],["ST-12",1],["ST-12",2],["ST-12",3],["ST-12",4],["ST-12",5],["ST-12",6],["ST-12",7],["ST-12",8],["ST-12",9],["ST-12",10],["ST-12",11],["ST-12",12]]],"ST13":[[["ST-13",0],["ST-13",1],["ST-13",2],["ST-13",3],["ST-13",4],["ST-13",5],["ST-13",6],["ST-13",7],["ST-13",8],["ST-13",9],["ST-13",10],["ST-13",11],["ST-13",12],["ST-13",13]]],"ST14":[[["ST-14",0],["ST-14",1],["ST-14",2],["ST-14",3],["ST-14",4],["ST-14",5],["ST-14",6],["ST-14",7],["ST-14",8],["ST-14",9],["ST-14",10],["ST-14",11]]],"ST15":[[["ST-15",0],["ST-15",1],["ST-15",2],["ST-15",3],["ST-15",4],["ST-15",5],["ST-15",6],["ST-15",7],["ST-15",8],["ST-15",9],["ST-15",10],["ST-15",11]]],"ST16":[[["ST-16",0],["ST-16",1],["ST-16",2],["ST-16",3],["ST-16",4],["ST-16",5],["ST-16",6],["ST-16",7],["ST-16",8],["ST-16",9]]],"ST17":[[["ST-17",0],["ST-17",1],["ST-17",2],["ST-17",3],["ST-17",4],["ST-17",6],["ST-17",7],["ST-17",8]]],"ST18":[[["ST-18",0],["ST-18",1],["ST-18",2],["ST-18",3],["ST-18",4],["ST-18",5],["ST-18",6]]],"ST19":[[["ST-19",0],["ST-19",1],["ST-19",2],["ST-19",3],["ST-19",4],["ST-19",5],["ST-19",6],["ST-19",7]]],"ST20":[[["ST-20",0],["ST-20",1],["ST-20",2],["ST-20",3],["ST-20",4],["ST-20",5],["ST-20",6],["ST-20",7],["ST-20",8],["ST-20",9]]],"ST21":[[["ST-21",0],["ST-21",1],["ST-21",2],["ST-21",3],["ST-21",4],["ST-21",5],["ST-21",6],["ST-21",7],["ST-21",8],["ST-21",9]]],"ST22":[[["ST-22",0],["ST-22",1],["ST-22",2],["ST-22",3],["ST-22",4],["ST-22",5],["ST-22",6],["ST-22",7]]],"ST23":[[["ST-23",0],["ST-23",1]]],"ST24":[[["ST-24",0],["ST-24",1],["ST-24",2],["ST-24",3],["ST-24",4],["ST-24",5],["ST-24",6],["ST-24",7],["ST-24",8],["ST-24",9],["ST-24",10],["ST-24",11]]],"ST25":[[["ST-25",0],["ST-25",1],["ST-25",2],["ST-25",3],["ST-25",4],["ST-25",5],["ST-25",6],["ST-25",7],["ST-25",8],["ST-25",9],["ST-25",10],["ST-25",11],["ST-25",12],["ST-25",13]]],"ST26":[[["ST-26",0],["ST-26",1],["ST-26",2],["ST-26",3],["ST-26",4],["ST-26",5],["ST-26",6],["ST-26",7],["ST-26",8],["ST-26",9],["ST-26",10],["ST-26",11],["ST-26",12],["ST-26",13]]],"RR03":[[["RR-03",3],["RR-03",2],["RR-03",1],["RR-03",0]],[["RR-03",3],["RR-03",2],["RR-03",1],["RR-03",0]]],"1A":[[["S-1",0]]],"3A":[[["S-3",0]]],"3B":[[["S-3",1]]],"3C":[[["S-3",2]]],"3D":[[["S-3",3]]],"1B":[[["S-1",1]]],"2A":[[["S-2",0]]],"2B":[[["S-2",1]]],"2C":[[["S-2",2]]],"2D":[[["S-2",3]]],"S71":[[["S-7",0]]],"S72":[[["S-7",1]]],"S73":[[["S-7",2]]],"RRBP2":[[["RRBP-2A",0]]],"RRBP3":[[["RRBP-3A",0]]],"S61":[[["S-6",0]]],"S62":[[["S-6",1]]],"S63":[[["S-6",2]]],"S64":[[["S-6",3]]],"S65":[[["S-6",4]]],"S51":[[["S-5",0]]],"S52":[[["S-5",1]]],"S53":[[["S-5",2]]],"S54":[[["S-5",3]]],"S55":[[["S-5",4]]],"S56":[[["S-5",5]]],"MT1":[[["MT-01",0]]],"MT2":[[["MT-01",1]]],"MT3":[[["MT-01",2]]],"MT4":[[["MT-01",3]]],"S81":[[["S8",0]]],"S82":[[["S8",1]]],"S1N":[[["S1-N",0]]],"S2N":[[["S2-N",0]]],"BPIT02":[[["BPC",1]]],"BPIT03":[[["BPC",2]]],"BPIT04":[[["BPC",3]]],"BPIT05":[[["BPC",4]]],"BPIT06":[[["BPC",5]]],"RRBP2B":[[["RRBP-2B",0]]],"RRBP3B":[[["RRBP-3B",0]]],"RM1":[[["RM",0]]],"RM2":[[["RM",1]]],"RM3":[[["RM",2]]],"RM4":[[["RM",3]]],"SNTF":[[["PSYT",0],["PSYT",1],["PSYT",2],["PSYT",3],["PSYT",4],["PSYT",5],["PSYT",6],["PSYT",7],["PSYT",8],["PSYT",9]]]},"DP":{"L1":[[["L-1",0],["L-1",1],["L-1",2],["L-1",3],["L-1",4],["L-1",5],["L-1",6],["L-1",7],["L-1",8],["L-1",9]]],"L2":[[["L-2",0],["L-2",1],["L-2",2],["L-2",3],["L-2",4],["L-2",5],["L-2",6],["L-2",7],["L-2",8],["L-2",9]]],"LTM1":[[["TMZ-1",0],["TMZ-1",1],["TMZ-1",2],["TMZ-1",3],["TMZ-1",4],["TMZ-1",5],["TMZ-1",6],["TMZ-1",7],["TMZ-1",8],["TMZ-1",9]]],"LTM2":[[["TMZ-2",0],["TMZ-2",1],["TMZ-2",2],["TMZ-2",3],["TMZ-2",4],["TMZ-2",5],["TMZ-2",6],["TMZ-2",7],["TMZ-2",8],["TMZ-2",9]]],"LB1":[[["TM1-E",0],["TM1-E",1],["TM1-E",2],["TM1-E",3],["TM1-E",4],["TM1-E",5]]],"LB2":[[["TM2-E",0],["TM2-E",1],["TM2-E",2],["TM2-E",3],["TM2-E",4],["TM2-E",5]]],"LSTOR1":[[["LSTOR1",0],["LSTOR1",1],["LSTOR1",2],["LSTOR1",3],["LSTOR1",4],["LSTOR1",5],["LSTOR1",6],["LSTOR1",7],["LSTOR1",8],["LSTOR1",9],["LSTOR1",10],["LSTOR1",11],["LSTOR1",12],["LSTOR1",13],["LSTOR1",14],["LSTOR1",15],["LSTOR1",16],["LSTOR1",17],["LSTOR1",18],["LSTOR1",19],["LSTOR1",20],["LSTOR1",21]]],"LSTOR2":[[["LSTOR2",0],["LSTOR2",1],["LSTOR2",2],["LSTOR2",3],["LSTOR2",4],["LSTOR2",5],["LSTOR2",6],["LSTOR2",7],["LSTOR2",8],["LSTOR2",9],["LSTOR2",10],["LSTOR2",11],["LSTOR2",12],["LSTOR2",13],["LSTOR2",14],["LSTOR2",15],["LSTOR2",16],["LSTOR2",17],["LSTOR2",18],["LSTOR2",19],["LSTOR2",20],["LSTOR2",21]]]},"PB":{"C75STOR2":[[["C75-S2",0],["C75-S2",1],["C75-S2",2],["C75-S2",3],["C75-S2",4],["C75-S2",5],["C75-S2",6],["C75-S2",7],["C75-S2",8],["C75-S2",9],["C75-S2",10],["C75-S2",11],["C75-S2",12],["C75-S2",13],["C75-S2",14],["C75-S2",15],["C75-S2",16],["C75-S2",17],["C75-S2",18],["C75-S2",19]]],"C75STOR1":[[["C75-S1",0],["C75-S1",1],["C75-S1",2],["C75-S1",3],["C75-S1",4],["C75-S1",5],["C75-S1",6],["C75-S1",7],["C75-S1",8],["C75-S1",9],["C75-S1",10],["C75-S1",11],["C75-S1",12],["C75-S1",13],["C75-S1",14],["C75-S1",15],["C75-S1",16],["C75-S1",17],["C75-S1",18],["C75-S1",19]]],"C2":[[["C-2",0],["C-2",1],["C-2",2],["C-2",3],["C-2",4],["C-2",5],["C-2",6],["C-2",7],["C-2",8],["C-2",9]]],"C1":[[["C-1",0],["C-1",1],["C-1",2],["C-1",3],["C-1",4],["C-1",5],["C-1",6],["C-1",7],["C-1",8],["C-1",9]]],"CTM2":[[["TMZ-2",0],["TMZ-2",1],["TMZ-2",2],["TMZ-2",3],["TMZ-2",4],["TMZ-2",5],["TMZ-2",6],["TMZ-2",7],["TMZ-2",8],["TMZ-2",9]]],"CTM1":[[["TMZ-1",0],["TMZ-1",1],["TMZ-1",2],["TMZ-1",3],["TMZ-1",4],["TMZ-1",6],["TMZ-1",7],["TMZ-1",8],["TMZ-1",9]]],"C883":[[["C88-3",0],["C88-3",1],["C88-3",2],["C88-3",3],["C88-3",4],["C88-3",5],["C88-3",6],["C88-3",7],["C88-3",8],["C88-3",9]]],"CSTOR3":[[["CSTOR3",0],["CSTOR3",1],["CSTOR3",2],["CSTOR3",3],["CSTOR3",4],["CSTOR3",5],["CSTOR3",6],["CSTOR3",7],["CSTOR3",8],["CSTOR3",9]]],"CSTOR2":[[["CSTOR2",0],["CSTOR2",1],["CSTOR2",2],["CSTOR2",3],["CSTOR2",4],["CSTOR2",5],["CSTOR2",6],["CSTOR2",7],["CSTOR2",8],["CSTOR2",9],["CSTOR2",10],["CSTOR2",11],["CSTOR2",12],["CSTOR2",13],["CSTOR2",14],["CSTOR2",15],["CSTOR2",16],["CSTOR2",17],["CSTOR2",18],["CSTOR2",19]]]},"BS":{"S1":[[["S-1",0],["S-1",1],["S-1",2],["S-1",3],["S-1",4],["S-1",5],["S-1",6],["S-1",7],["S-1",8],["S-1",9]]],"S2":[[["S-2",0],["S-2",1],["S-2",2],["S-2",3],["S-2",4],["S-2",5],["S-2",6],["S-2",7],["S-2",8],["S-2",9]]],"TM3":[[["TM3",0],["TM3",1],["TM3",2],["TM3",3],["TM3",4],["TM3",5],["TM3",6],["TM3",7],["TM3",8],["TM3",9]]],"TM4":[[["TM4",0],["TM4",1],["TM4",2],["TM4",3],["TM4",4],["TM4",5],["TM4",6],["TM4",7],["TM4",8],["TM4",9]]],"SSTOR1":[[["STOR1",0],["STOR1",1],["STOR1",2],["STOR1",3],["STOR1",4],["STOR1",5],["STOR1",6],["STOR1",7],["STOR1",8],["STOR1",9]]],"SSTOR2":[[["STOR2",0],["STOR2",1],["STOR2",2],["STOR2",3],["STOR2",4],["STOR2",5],["STOR2",6],["STOR2",7],["STOR2",8],["STOR2",9]]],"SSTOR3":[[["STOR3",0],["STOR3",1],["STOR3",2],["STOR3",3],["STOR3",4],["STOR3",5],["STOR3",6],["STOR3",7],["STOR3",8],["STOR3",9]]]},"MB":{"MSTOR1":[[["W-1",0],["W-1",1],["W-1",2],["W-1",3],["W-1",4],["W-1",5],["W-1",6],["W-1",7],["W-1",8],["W-1",9],["W-1",10],["W-1",11],["W-1",12],["W-1",13],["W-1",14],["W-1",15],["W-1",16],["W-1",17]]],"MSTOR2":[[["W-2",0],["W-2",1],["W-2",2],["W-2",3],["W-2",4],["W-2",5],["W-2",6],["W-2",7],["W-2",8],["W-2",9],["W-2",10],["W-2",11],["W-2",12],["W-2",13],["W-2",14],["W-2",15],["W-2",16],["W-2",17]]],"MSTOR4":[[["W-4",0],["W-4",1],["W-4",2],["W-4",3],["W-4",4],["W-4",5],["W-4",6],["W-4",7],["W-4",8],["W-4",9],["W-4",10],["W-4",11],["W-4",12],["W-4",13],["W-4",13],["W-4",14],["W-4",15]]],"MSTOR3":[[["W-S",0],["W-S",1],["W-S",2],["W-S",3],["W-S",4],["W-S",5],["W-S",6],["W-S",7],["W-S",8],["W-S",9]]],"W3":[[["W-SN",0],["W-SN",1],["W-SN",2],["W-SN",3],["W-SN",4],["W-SN",5],["W-SN",6],["W-SN",7],["W-SN",8],["W-SN",9]]],"W1":[[["W-1N",0],["W-1N",1],["W-1N",2],["W-1N",3],["W-1N",4],["W-1N",5],["W-1N",6],["W-1N",7],["W-1N",8],["W-1N",9]]],"W2":[[["W-2N",0],["W-2N",1],["W-2N",2],["W-2N",3],["W-2N",4],["W-2N",5],["W-2N",6],["W-2N",7],["W-2N",8],["W-2N",9]]],"Y1":[[["Y-1",0],["Y-1",1],["Y-1",2],["Y-1",3],["Y-1",4],["Y-1",5],["Y-1",6],["Y-1",7],["Y-1",8],["Y-1",9]]],"Y2":[[["Y-2",0],["Y-2",1],["Y-2",2],["Y-2",3],["Y-2",4],["Y-2",5],["Y-2",6],["Y-2",7],["Y-2",8],["Y-2",9]]],"Y3":[[["Y-3",0],["Y-3",1],["Y-3",2],["Y-3",3],["Y-3",4],["Y-3",5],["Y-3",6],["Y-3",7],["Y-3",8],["Y-3",9]]]}};
+function placeOf(code, id) {
+  const ids = (aliasTrack(code, id), _specIds[code]);
+  const a = aliasTrack(code, id);
+  if (ids[a]) return [a, 0];
+  const m = /^(.*\D)(\d+)([A-Z])$/.exec(String(id).toUpperCase());
+  if (m) for (const t of Object.keys(ids)) {
+    const r = /^(.*\D)(\d+)$/.exec(t);
+    if (r && r[1] === m[1] && +r[2] === +m[2]) return [t, m[3].charCodeAt(0) - 65];
+  }
+  return [a, 0];
+}
+function applyRealFleet(fleet) {
+  // one yard's trouble must not keep the others' cars off their maps
+  Object.keys(fleet || {}).forEach(code => { try { applyYard(code, fleet); } catch (e) { console.warn("MARIS map data for " + code, e); } });
+}
+function applyYard(code, fleet) {
+  {
+    // the drawing's tracks, then MARIS's: a track MARIS has no car on stays empty, a yard with no cars shows empty (never demo cars)
+    const byId = {};
+    emptyTracks(code).forEach(t => { byId[t.id] = t; });
+    (fleet[code] || []).forEach(t => {
+      const cars = (t.cars || []).map(c => (c ? parseCar(c, code) : null));
+      // the boxes the old screens show this track's positions in (every map that shows it: Daly City's SS-06 is on both)
+      const boxes = (MAP_BOXES[code] || {})[String(t.id).toUpperCase().replace(/[^A-Z0-9]/g, '')];
+      if (boxes && boxes.length) {
+        let all = true;
+        boxes.forEach(list => cars.forEach((c, i) => { const to = list[i], row = to && byId[to[0]]; if (row && to[1] < row.cap) { if (c) row.cars[to[1]] = c; } else if (c) all = false; }));
+        if (all) return;
+      }
+      const [id, at] = placeOf(code, t.id);
+      const drawn = byId[id];
+      // a whole drawn track takes MARIS's track as it is; a sub-location fills its boxes of the drawn row
+      if (!drawn || (at === 0 && id === aliasTrack(code, t.id))) { byId[id] = { id, cap: t.cap, cars }; return; }
+      cars.forEach((c, i) => { if (c) drawn.cars[Math.min(at + i, drawn.cap - 1)] = c; });
+    });
+    _realFleet[code] = Object.values(byId);
+    _yardCache[code] = _realFleet[code];
+    try { sessionStorage.removeItem('maris.yard.v3.' + code); } catch (e) { /* storage unavailable */ }
+    repaintMap(code);
+  }
 }
 
 function yardTracks(code) {
+  if (_realFleet[code]) return _realFleet[code];
   if (_yardCache[code]) return _yardCache[code];
-  let tracks = null;
-  try {
-    const saved = sessionStorage.getItem('maris.yard.v3.' + code);
-    if (saved) tracks = JSON.parse(saved);
-  } catch (e) { /* storage unavailable - fall back to fresh data */ }
-  _yardCache[code] = fillSparse(code, tracks || buildTracks(code));
+  // no demo cars: until MARIS's cars arrive (maris-map:data) a map shows its tracks empty
+  _yardCache[code] = emptyTracks(code);
   return _yardCache[code];
 }
 
+/* the map's own tracks (from its drawing), every position empty */
+function emptyTracks(code) {
+  const caps = { 'T-95': 30 };
+  specCaps(MAPS[code], caps);
+  specCaps(SHOPS[code], caps);
+  return Object.keys(caps).map(id => ({ id, cap: caps[id], cars: new Array(caps[id]).fill(null) }));
+}
+
 function saveYard(code) {
+  if (_realFleet[code]) { _realFleet[code] = _yardCache[code]; return; }
   try { sessionStorage.setItem('maris.yard.v3.' + code, JSON.stringify(_yardCache[code])); } catch (e) { /* ignore */ }
 }
 
@@ -4325,7 +4342,7 @@ const Taskbar = {
   update() {
     if (!this.bar) return;
     this.bar.classList.toggle('off', !SESSION.signed);
-    const g = USER_GROUPS.find(x => x.role === SESSION.role);
+    const g = USER_GROUPS.find(x => x.role === SESSION.role) || { group: SESSION.group };
     this.bar.querySelector('.tb-user').innerHTML = SESSION.signed ? '<b>' + SESSION.user + '</b> · ' + g.group + (SESSION.update ? ' <em>Update</em>' : ' <em>Inquiry</em>') : 'Not signed on';
     this.badge();
   },
@@ -4393,6 +4410,7 @@ Screens.signOn = function () {
     role.style.lineHeight = '15px';
     const showRole = () => {
       const g = USER_GROUPS.find(x => x.users.includes(user.value));
+      if (!g) { role.innerHTML = ''; return; }
       role.innerHTML = g.group + '<br>maps open in <b>' + (['TOWER', 'SHOP', 'ADMIN'].includes(g.role) ? 'Update' : 'Inquiry') + '</b> mode';
     };
     user.onchange = showRole;
@@ -4401,6 +4419,7 @@ Screens.signOn = function () {
     const go = () => {
       if (!pw.value) return status('Enter your password.', '#d0261b');
       const g = USER_GROUPS.find(x => x.users.includes(user.value));
+      if (!g) return status('User ID ' + user.value + ' is not known here. Sign on in the application and return.', '#d0261b');
       SESSION.user = user.value;
       SESSION.role = g.role;
       SESSION.signed = true;
@@ -4420,10 +4439,10 @@ Screens.signOn = function () {
   };
 
   /* after sign on the base window becomes a small launcher, like the MRS00I window behind the menus */
-  const launcher = () => {
+  const launcher = window.__marisLauncher = () => {
     area.innerHTML = '';
     const kk = kit({ cv: area, key: 'signon' }, { s: 1 });
-    const g = USER_GROUPS.find(x => x.role === SESSION.role);
+    const g = USER_GROUPS.find(x => x.role === SESSION.role) || { group: SESSION.group };
     kk.group('Signed On', 24, 18, 736, 140);
     kk.label('User: <b>' + SESSION.user + '</b> &nbsp; (' + g.group + ')', 44, 56);
     kk.label('Signed on ' + today() + ' ' + nowHM(), 44, 84);
@@ -9155,10 +9174,11 @@ html[data-theme=dark] .win pre.report { background-color: #0f1a2b !important; ba
        </div>`;
     const pic = cv.querySelector(".mm-pic");
     const ug = groupOf(SESSION.user);
-    cv.querySelector(".mm-who").innerHTML = `<b>${SESSION.user}</b> · ${ug ? ug.group : ""}`;
+    cv.querySelector(".mm-who").innerHTML = `<b>${SESSION.user}</b> · ${ug ? ug.group : SESSION.group || ""}`;
 
     /* buttons: everything for the administrator (MRS01I); otherwise the group's own button and EXIT (MRS00IS-MAIN_GUI) */
-    const home = HOME[SESSION.user], hb = homeButton(home);
+    const home = HOME[SESSION.user] || (SESSION.yard ? (SESSION.role === "SHOP" ? "shop:" : "yard:") + SESSION.yard : null);
+    const hb = homeButton(home);
     const hc = homeCaption(SESSION.user, SESSION.role);
     BTNS.forEach(([cap, x, y, hs, to], i) => {
       const b = el("button", "mm-btn");
@@ -10410,7 +10430,7 @@ html[data-theme=dark] .detail .stat-box.off { background: #0e1c2b !important; bo
   const userChip = () => {
     const u = bar.querySelector(".tb-user");
     if (!SESSION.signed) { u.textContent = ""; return; }
-    const g = USER_GROUPS.find(x => x.role === SESSION.role) || { group: "" };
+    const g = USER_GROUPS.find(x => x.role === SESSION.role) || { group: SESSION.group || "" };
     u.innerHTML = `<span class="wv-av">${esc(SESSION.user.slice(0, 2))}</span><span class="wv-uinfo"><b>${esc(SESSION.user)}</b><small>${esc(g.group)} · <em>${SESSION.update ? "Update" : "Inquiry"}</em></small></span>`;
   };
 
@@ -10520,7 +10540,7 @@ html[data-theme=dark] .detail .stat-box.off { background: #0e1c2b !important; bo
   // what the home page is showing; kept while the user moves around the application
   const HM = { f: "all", yard: null, q: "", sort: "sev", dir: 1 };
   function dashboard() {
-    const g = USER_GROUPS.find(x => x.role === SESSION.role) || { group: "" };
+    const g = USER_GROUPS.find(x => x.role === SESSION.role) || { group: SESSION.group || "" };
     const h = new Date().getHours(), hello = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
     const F = fleet(), pct = n => F.total ? Math.round(100 * n / F.total) : 0;
     const att = F.all.nogo + F.all.hi, occ = F.slots ? Math.round(100 * F.total / F.slots) : 0;
@@ -11339,7 +11359,7 @@ body.m3d-pref .frame:has(> .win.map:not(.m3d-ready)) { visibility: hidden; }
   const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const txt = e => (e.textContent || "").replace(/\s+/g, " ").trim();
-  let PREF = true; try { PREF = localStorage.getItem("maris.3d") !== "off"; } catch (e) { /* storage unavailable */ }
+  let PREF = false;   // every map opens in 2D; 3D is one click away and not remembered
 
   /* ---------- status colours (as in Yard Command) ---------- */
   const GRP = { go: { name: "GO", hex: 0x2fbf8a, css: "var(--go)" }, hi: { name: "High PM", hex: 0xf08a24, css: "var(--hi)" },
@@ -15383,7 +15403,7 @@ html[data-theme=dark] .mvx-view .bxroot .map-btn { background: #13263b !importan
     }
     const fills = () => Object.keys(SHOP_FILL).flatMap(y => SHOP_FILL[y].map(r => { const el = document.createElement("div");
       el.className = "cell c-" + r[5]; Object.assign(el.dataset, { yard: y, track: r[0], idx: r[1], st: r[3], pm: r[4] }); el.textContent = r[2]; return el; }));
-    return { want: () => store.get("map3d") !== "2d", save: on => store.set("map3d", on ? "3d" : "2d"), build, dressPlan, state: el => carState(el, ""), fills,
+    return { want: () => false, save: on => store.set("map3d", on ? "3d" : "2d"), build, dressPlan, state: el => carState(el, ""), fills,
       kit: { STATUS, livery, liveryModern, carGeo, engineTex } };   // the car models and status colours, for the sign-on background
   })();
   /* 3D or Plan for one map card: called at the end of every fit */
@@ -17342,39 +17362,68 @@ html[data-theme=dark] .wp-grid td.na { background-color: #0f2236 !important; }
   const send = m => parent.postMessage(Object.assign({ source: "maris-map" }, m), location.origin);
   const css = document.createElement("style");
   // nothing of the reference shell shows: only the map in its focus mode
-  css.textContent = "html.island-wait body { visibility: hidden !important; } #wv-login, .taskbar, #wv-side, #wv-head, .mm-foot, .nav-crumb { display: none !important; }";
+  css.textContent = "html.island-wait body { visibility: hidden !important; } #wv-login, .taskbar, #wv-side, #wv-head, .mm-foot, .nav-crumb { display: none !important; }"
+    // not in full screen the React page keeps its header, side menu and footer: the map fills the space left for it
+    + " html body.mvx-page .frame.mvx-frame:not(.nav-hidden) { left: 0 !important; right: 0 !important; top: 0 !important; bottom: 0 !important; width: auto !important; height: auto !important; }"
+    + " html:has(body.mvx-page), html body.mvx-page { background: transparent !important; }"
+    // the viewer's side menu and top bar are hidden here: its windows (car move, detail) centre on the map, not beside a menu
+    + " html { --side: 0px !important; --hdr: 0px !important; } html #desk { margin-left: 0 !important; }";
   document.head.appendChild(css);
   document.documentElement.classList.add("island-wait");
-  let user = null, pending = null, mapWin = null;
+  let mapWin = null;
   const until = (ok, ms = 20000) => new Promise((res, rej) => { const t0 = Date.now(); (function poll() { if (ok()) return res(); if (Date.now() - t0 > ms) return rej(new Error("timeout")); setTimeout(poll, 40); })(); });
-  async function signOn(u) {
-    if (user === u && SESSION.signed) return;
-    await until(() => document.querySelector(".lg-user"));
-    const sel = document.querySelector(".lg-user"); sel.value = u; sel.dispatchEvent(new Event("change"));
-    document.querySelector(".lg-go").click();
-    await until(() => SESSION.signed && document.querySelectorAll(".sd-sec").length > 0);
-    user = u;
+  /* the real middleware session arrives with every open request: no demo sign-on, any group ID works */
+  function applySession(m) {
+    if (!m.user) return false;
+    const fresh = !SESSION.signed || SESSION.user !== m.user || SESSION.role !== (m.role || SESSION.role);
+    SESSION.user = m.user;
+    SESSION.role = m.role || SESSION.role;
+    SESSION.group = m.group || SESSION.group;
+    SESSION.forced = !!m.update;
+    SESSION.yard = m.homeYard || SESSION.yard;
+    SESSION.signed = true;
+    return fresh;
   }
   async function open(m) {
     document.documentElement.classList.add("island-wait");
-    await signOn(m.user);
+    await until(() => document.querySelector(".lg-user"));      // the app shell is built
+    const fresh = applySession(m);
+    // the viewer's own shell (task bar, side menu) is hidden in the island: building it must never hold the map up
+    if (fresh) { try { Taskbar.update(); if (window.__marisLauncher) window.__marisLauncher(); Menus.openMain(); } catch (e) { console.warn("MARIS map shell", e); } }
+    await until(() => SESSION.signed && Menus.root());
+    // the shell's first build finishes on its own timers and closes / minimizes what is open: let it settle before the map
+    if (fresh) await new Promise(r => setTimeout(r, 300));
     const root = Menus.root(); [...WM.list].reverse().forEach(x => { if (x !== root && WM.list.includes(x)) WM.close(x); });
     m.shop ? Screens.shopMap(root, m.yard) : Screens.yardMap(root, m.yard);
     mapWin = WM.list.at(-1);
     document.documentElement.classList.remove("island-wait");
-    send({ type: "maris-map:shown", yard: m.yard, shop: m.shop });
+    send({ type: "maris-map:shown", yard: m.yard, shop: m.shop, title: (mapWin && mapWin.win.querySelector(".titlebar .ttl") || {}).textContent || "" });
   }
   // Return / Exit on the map closes its window: the React page goes back
   const close0 = WM.close.bind(WM);
   WM.close = function (w) { const r = close0.apply(this, arguments); if (w && w === mapWin) { mapWin = null; send({ type: "maris-map:closed" }); } return r; };
+  // minimizing the map hides it on a desktop the island does not show: that is a return to the React page too
+  const min0 = WM.minimize.bind(WM);
+  WM.minimize = function (w) { const was = w && w.win.classList.contains("minimized"); const r = min0.apply(this, arguments); if (w && w === mapWin && !was) { mapWin = null; send({ type: "maris-map:closed" }); } return r; };
+  // the map's buttons open MARIS's own screens (the old screens' wiring, e.g. VHYT71IConnections), not the viewer's stand-ins
+  const real = code => () => send({ type: "maris-map:screen", code });
+  Screens.pseudoStatus = real("VHYT09I");
+  Screens.towerMenu = real("VHMTOI");
+  Screens.mapReports = real("VHYTM3I");
+  Screens.vehicleIncdMaint = real("VHYTM6I");
   addEventListener("message", e => {
     if (e.origin !== location.origin || !e.data) return;
-    if (e.data.type === "maris-map:open") { pending = open(e.data).catch(err => send({ type: "maris-map:error", message: String(err) })); }
+    if (e.data.type === "maris-map:open") { open(e.data).catch(err => send({ type: "maris-map:error", message: String(err) })); }
+    if (e.data.type === "maris-map:data") { try { applyRealFleet(e.data.fleet); } catch (err) { send({ type: "maris-map:error", message: String(err) }); } }
     if (e.data.type === "maris-map:theme") {
       // the reference's own switch: icon, stored choice and the 3D palette follow
       const b = document.querySelector(".wv-theme"); if (b && (document.documentElement.dataset.theme === "dark") !== (e.data.theme === "dark")) b.click();
     }
   });
+  // tell the React page whether the map is in full screen (the viewer marks it on <body>)
+  let full = null;
+  const fullNow = () => { const on = document.body.classList.contains("mvx-on"); if (on !== full) { full = on; send({ type: "maris-map:full", on }); } };
+  new MutationObserver(fullNow).observe(document.body, { attributes: true, attributeFilter: ["class"] });
   send({ type: "maris-map:ready" });
 })();
 </script>

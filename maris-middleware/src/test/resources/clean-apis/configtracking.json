@@ -1,0 +1,17 @@
+{
+  "_about": "Screens of the configuration tracking module rebuilt on the clean API, with their tests.",
+  "VHCF01I": {
+    "module": "configtracking",
+    "api": "com.bart.maris.middleware.api.configtracking.ConfigTrackingController",
+    "apiTest": "com.bart.maris.middleware.api.configtracking.ConfigTrackingApiTest",
+    "parityTest": "com.bart.maris.middleware.api.configtracking.ConfigTrackingParityTest",
+    "uiTest": "src/features/configtracking/CarConfigurationPage.test.tsx"
+  },
+  "VFCF05I": {
+    "module": "configtracking",
+    "api": "com.bart.maris.middleware.api.configtracking.ConfigTrackingController",
+    "apiTest": "com.bart.maris.middleware.api.configtracking.ConfigTrackingApiTest",
+    "parityTest": "com.bart.maris.middleware.api.configtracking.ConfigTrackingParityTest",
+    "uiTest": "src/features/configtracking/CarConfigurationPage.test.tsx"
+  }
+}

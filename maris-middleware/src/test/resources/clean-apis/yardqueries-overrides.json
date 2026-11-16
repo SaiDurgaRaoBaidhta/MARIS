@@ -1,0 +1,10 @@
+{
+  "_about": "Yard queries (agent T7): VHYT34I make / break overrides (service in domain/yardtracking, it runs on that package's screen logic runner).",
+  "VHYT34I": {
+    "module": "yardqueries",
+    "api": "com.bart.maris.middleware.api.yardqueries.YardQueriesOverridesController",
+    "apiTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingMiscApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardtracking.YardTrackingOverridesParityTest",
+    "uiTest": "src/features/yardqueries/OverridesPage.test.tsx"
+  }
+}

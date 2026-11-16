@@ -1,0 +1,38 @@
+{
+  "_about": "Screens of the table maintenance 2 module (MRS messages received) rebuilt on the clean API, with their tests.",
+  "VHCCS04I": {
+    "module": "tables2",
+    "api": "com.bart.maris.middleware.api.tables2.Tables2Controller",
+    "apiTest": "com.bart.maris.middleware.api.tables2.Tables2ApiTest",
+    "parityTest": "com.bart.maris.middleware.api.tables2.Tables2MessagesParityTest",
+    "uiTest": "src/features/tables2/MessagesPage.test.tsx"
+  },
+  "VHCCS05I": {
+    "module": "tables2",
+    "api": "com.bart.maris.middleware.api.tables2.Tables2Controller",
+    "apiTest": "com.bart.maris.middleware.api.tables2.Tables2ApiTest",
+    "parityTest": "com.bart.maris.middleware.api.tables2.Tables2MessagesParityTest",
+    "uiTest": "src/features/tables2/MessagesPage.test.tsx"
+  },
+  "VHCCS06I": {
+    "module": "tables2",
+    "api": "com.bart.maris.middleware.api.tables2.Tables2Controller",
+    "apiTest": "com.bart.maris.middleware.api.tables2.Tables2ApiTest",
+    "parityTest": "com.bart.maris.middleware.api.tables2.Tables2MessagesParityTest",
+    "uiTest": "src/features/tables2/MessagesPage.test.tsx"
+  },
+  "VHCCS07I": {
+    "module": "tables2",
+    "api": "com.bart.maris.middleware.api.tables2.Tables2Controller",
+    "apiTest": "com.bart.maris.middleware.api.tables2.Tables2ApiTest",
+    "parityTest": "com.bart.maris.middleware.api.tables2.Tables2MessagesParityTest",
+    "uiTest": "src/features/tables2/MessagesPage.test.tsx"
+  },
+  "VHCCS18I": {
+    "module": "tables2",
+    "api": "com.bart.maris.middleware.api.tables2.Tables2Controller",
+    "apiTest": "com.bart.maris.middleware.api.tables2.Tables2ApiTest",
+    "parityTest": "com.bart.maris.middleware.api.tables2.Tables2MessagesParityTest",
+    "uiTest": "src/features/tables2/MessagesPage.test.tsx"
+  }
+}

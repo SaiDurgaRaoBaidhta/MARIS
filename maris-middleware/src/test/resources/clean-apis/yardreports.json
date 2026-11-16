@@ -1,0 +1,115 @@
+{
+  "_about": "Screens of the yard reports module rebuilt on the clean API, with their tests. The map screens reach their new pages once shared/clean-pages-before-maps is merged.",
+  "VHIC01": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHIC02": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHYT80I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHYT81I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHYT105I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHYT106I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHYT70I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHYT71I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHYT90I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHYT91I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHSW01I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHYT100I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHYT101I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHYT61I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHIC03I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsMoveApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsMoveParityTest",
+    "uiTest": "src/features/yardreports/PseudoTrainMovePage.test.tsx"
+  },
+  "VHYT53I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsPseudoApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsPseudoParityTest",
+    "uiTest": "src/features/yardreports/PseudoConfigPage.test.tsx"
+  }
+}

@@ -741,20 +741,20 @@ public final class Interp {
     /** vgLib.findStr(source, sourceIndex, sourceLength, searchString): 0 found (index updated), 1 not found */
     private Object findStr(Call c) {
         Ref src = resolve((Name) c.args().get(0));
-        Ref idxRef = resolve((Name) c.args().get(1));
+        Ref idxRef = c.args().get(1) instanceof Name n1 ? resolve(n1) : null;       // a literal start index is allowed (VHCY01I)
         int len = Conv.number(eval(c.args().get(2))).intValue();
         String search = Conv.rtrim(Conv.string(eval(c.args().get(3))));
-        int start = Conv.number(read(idxRef)).intValue();
+        int start = idxRef != null ? Conv.number(read(idxRef)).intValue() : Conv.number(eval(c.args().get(1))).intValue();
         if (src instanceof FieldRef fr && fr.dims() > 0) {
             List<FieldRef> els = elementsFrom(new FieldRef(fr.rec, fr.path, fr.isArray() ? append(fr.idx, start) : fr.idx, null, null));
             for (int i = 0; i < Math.min(len, els.size()); i++) {
-                if (Conv.compare(read(els.get(i)), search) == 0) { store(idxRef, BigDecimal.valueOf(start + i)); return BigDecimal.ZERO; }
+                if (Conv.compare(read(els.get(i)), search) == 0) { if (idxRef != null) store(idxRef, BigDecimal.valueOf(start + i)); return BigDecimal.ZERO; }
             }
             return BigDecimal.ONE;
         }
         String s = Conv.string(read(src));
         int at = s.indexOf(search, Math.max(0, start - 1));
-        if (at >= 0 && at < start - 1 + len) { store(idxRef, BigDecimal.valueOf(at + 1)); return BigDecimal.ZERO; }
+        if (at >= 0 && at < start - 1 + len) { if (idxRef != null) store(idxRef, BigDecimal.valueOf(at + 1)); return BigDecimal.ZERO; }
         return BigDecimal.ONE;
     }
 

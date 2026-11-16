@@ -4,9 +4,6 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-# http (default) = call the middleware behind /api; mock = answer from the bundled demo data
-ARG VITE_MARIS_API=http
-ENV VITE_MARIS_API=$VITE_MARIS_API
 RUN npm run build
 
 FROM nginx:1.27-alpine

@@ -10,6 +10,6 @@ grep -m1 '^window.MARIS_SCREENS = ' "$HTML" | sed 's/^window.MARIS_SCREENS = //;
 node tools/capture-screens.mjs "$OUT"            # menus + every screen's final layout
 node tools/capture-web-pages.mjs "$OUT"          # web report pages, with their look inlined
 mkdir -p "$OUT/data" && node tools/capture-data.mjs "$OUT/data"
-cp "$OUT/data/fleet.json" "$OUT/data/maps.json" public/data/ && cp "$OUT/data/bart-logo.png" public/ && cp "$OUT/data/userGroups.json" src/features/auth/
+cp "$OUT/data/maps.json" public/data/ && cp "$OUT/data/bart-logo.png" public/
 node tools/build-screens.mjs "$OUT" "$OUT/screens-src.json" .
 echo "done: $OUT"
