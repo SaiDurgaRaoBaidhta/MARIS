@@ -111,5 +111,19 @@
     "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsPseudoApiTest",
     "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsPseudoParityTest",
     "uiTest": "src/features/yardreports/PseudoConfigPage.test.tsx"
+  },
+  "VHY105I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
+  },
+  "VHY106I": {
+    "module": "yardreports",
+    "api": "com.bart.maris.middleware.api.yardreports.YardReportsController",
+    "apiTest": "com.bart.maris.middleware.api.yardreports.YardReportsApiTest",
+    "parityTest": "com.bart.maris.middleware.api.yardreports.YardReportsParityTest",
+    "uiTest": "src/features/yardreports/YardMapPage.test.tsx"
   }
 }
