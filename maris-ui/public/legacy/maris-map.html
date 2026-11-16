@@ -11034,7 +11034,7 @@ html[data-theme=dark] .detail .stat-box.off { background: #0e1c2b !important; bo
       const toast0 = window.toast; window.toast = () => {};
       const quiet = () => { if (window.toast !== toast0) window.toast = toast0; document.querySelectorAll(".toast").forEach(t => t.remove()); };
       harvest().then(list => {
-        preparing = false; quiet();
+        preparing = false; busy(false); quiet();   // busy off marks the menus read (the island's map open waits on it)
         if (!SESSION.signed) return;
         SECTIONS = list; buildSide();
         closeTo(Menus.root()); login(false); refresh(true);
@@ -15480,7 +15480,7 @@ html[data-theme=dark] .mvx-view .bxroot .map-btn { background: #13263b !importan
       const top = document.createElement("div"); top.className = "mv-top3d"; card.querySelectorAll(".mv-acts .mv-lk").forEach(b => top.appendChild(b)); card.appendChild(top); }
     zoom2d(v);
     VIEWS_ON.add(v);
-    mapFull(f.mv.card, true);                                        // every map opens in full screen, the side menu closed
+    f.mv.card.classList.toggle("fs-css", true); fsChanged();         // every map opens in full screen (the page shell steps aside); the browser's own full screen is only for the map's full-screen button, its zoom animation made opening a second step
     requestAnimationFrame(() => fitAll(v));
     setTimeout(() => fitAll(v), 120);
   }
@@ -17384,13 +17384,19 @@ html[data-theme=dark] .wp-grid td.na { background-color: #0f2236 !important; }
     SESSION.signed = true;
     return fresh;
   }
-  async function open(m) {
+  let opening = false;
+  async function open(m) { opening = true; try { await open1(m); } finally { opening = false; } }
+  async function open1(m) {
+    mapWin = null;   // the map being replaced closes quietly (side bar reading, new map): "closed" would send the React page back off the new map
     document.documentElement.classList.add("island-wait");
     await until(() => document.querySelector(".lg-user"));      // the app shell is built
     const fresh = applySession(m);
     // the viewer's own shell (task bar, side menu) is hidden in the island: building it must never hold the map up
     if (fresh) { try { Taskbar.update(); if (window.__marisLauncher) window.__marisLauncher(); Menus.openMain(); } catch (e) { console.warn("MARIS map shell", e); } }
     await until(() => SESSION.signed && Menus.root());
+    // the side bar reads every menu by clicking it unseen (#wv-login.busy) and then closes all windows: wait it out, or it
+    // opens Tower Menu in the React page and closes the map just drawn
+    await until(() => !document.querySelector("#wv-login.busy"), 60000);
     // the shell's first build finishes on its own timers and closes / minimizes what is open: let it settle before the map
     if (fresh) await new Promise(r => setTimeout(r, 300));
     const root = Menus.root(); [...WM.list].reverse().forEach(x => { if (x !== root && WM.list.includes(x)) WM.close(x); });
@@ -17401,12 +17407,27 @@ html[data-theme=dark] .wp-grid td.na { background-color: #0f2236 !important; }
   }
   // Return / Exit on the map closes its window: the React page goes back
   const close0 = WM.close.bind(WM);
-  WM.close = function (w) { const r = close0.apply(this, arguments); if (w && w === mapWin) { mapWin = null; send({ type: "maris-map:closed" }); } return r; };
+  /* leaving the map: tell the page first so it fades out over the map as it is, and take the map down only once the fade is done
+     (taking it down at once leaves the page fading out an empty panel) */
+  let leaving = null;
+  function leave(w, doIt) {
+    if (leaving) return;
+    leaving = w; send({ type: "maris-map:closing" });
+    setTimeout(() => { leaving = null; doIt(); if (mapWin === w) { mapWin = null; send({ type: "maris-map:closed" }); } }, 240);
+  }
+  WM.close = function (w) {
+    if (w && w === mapWin) return leave(w, () => close0(w));
+    return close0.apply(this, arguments);
+  };
   // minimizing the map hides it on a desktop the island does not show: that is a return to the React page too
   const min0 = WM.minimize.bind(WM);
-  WM.minimize = function (w) { const was = w && w.win.classList.contains("minimized"); const r = min0.apply(this, arguments); if (w && w === mapWin && !was) { mapWin = null; send({ type: "maris-map:closed" }); } return r; };
+  WM.minimize = function (w) {
+    const was = w && w.win.classList.contains("minimized");
+    if (w && w === mapWin && !was) return leave(w, () => min0(w));
+    return min0.apply(this, arguments);
+  };
   // the map's buttons open MARIS's own screens (the old screens' wiring, e.g. VHYT71IConnections), not the viewer's stand-ins
-  const real = code => () => send({ type: "maris-map:screen", code });
+  const real = code => () => { if (!opening && mapWin) send({ type: "maris-map:screen", code }); };   // only a click on a shown map
   Screens.pseudoStatus = real("VHYT09I");
   Screens.towerMenu = real("VHMTOI");
   Screens.mapReports = real("VHYTM3I");

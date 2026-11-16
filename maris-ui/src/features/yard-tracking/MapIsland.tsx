@@ -18,6 +18,8 @@ export function MapIsland({ map, navWidth }: { map: { yard: string; shop: boolea
   const [shown, setShown] = useState(false);
   const [title, setTitle] = useState("");
   const [full, setFull] = useState(true);            // the map in full screen covers the page; otherwise the page shell stays
+  const leaving = useRef(false);                 // the map announced it is closing: the page already went back, its final "closed" must not go back again
+  const settled = useRef(false);                 // the shown map has reported its own state: before that, "full" messages are left over from the last map
   const back = useRef(app.back); back.current = app.back;
   const toast = useRef(app.toast); toast.current = app.toast;
   const open = useRef(app.open); open.current = app.open;
@@ -29,10 +31,11 @@ export function MapIsland({ map, navWidth }: { map: { yard: string; shop: boolea
     const on = (e: MessageEvent<Msg>) => {
       if (e.origin !== location.origin || e.data?.source !== "maris-map") return;
       if (e.data.type === "maris-map:ready") setReady(true);
-      if (e.data.type === "maris-map:shown") { setShown(true); setTitle(e.data.title || ""); }
-      if (e.data.type === "maris-map:closed") { setShown(false); back.current(); }
+      if (e.data.type === "maris-map:shown") { settled.current = true; setShown(true); setTitle(e.data.title || ""); }
+      if (e.data.type === "maris-map:closing") { leaving.current = true; back.current(); }   // the layer fades out over the map, still drawn
+      if (e.data.type === "maris-map:closed") { settled.current = false; setShown(false); if (leaving.current) leaving.current = false; else back.current(); }
       if (e.data.type === "maris-map:screen" && e.data.code) open.current({ kind: "screen", key: "egl:" + e.data.code, label: e.data.code });
-      if (e.data.type === "maris-map:full") setFull(!!e.data.on);
+      if (e.data.type === "maris-map:full" && settled.current) setFull(!!e.data.on);
       if (e.data.type === "maris-map:error") toast.current("The map could not be opened: " + e.data.message, "err");
     };
     addEventListener("message", on);
@@ -51,7 +54,7 @@ export function MapIsland({ map, navWidth }: { map: { yard: string; shop: boolea
   }, [ready, key]);
   useEffect(() => {
     if (!ready || !map) return;
-    setShown(false);
+    setShown(false); settled.current = false; leaving.current = false; setFull(true);   // every map opens straight into full screen, never via the page layout
     const s = app.session;
     post({
       type: "maris-map:open", yard: map.yard, shop: map.shop,
@@ -59,6 +62,8 @@ export function MapIsland({ map, navWidth }: { map: { yard: string; shop: boolea
     });
   }, [ready, key]);   // eslint-disable-line react-hooks/exhaustive-deps -- reopen only when the map changes
   useEffect(() => { if (ready) post({ type: "maris-map:theme", theme: app.theme }); }, [ready, app.theme]);
+  // the browser's full screen is for the maps only: any other page (back, a screen a map button opened) leaves it
+  useEffect(() => { if (!map && document.fullscreenElement) document.exitFullscreen().catch(() => {}); }, [map]);
 
   if (!wanted) return null;
   const [code, name] = splitTitle(title);
@@ -71,10 +76,9 @@ export function MapIsland({ map, navWidth }: { map: { yard: string; shop: boolea
           <PageHead title={name || map.yard} code={code || undefined} />
         </div>)}
       {/* the viewer sizes its own map card (58px above the window's bottom, as in the reference): the layer reaches the bottom and adds no card of its own */}
-      <div className={`fixed ${full ? "inset-0 z-[6000] bg-[#eef3f8] dark:bg-[#08121d]" : "bottom-0 right-4 top-[166px] z-[4400]"} ${map ? "" : "hidden"}`}
+      <div className={`fixed ${full ? "inset-0 z-[6000] bg-[#eef3f8] dark:bg-[#08121d]" : "bottom-0 right-4 top-[166px] z-[4400]"} ${map && shown ? "opacity-100" : "pointer-events-none invisible opacity-0"} transition-[opacity,visibility] duration-200 motion-reduce:transition-none`}
         style={full ? undefined : { left: navWidth + 16 }} aria-hidden={!map}>
-        {map && !shown && <p role="status" className="absolute inset-0 grid place-items-center text-slate-500">Loading the map…</p>}
-        <iframe ref={frame} src="/legacy/maris-map.html" title="Yard map" className={`size-full border-0 bg-transparent ${shown ? "" : "invisible"}`} />
+        <iframe ref={frame} src="/legacy/maris-map.html" title="Yard map" className="size-full border-0 bg-transparent" />
       </div>
     </>
   );
